@@ -1,0 +1,395 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!--This file represents the results of running a test suite-->
+<test-results name="D:\Projects\net.bindable.svn\Bindable.Linq\trunk\source\Bindable.Linq.Tests\Bindable.Linq.nunit" total="191" failures="5" not-run="0" date="2008-05-08" time="22:45:39">
+  <environment nunit-version="2.4.3.0" clr-version="2.0.50727.1434" os-version="Microsoft Windows NT 6.0.6001 Service Pack 1" platform="Win32NT" cwd="D:\Projects\net.bindable.svn\Bindable.Linq\trunk\source\Bindable.Linq.Tests" machine-name="SPONGEBOB" user="Paul.Stovell" user-domain="SOLAR" />
+  <culture-info current-culture="en-AU" current-uiculture="en-US" />
+  <test-suite name="D:\Projects\net.bindable.svn\Bindable.Linq\trunk\source\Bindable.Linq.Tests\Bindable.Linq.nunit" success="False" time="4.542" asserts="0">
+    <results>
+      <test-suite name="D:\Projects\net.bindable.svn\Bindable.Linq\trunk\source\Bindable.Linq.Tests\bin\Debug\Bindable.Linq.Tests.dll" success="False" time="4.477" asserts="0">
+        <results>
+          <test-suite name="Bindable" success="False" time="4.419" asserts="0">
+            <results>
+              <test-suite name="Linq" success="False" time="4.419" asserts="0">
+                <results>
+                  <test-suite name="Tests" success="False" time="4.419" asserts="0">
+                    <results>
+                      <test-suite name="Behaviour" success="False" time="3.473" asserts="0">
+                        <results>
+                          <test-suite name="Aggregators" success="True" time="0.512" asserts="0">
+                            <results>
+                              <test-suite name="CustomAggregatorTests" success="True" time="0.459" asserts="0">
+                                <results>
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Aggregators.CustomAggregatorTests.CustomAggregatorAccumulateTypeCalculate" executed="True" success="True" time="0.217" asserts="2" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Aggregators.CustomAggregatorTests.CustomAggregatorCalculate" executed="True" success="True" time="0.179" asserts="2" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Aggregators.CustomAggregatorTests.CustomAggregatorCollectionChangeCausesRefresh" executed="True" success="True" time="0.053" asserts="14" />
+                                </results>
+                              </test-suite>
+                              <test-suite name="MaxAggregatorTests" success="True" time="0.009" asserts="0">
+                                <results>
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Aggregators.MaxAggregatorTests.MaxAggregatorCalculate" executed="True" success="True" time="0.005" asserts="2" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Aggregators.MaxAggregatorTests.MaxAggregatorCollectionChangeCausesRefresh" executed="True" success="True" time="0.003" asserts="14" />
+                                </results>
+                              </test-suite>
+                              <test-suite name="MinAggregatorTests" success="True" time="0.007" asserts="0">
+                                <results>
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Aggregators.MinAggregatorTests.MinAggregatorCalculate" executed="True" success="True" time="0.003" asserts="2" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Aggregators.MinAggregatorTests.MinAggregatorCollectionChangeCausesRefresh" executed="True" success="True" time="0.003" asserts="14" />
+                                </results>
+                              </test-suite>
+                              <test-suite name="SumAggregatorTests" success="True" time="0.009" asserts="0">
+                                <results>
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Aggregators.SumAggregatorTests.SumAggregatorCalculate" executed="True" success="True" time="0.003" asserts="2" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Aggregators.SumAggregatorTests.SumAggregatorCollectionChangeCausesRefresh" executed="True" success="True" time="0.003" asserts="14" />
+                                </results>
+                              </test-suite>
+                            </results>
+                          </test-suite>
+                          <test-suite name="Dependencies" success="True" time="0.227" asserts="0">
+                            <results>
+                              <test-suite name="WhereDependenciesBehavior" success="True" time="0.226" asserts="0">
+                                <results>
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Dependencies.WhereDependenciesBehavior.Test1" executed="True" success="True" time="0.226" asserts="6" />
+                                </results>
+                              </test-suite>
+                            </results>
+                          </test-suite>
+                          <test-suite name="Iterators" success="False" time="2.729" asserts="0">
+                            <results>
+                              <test-suite name="AsynchronousBehaviour" success="True" time="0.246" asserts="0">
+                                <results>
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.AsynchronousBehaviour.AsynchronousIteratorInitializeIsEmptyAndItemsAreStreamed" executed="True" success="True" time="0.245" asserts="25" />
+                                </results>
+                              </test-suite>
+                              <test-suite name="GroupByBehaviour" success="False" time="0.239" asserts="0">
+                                <results>
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.GroupByBehaviour.GroupByIteratorAddMultipleItemsToExistingGroupAfterInitialize" executed="True" success="True" time="0.000" asserts="0" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.GroupByBehaviour.GroupByIteratorAddMultipleItemsToExistingGroupBeforeInitialize" executed="True" success="True" time="0.000" asserts="0" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.GroupByBehaviour.GroupByIteratorAddMultipleItemsToMixedGroupsAfterInitialize" executed="True" success="True" time="0.000" asserts="0" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.GroupByBehaviour.GroupByIteratorAddMultipleItemsToMixedGroupsBeforeInitialize" executed="True" success="True" time="0.001" asserts="0" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.GroupByBehaviour.GroupByIteratorAddMultipleItemsToMultipleNonExistingGroupsAfterInitialize" executed="True" success="True" time="0.000" asserts="0" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.GroupByBehaviour.GroupByIteratorAddMultipleItemsToMultipleNonExistingGroupsBeforeInitialize" executed="True" success="True" time="0.000" asserts="0" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.GroupByBehaviour.GroupByIteratorAddMultipleItemsToNonExistingGroupAfterInitialize" executed="True" success="True" time="0.000" asserts="0" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.GroupByBehaviour.GroupByIteratorAddMultipleItemsToNonExistingGroupBeforeInitialize" executed="True" success="True" time="0.000" asserts="0" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.GroupByBehaviour.GroupByIteratorAddSingleItemToExistingGroupAfterInitialize" executed="True" success="False" time="0.106" asserts="3">
+                                    <failure>
+                                      <message><![CDATA[System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.]]></message>
+                                      <stack-trace><![CDATA[   at System.ThrowHelper.ThrowKeyNotFoundException()
+   at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+   at Bindable.Linq.Tests.TestHelpers.EventCatcher`2.DequeueNextEvent(TPublisher publisher) in D:\Projects\net.bindable.svn\Bindable.Linq\trunk\source\Bindable.Linq.Tests\TestHelpers\EventCatcher.cs:line 86
+   at Bindable.Linq.Tests.TestHelpers.IteratorTestExtensions.GetLastEvent[TInput,TResult](Nullable`1 group, IteratorTestState`2 testState) in D:\Projects\net.bindable.svn\Bindable.Linq\trunk\source\Bindable.Linq.Tests\TestHelpers\IteratorTestExtensions.cs:line 360
+   at Bindable.Linq.Tests.TestHelpers.IteratorTestExtensions.ExpectEvent[TInput,TResult](IteratorTestState`2 testState, CollectionChangeSpecification specification) in D:\Projects\net.bindable.svn\Bindable.Linq\trunk\source\Bindable.Linq.Tests\TestHelpers\IteratorTestExtensions.cs:line 267
+   at Bindable.Linq.Tests.Behaviour.Iterators.GroupByBehaviour.GroupByIteratorAddSingleItemToExistingGroupAfterInitialize() in D:\Projects\net.bindable.svn\Bindable.Linq\trunk\source\Bindable.Linq.Tests\Behaviour\Iterators\GroupByBehaviour.cs:line 55
+]]></stack-trace>
+                                    </failure>
+                                  </test-case>
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.GroupByBehaviour.GroupByIteratorAddSingleItemToExistingGroupBeforeInitialize" executed="True" success="False" time="0.024" asserts="2">
+                                    <failure>
+                                      <message><![CDATA[System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.]]></message>
+                                      <stack-trace><![CDATA[   at System.ThrowHelper.ThrowKeyNotFoundException()
+   at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+   at Bindable.Linq.Tests.TestHelpers.EventCatcher`2.DequeueNextEvent(TPublisher publisher) in D:\Projects\net.bindable.svn\Bindable.Linq\trunk\source\Bindable.Linq.Tests\TestHelpers\EventCatcher.cs:line 86
+   at Bindable.Linq.Tests.TestHelpers.IteratorTestExtensions.GetLastEvent[TInput,TResult](Nullable`1 group, IteratorTestState`2 testState) in D:\Projects\net.bindable.svn\Bindable.Linq\trunk\source\Bindable.Linq.Tests\TestHelpers\IteratorTestExtensions.cs:line 360
+   at Bindable.Linq.Tests.TestHelpers.IteratorTestExtensions.ExpectNoEventsOnGroup[TInput,TResult](IteratorTestState`2 testState, Int32 childIndex) in D:\Projects\net.bindable.svn\Bindable.Linq\trunk\source\Bindable.Linq.Tests\TestHelpers\IteratorTestExtensions.cs:line 276
+   at Bindable.Linq.Tests.Behaviour.Iterators.GroupByBehaviour.GroupByIteratorAddSingleItemToExistingGroupBeforeInitialize() in D:\Projects\net.bindable.svn\Bindable.Linq\trunk\source\Bindable.Linq.Tests\Behaviour\Iterators\GroupByBehaviour.cs:line 43
+]]></stack-trace>
+                                    </failure>
+                                  </test-case>
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.GroupByBehaviour.GroupByIteratorAddSingleItemToNonExistingGroupAfterInitialize" executed="True" success="True" time="0.000" asserts="0" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.GroupByBehaviour.GroupByIteratorAddSingleItemToNonExistingGroupBeforeInitialize" executed="True" success="True" time="0.000" asserts="0" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.GroupByBehaviour.GroupByIteratorAfterInitialize" executed="True" success="True" time="0.044" asserts="6" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.GroupByBehaviour.GroupByIteratorBeforeInitialize" executed="True" success="True" time="0.020" asserts="5" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.GroupByBehaviour.GroupByIteratorChangeSingleItemKeyForExistingGroupAfterInitialize" executed="True" success="True" time="0.000" asserts="0" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.GroupByBehaviour.GroupByIteratorChangeSingleItemKeyForExistingGroupBeforeInitialize" executed="True" success="True" time="0.000" asserts="0" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.GroupByBehaviour.GroupByIteratorChangeSingleItemKeyForNonExistingGroupAfterInitialize" executed="True" success="True" time="0.000" asserts="0" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.GroupByBehaviour.GroupByIteratorChangeSingleItemKeyForNonExistingGroupBeforeInitialize" executed="True" success="True" time="0.000" asserts="0" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.GroupByBehaviour.GroupByIteratorMoveMultipleItemsToExistingGroupsAfterInitialize" executed="True" success="True" time="0.000" asserts="0" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.GroupByBehaviour.GroupByIteratorMoveMultipleItemsToExistingGroupsBeforeInitialize" executed="True" success="True" time="0.000" asserts="0" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.GroupByBehaviour.GroupByIteratorMoveMultipleItemsToMixedGroupsAfterInitialize" executed="True" success="True" time="0.001" asserts="0" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.GroupByBehaviour.GroupByIteratorMoveMultipleItemsToMixedGroupsBeforeInitialize" executed="True" success="True" time="0.000" asserts="0" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.GroupByBehaviour.GroupByIteratorMoveSingleItemInExistingGroupAfterInitialize" executed="True" success="True" time="0.000" asserts="0" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.GroupByBehaviour.GroupByIteratorMoveSingleItemInExistingGroupBeforeInitialize" executed="True" success="True" time="0.000" asserts="0" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.GroupByBehaviour.GroupByIteratorMoveSingleNonExistingItemAfterInitialize" executed="True" success="True" time="0.001" asserts="0" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.GroupByBehaviour.GroupByIteratorMoveSingleNonExistingItemBeforeInitialize" executed="True" success="True" time="0.000" asserts="0" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.GroupByBehaviour.GroupByIteratorRemoveMultipleItemsFromExistingGroupsAfterInitialize" executed="True" success="True" time="0.000" asserts="0" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.GroupByBehaviour.GroupByIteratorRemoveMultipleItemsFromExistingGroupsBeforeInitialize" executed="True" success="True" time="0.000" asserts="0" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.GroupByBehaviour.GroupByIteratorRemoveMultipleItemsFromMixedGroupsAfterInitialize" executed="True" success="True" time="0.000" asserts="0" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.GroupByBehaviour.GroupByIteratorRemoveMultipleItemsFromMixedGroupsBeforeInitialize" executed="True" success="True" time="0.000" asserts="0" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.GroupByBehaviour.GroupByIteratorRemoveSingleItemFromExistingGroupAfterInitialize" executed="True" success="True" time="0.000" asserts="0" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.GroupByBehaviour.GroupByIteratorRemoveSingleItemFromExistingGroupBeforeInitialize" executed="True" success="True" time="0.000" asserts="0" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.GroupByBehaviour.GroupByIteratorRemoveSingleNonExisingItemFromNonExisingGroupAfterInitialize" executed="True" success="True" time="0.000" asserts="0" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.GroupByBehaviour.GroupByIteratorRemoveSingleNonExisingItemFromNonExisingGroupBeforeInitialize" executed="True" success="True" time="0.000" asserts="0" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.GroupByBehaviour.GroupByIteratorReplaceMultipleExistingItemsForExistingGroupsAfterInitialize" executed="True" success="True" time="0.000" asserts="0" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.GroupByBehaviour.GroupByIteratorReplaceMultipleExistingItemsForExistingGroupsBeforeInitialize" executed="True" success="True" time="0.000" asserts="0" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.GroupByBehaviour.GroupByIteratorReplaceMultipleExistingItemsForNonExistingGroupsAfterInitialize" executed="True" success="True" time="0.000" asserts="0" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.GroupByBehaviour.GroupByIteratorReplaceMultipleExistingItemsForNonExistingGroupsBeforeInitialize" executed="True" success="True" time="0.000" asserts="0" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.GroupByBehaviour.GroupByIteratorReplaceMultipleMixedItemsForExistingGroupsAfterInitialize" executed="True" success="True" time="0.000" asserts="0" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.GroupByBehaviour.GroupByIteratorReplaceMultipleMixedItemsForExistingGroupsBeforeInitialize" executed="True" success="True" time="0.000" asserts="0" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.GroupByBehaviour.GroupByIteratorReplaceMultipleMixedItemsForMixedGroupsAfterInitialize" executed="True" success="True" time="0.000" asserts="0" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.GroupByBehaviour.GroupByIteratorReplaceMultipleMixedItemsForMixedGroupsBeforeInitialize" executed="True" success="True" time="0.001" asserts="0" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.GroupByBehaviour.GroupByIteratorReplaceMultipleNonExistingItemsForExistingGroupsAfterInitialize" executed="True" success="True" time="0.000" asserts="0" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.GroupByBehaviour.GroupByIteratorReplaceMultipleNonExistingItemsForExistingGroupsBeforeInitialize" executed="True" success="True" time="0.000" asserts="0" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.GroupByBehaviour.GroupByIteratorReplaceMultipleNonExistingItemsForNonExistingGroupsAfterInitialize" executed="True" success="True" time="0.000" asserts="0" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.GroupByBehaviour.GroupByIteratorReplaceMultipleNonExistingItemsForNonExistingGroupsBeforeInitialize" executed="True" success="True" time="0.000" asserts="0" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.GroupByBehaviour.GroupByIteratorReplaceSingleItemInExistingGroupWithItemForExistingGroupAfterInitialize" executed="True" success="True" time="0.001" asserts="0" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.GroupByBehaviour.GroupByIteratorReplaceSingleItemInExistingGroupWithItemForExistingGroupBeforeInitialize" executed="True" success="True" time="0.000" asserts="0" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.GroupByBehaviour.GroupByIteratorReplaceSingleItemInExistingGroupWithItemForNonExistingGroupAfterInitialize" executed="True" success="True" time="0.000" asserts="0" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.GroupByBehaviour.GroupByIteratorReplaceSingleItemInExistingGroupWithItemForNonExistingGroupBeforeInitialize" executed="True" success="True" time="0.000" asserts="0" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.GroupByBehaviour.GroupByIteratorReplaceSingleNonExistingItemInExistingGroupWithItemForExistingGroupAfterInitialize" executed="True" success="True" time="0.000" asserts="0" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.GroupByBehaviour.GroupByIteratorReplaceSingleNonExistingItemInExistingGroupWithItemForExistingGroupBeforeInitialize" executed="True" success="True" time="0.000" asserts="0" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.GroupByBehaviour.GroupByIteratorReplaceSingleNonExistingItemInExistingGroupWithItemForNonExistingGroupAfterInitialize" executed="True" success="True" time="0.000" asserts="0" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.GroupByBehaviour.GroupByIteratorReplaceSingleNonExistingItemInExistingGroupWithItemForNonExistingGroupBeforeInitialize" executed="True" success="True" time="0.000" asserts="0" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.GroupByBehaviour.GroupByIteratorReplaceSingleNonExistingItemInNonExistingGroupWithItemForExistingGroupAfterInitialize" executed="True" success="True" time="0.000" asserts="0" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.GroupByBehaviour.GroupByIteratorReplaceSingleNonExistingItemInNonExistingGroupWithItemForExistingGroupBeforeInitialize" executed="True" success="True" time="0.000" asserts="0" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.GroupByBehaviour.GroupByIteratorReplaceSingleNonExistingItemInNonExistingGroupWithItemForNonExistingGroupAfterInitialize" executed="True" success="True" time="0.001" asserts="0" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.GroupByBehaviour.GroupByIteratorReplaceSingleNonExistingItemInNonExistingGroupWithItemForNonExistingGroupBeforeInitialize" executed="True" success="True" time="0.000" asserts="0" />
+                                </results>
+                              </test-suite>
+                              <test-suite name="OrderByBehaviour" success="True" time="0.045" asserts="0">
+                                <results>
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.OrderByBehaviour.OrderByIteratorOrderByAscendingThenByAscending" executed="True" success="True" time="0.038" asserts="17" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.OrderByBehaviour.OrderByIteratorSingleAscendingSort" executed="True" success="True" time="0.006" asserts="16" />
+                                </results>
+                              </test-suite>
+                              <test-suite name="PollBehaviour" success="False" time="0.839" asserts="0">
+                                <results>
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.PollBehaviour.PollIteratorDetectsAdditions" executed="True" success="False" time="0.321" asserts="6">
+                                    <failure>
+                                      <message><![CDATA[  An event was expected at this point: Add, new items { "Mick" }, new index 2
+  Expected: not null
+  But was:  null
+]]></message>
+                                      <stack-trace><![CDATA[   at Bindable.Linq.Tests.TestHelpers.IteratorTestExtensions.ExpectEvent[TInput,TResult](IteratorTestState`2 testState, CollectionChangeSpecification specification) in D:\Projects\net.bindable.svn\Bindable.Linq\trunk\source\Bindable.Linq.Tests\TestHelpers\IteratorTestExtensions.cs:line 268
+   at Bindable.Linq.Tests.Behaviour.Iterators.PollBehaviour.PollIteratorDetectsAdditions() in D:\Projects\net.bindable.svn\Bindable.Linq\trunk\source\Bindable.Linq.Tests\Behaviour\Iterators\PollBehaviour.cs:line 78
+]]></stack-trace>
+                                    </failure>
+                                  </test-case>
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.PollBehaviour.PollIteratorDetectsRemovals" executed="True" success="False" time="0.259" asserts="6">
+                                    <failure>
+                                      <message><![CDATA[  An event was expected at this point: Remove, old items { "Tom" }, original index 0
+  Expected: not null
+  But was:  null
+]]></message>
+                                      <stack-trace><![CDATA[   at Bindable.Linq.Tests.TestHelpers.IteratorTestExtensions.ExpectEvent[TInput,TResult](IteratorTestState`2 testState, CollectionChangeSpecification specification) in D:\Projects\net.bindable.svn\Bindable.Linq\trunk\source\Bindable.Linq.Tests\TestHelpers\IteratorTestExtensions.cs:line 268
+   at Bindable.Linq.Tests.Behaviour.Iterators.PollBehaviour.PollIteratorDetectsRemovals() in D:\Projects\net.bindable.svn\Bindable.Linq\trunk\source\Bindable.Linq.Tests\Behaviour\Iterators\PollBehaviour.cs:line 98
+]]></stack-trace>
+                                    </failure>
+                                  </test-case>
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.PollBehaviour.PollIteratorPollsForChanges" executed="True" success="False" time="0.256" asserts="6">
+                                    <failure>
+                                      <message><![CDATA[  Expected: 3
+  But was:  1
+]]></message>
+                                      <stack-trace><![CDATA[   at Bindable.Linq.Tests.TestHelpers.IteratorTestExtensions.ExpectEqual[TInput,TResult](IteratorTestState`2 testState, Object actual, Object expected) in D:\Projects\net.bindable.svn\Bindable.Linq\trunk\source\Bindable.Linq.Tests\TestHelpers\IteratorTestExtensions.cs:line 243
+   at Bindable.Linq.Tests.Behaviour.Iterators.PollBehaviour.PollIteratorPollsForChanges() in D:\Projects\net.bindable.svn\Bindable.Linq\trunk\source\Bindable.Linq.Tests\Behaviour\Iterators\PollBehaviour.cs:line 60
+]]></stack-trace>
+                                    </failure>
+                                  </test-case>
+                                </results>
+                              </test-suite>
+                              <test-suite name="SelectBehaviour" success="True" time="1.252" asserts="0">
+                                <results>
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorAddMultipleItemsAnonymousProjectionAfterInitialize" executed="True" success="True" time="0.031" asserts="13" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorAddMultipleItemsAnonymousProjectionBeforeInitialize" executed="True" success="True" time="0.014" asserts="8" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorAddMultipleItemsKnownProjectionAfterInitialize" executed="True" success="True" time="0.034" asserts="13" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorAddMultipleItemsKnownProjectionBeforeInitialize" executed="True" success="True" time="0.014" asserts="8" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorAddMultipleItemsNoProjectionAfterInitialize" executed="True" success="True" time="0.010" asserts="12" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorAddMultipleItemsNoProjectionBeforeInitialize" executed="True" success="True" time="0.009" asserts="8" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorAddSingleItemAnonymousProjectionAfterInitialize" executed="True" success="True" time="0.012" asserts="13" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorAddSingleItemAnonymousProjectionBeforeInitialize" executed="True" success="True" time="0.012" asserts="8" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorAddSingleItemKnownProjectionAfterInitialize" executed="True" success="True" time="0.010" asserts="13" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorAddSingleItemKnownProjectionBeforeInitialize" executed="True" success="True" time="0.013" asserts="8" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorAddSingleItemNoProjectionAfterInitialize" executed="True" success="True" time="0.007" asserts="12" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorAddSingleItemNoProjectionBeforeInitialize" executed="True" success="True" time="0.009" asserts="8" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorInitializeAnonymousProjection" executed="True" success="True" time="0.010" asserts="6" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorInitializeKnownProjection" executed="True" success="True" time="0.011" asserts="6" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorInitializeNoProjection" executed="True" success="True" time="0.007" asserts="6" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorMoveSingleExistingItemNoProjectionAfterInitialize" executed="True" success="True" time="0.018" asserts="10" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorMoveSingleExistingItemNoProjectionBeforeInitialize" executed="True" success="True" time="0.010" asserts="5" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorMoveSingleExistingItemPastRangeNoProjectionBeforeInitialize" executed="True" success="True" time="0.012" asserts="5" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorMoveSingleNonExistingItemNoProjectionAfterInitialize" executed="True" success="True" time="0.009" asserts="13" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorMoveSingleNonExistingItemNoProjectionBeforeInitialize" executed="True" success="True" time="0.010" asserts="5" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorRemoveMultipleExistingItemsAnonymousProjectionAfterInitialize" executed="True" success="True" time="0.020" asserts="11" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorRemoveMultipleExistingItemsAnonymousProjectionBeforeInitialize" executed="True" success="True" time="0.015" asserts="5" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorRemoveMultipleExistingItemsKnownProjectionAfterInitialize" executed="True" success="True" time="0.013" asserts="11" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorRemoveMultipleExistingItemsKnownProjectionBeforeInitialize" executed="True" success="True" time="0.012" asserts="5" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorRemoveMultipleExistingItemsNoProjectionAfterInitialize" executed="True" success="True" time="0.010" asserts="10" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorRemoveMultipleExistingItemsNoProjectionBeforeInitialize" executed="True" success="True" time="0.011" asserts="5" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorRemoveMultipleNonExistingItemsAnonymousProjectionAfterInitialize" executed="True" success="True" time="0.014" asserts="6" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorRemoveMultipleNonExistingItemsAnonymousProjectionBeforeInitialize" executed="True" success="True" time="0.014" asserts="5" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorRemoveMultipleNonExistingItemsKnownProjectionAfterInitialize" executed="True" success="True" time="0.013" asserts="6" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorRemoveMultipleNonExistingItemsKnownProjectionBeforeInitialize" executed="True" success="True" time="0.012" asserts="5" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorRemoveMultipleNonExistingItemsNoProjectionAfterInitialize" executed="True" success="True" time="0.010" asserts="6" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorRemoveMultipleNonExistingItemsNoProjectionBeforeInitialize" executed="True" success="True" time="0.010" asserts="5" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorRemoveMultiplePartlyExistingItemsAnonymousProjectionAfterInitialize" executed="True" success="True" time="0.015" asserts="13" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorRemoveMultiplePartlyExistingItemsAnonymousProjectionBeforeInitialize" executed="True" success="True" time="0.013" asserts="5" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorRemoveMultiplePartlyExistingItemsKnownProjectionAfterInitialize" executed="True" success="True" time="0.013" asserts="13" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorRemoveMultiplePartlyExistingItemsKnownProjectionBeforeInitialize" executed="True" success="True" time="0.013" asserts="5" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorRemoveMultiplePartlyExistingItemsNoProjectionAfterInitialize" executed="True" success="True" time="0.010" asserts="12" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorRemoveMultiplePartlyExistingItemsNoProjectionBeforeInitialize" executed="True" success="True" time="0.010" asserts="5" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorRemoveSingleExistingItemAnonymousProjectionAfterInitialize" executed="True" success="True" time="0.012" asserts="13" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorRemoveSingleExistingItemAnonymousProjectionBeforeInitialize" executed="True" success="True" time="0.013" asserts="5" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorRemoveSingleExistingItemKnownProjectionAfterInitialize" executed="True" success="True" time="0.010" asserts="13" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorRemoveSingleExistingItemKnownProjectionBeforeInitialize" executed="True" success="True" time="0.013" asserts="5" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorRemoveSingleExistingItemNoProjectionAfterInitialize" executed="True" success="True" time="0.008" asserts="12" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorRemoveSingleExistingItemNoProjectionBeforeInitialize" executed="True" success="True" time="0.009" asserts="5" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorRemoveSingleNonExistingItemAnonymousProjectionAfterInitialize" executed="True" success="True" time="0.011" asserts="6" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorRemoveSingleNonExistingItemAnonymousProjectionBeforeInitialize" executed="True" success="True" time="0.014" asserts="5" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorRemoveSingleNonExistingItemKnownProjectionAfterInitialize" executed="True" success="True" time="0.009" asserts="6" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorRemoveSingleNonExistingItemKnownProjectionBeforeInitialize" executed="True" success="True" time="0.012" asserts="5" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorRemoveSingleNonExistingItemNoProjectionAfterInitialize" executed="True" success="True" time="0.007" asserts="6" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorRemoveSingleNonExistingItemNoProjectionBeforeInitialize" executed="True" success="True" time="0.011" asserts="5" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorReplaceMultipleExistingItemsAnonymousProjectionAfterInitialize" executed="True" success="True" time="0.017" asserts="9" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorReplaceMultipleExistingItemsAnonymousProjectionBeforeInitialize" executed="True" success="True" time="0.015" asserts="5" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorReplaceMultipleExistingItemsKnownProjectionAfterInitialize" executed="True" success="True" time="0.015" asserts="10" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorReplaceMultipleExistingItemsKnownProjectionBeforeInitialize" executed="True" success="True" time="0.013" asserts="5" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorReplaceMultipleExistingItemsNoProjectionAfterInitialize" executed="True" success="True" time="0.010" asserts="8" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorReplaceMultipleExistingItemsNoProjectionBeforeInitialize" executed="True" success="True" time="0.010" asserts="5" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorReplaceMultipleNonExistingItemsAnonymousProjectionAfterInitialize" executed="True" success="True" time="0.016" asserts="13" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorReplaceMultipleNonExistingItemsAnonymousProjectionBeforeInitialize" executed="True" success="True" time="0.014" asserts="5" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorReplaceMultipleNonExistingItemsKnownProjectionAfterInitialize" executed="True" success="True" time="0.014" asserts="13" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorReplaceMultipleNonExistingItemsKnownProjectionBeforeInitialize" executed="True" success="True" time="0.015" asserts="5" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorReplaceMultipleNonExistingItemsNoProjectionAfterInitialize" executed="True" success="True" time="0.011" asserts="12" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorReplaceMultipleNonExistingItemsNoProjectionBeforeInitialize" executed="True" success="True" time="0.010" asserts="5" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorReplaceMultiplePartlyExistingItemsAnonymousProjectionAfterInitialize" executed="True" success="True" time="0.019" asserts="16" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorReplaceMultiplePartlyExistingItemsAnonymousProjectionBeforeInitialize" executed="True" success="True" time="0.014" asserts="5" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorReplaceMultiplePartlyExistingItemsKnownProjectionAfterInitialize" executed="True" success="True" time="0.016" asserts="17" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorReplaceMultiplePartlyExistingItemsKnownProjectionBeforeInitialize" executed="True" success="True" time="0.014" asserts="5" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorReplaceMultiplePartlyExistingItemsNoProjectionAfterInitialize" executed="True" success="True" time="0.013" asserts="14" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorReplaceMultiplePartlyExistingItemsNoProjectionBeforeInitialize" executed="True" success="True" time="0.010" asserts="5" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorReplaceMultiplePartlyExistingItemsWithLessAnonymousProjectionAfterInitialize" executed="True" success="True" time="0.019" asserts="16" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorReplaceMultiplePartlyExistingItemsWithLessAnonymousProjectionBeforeInitialize" executed="True" success="True" time="0.014" asserts="5" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorReplaceMultiplePartlyExistingItemsWithLessKnownProjectionAfterInitialize" executed="True" success="True" time="0.016" asserts="17" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorReplaceMultiplePartlyExistingItemsWithLessKnownProjectionBeforeInitialize" executed="True" success="True" time="0.015" asserts="5" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorReplaceMultiplePartlyExistingItemsWithLessNoProjectionAfterInitialize" executed="True" success="True" time="0.014" asserts="14" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorReplaceMultiplePartlyExistingItemsWithLessNoProjectionBeforeInitialize" executed="True" success="True" time="0.010" asserts="5" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorReplaceMultiplePartlyExistingItemsWithMoreAnonymousProjectionAfterInitialize" executed="True" success="True" time="0.018" asserts="16" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorReplaceMultiplePartlyExistingItemsWithMoreAnonymousProjectionBeforeInitialize" executed="True" success="True" time="0.014" asserts="5" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorReplaceMultiplePartlyExistingItemsWithMoreKnownProjectionAfterInitialize" executed="True" success="True" time="0.016" asserts="17" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorReplaceMultiplePartlyExistingItemsWithMoreKnownProjectionBeforeInitialize" executed="True" success="True" time="0.014" asserts="5" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorReplaceMultiplePartlyExistingItemsWithMoreNoProjectionAfterInitialize" executed="True" success="True" time="0.013" asserts="14" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorReplaceMultiplePartlyExistingItemsWithMoreNoProjectionBeforeInitialize" executed="True" success="True" time="0.010" asserts="5" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorReplaceSingleExistingItemAnonymousProjectionAfterInitialize" executed="True" success="True" time="0.018" asserts="10" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorReplaceSingleExistingItemAnonymousProjectionBeforeInitialize" executed="True" success="True" time="0.015" asserts="5" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorReplaceSingleExistingItemKnownProjectionAfterInitialize" executed="True" success="True" time="0.013" asserts="10" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorReplaceSingleExistingItemKnownProjectionBeforeInitialize" executed="True" success="True" time="0.014" asserts="5" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorReplaceSingleExistingItemNoProjectionAfterInitialize" executed="True" success="True" time="0.010" asserts="8" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorReplaceSingleExistingItemNoProjectionBeforeInitialize" executed="True" success="True" time="0.010" asserts="5" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorReplaceSingleNonExistingItemAnonymousProjectionAfterInitialize" executed="True" success="True" time="0.014" asserts="13" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorReplaceSingleNonExistingItemAnonymousProjectionBeforeInitialize" executed="True" success="True" time="0.015" asserts="5" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorReplaceSingleNonExistingItemKnownProjectionAfterInitialize" executed="True" success="True" time="0.013" asserts="13" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorReplaceSingleNonExistingItemKnownProjectionBeforeInitialize" executed="True" success="True" time="0.013" asserts="5" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorReplaceSingleNonExistingItemNoProjectionAfterInitialize" executed="True" success="True" time="0.010" asserts="12" />
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.SelectBehaviour.SelectIteratorReplaceSingleNonExistingItemNoProjectionBeforeInitialize" executed="True" success="True" time="0.011" asserts="5" />
+                                </results>
+                              </test-suite>
+                              <test-suite name="UnionBehaviour" success="True" time="0.080" asserts="0">
+                                <results>
+                                  <test-case name="Bindable.Linq.Tests.Behaviour.Iterators.UnionBehaviour.UnionIteratorSimpleUnion" executed="True" success="True" time="0.080" asserts="6" />
+                                </results>
+                              </test-suite>
+                              <test-suite name="WhereBehaviour" success="True" time="0.001" asserts="0">
+                                <results />
+                              </test-suite>
+                            </results>
+                          </test-suite>
+                        </results>
+                      </test-suite>
+                      <test-suite name="Unit" success="True" time="0.904" asserts="0">
+                        <results>
+                          <test-suite name="Dependencies" success="True" time="0.048" asserts="0">
+                            <results>
+                              <test-suite name="ExpressionAnalysis" success="True" time="0.030" asserts="0">
+                                <results>
+                                  <test-suite name="ExpressionFlattenerTests" success="True" time="0.029" asserts="0">
+                                    <results>
+                                      <test-case name="Bindable.Linq.Tests.Unit.Dependencies.ExpressionAnalysis.ExpressionFlattenerTests.ExpressionFlattenerCombinedTest" executed="True" success="True" time="0.028" asserts="0" />
+                                    </results>
+                                  </test-suite>
+                                </results>
+                              </test-suite>
+                              <test-suite name="PropertyChangeDependencyTests" success="True" time="0.016" asserts="0">
+                                <results>
+                                  <test-case name="Bindable.Linq.Tests.Unit.Dependencies.PropertyChangeDependencyTests.PropertyChangeDependency_NestedPropertyChangeStopsEventsBeingRaised" executed="True" success="True" time="0.006" asserts="7" />
+                                  <test-case name="Bindable.Linq.Tests.Unit.Dependencies.PropertyChangeDependencyTests.PropertyChangeDependency_NestedPropertyDependencyCreatedAfterObjectPopulation" executed="True" success="True" time="0.002" asserts="17" />
+                                  <test-case name="Bindable.Linq.Tests.Unit.Dependencies.PropertyChangeDependencyTests.PropertyChangeDependency_NestedPropertyDependencyCreatedBeforeObjectPopulation" executed="True" success="True" time="0.007" asserts="15" />
+                                </results>
+                              </test-suite>
+                            </results>
+                          </test-suite>
+                          <test-suite name="Eventing" success="True" time="0.013" asserts="0">
+                            <results>
+                              <test-suite name="CollectionChangePublisherTests" success="True" time="0.002" asserts="0">
+                                <results>
+                                  <test-case name="Bindable.Linq.Tests.Unit.Eventing.CollectionChangePublisherTests.SenderIsImpersonated" executed="True" success="True" time="0.001" asserts="4" />
+                                </results>
+                              </test-suite>
+                              <test-suite name="CollectionChangeRecorderTests" success="True" time="0.008" asserts="0">
+                                <results>
+                                  <test-case name="Bindable.Linq.Tests.Unit.Eventing.CollectionChangeRecorderTests.AdjacentAddsAreCombined" executed="True" success="True" time="0.006" asserts="3" />
+                                  <test-case name="Bindable.Linq.Tests.Unit.Eventing.CollectionChangeRecorderTests.MatchingAddsAreNotCombined" executed="True" success="True" time="0.001" asserts="4" />
+                                  <test-case name="Bindable.Linq.Tests.Unit.Eventing.CollectionChangeRecorderTests.NonAdjacentAddsAreNotCombined" executed="True" success="True" time="0.001" asserts="4" />
+                                </results>
+                              </test-suite>
+                            </results>
+                          </test-suite>
+                          <test-suite name="Helpers" success="True" time="0.016" asserts="0">
+                            <results>
+                              <test-suite name="BindableCollectionTests" success="True" time="0.002" asserts="0">
+                                <results>
+                                  <test-case name="Bindable.Linq.Tests.Unit.Helpers.BindableCollectionTests.BindableCollectionEnumeratorFrozen" executed="True" success="True" time="0.002" asserts="7" />
+                                </results>
+                              </test-suite>
+                              <test-suite name="StateScopeTests" success="True" time="0.002" asserts="0">
+                                <results>
+                                  <test-case name="Bindable.Linq.Tests.Unit.Helpers.StateScopeTests.StateScopeEntranceTest" executed="True" success="True" time="0.001" asserts="5" />
+                                  <test-case name="Bindable.Linq.Tests.Unit.Helpers.StateScopeTests.StateScopeEntranceTriggersCallback" executed="True" success="True" time="0.001" asserts="5" />
+                                </results>
+                              </test-suite>
+                              <test-suite name="WeakEventReferenceTests" success="True" time="0.009" asserts="0">
+                                <results>
+                                  <test-case name="Bindable.Linq.Tests.Unit.Helpers.WeakEventReferenceTests.WeakEventReferenceStandardEventIntroducesLeaks" executed="True" success="True" time="0.005" asserts="3" />
+                                  <test-case name="Bindable.Linq.Tests.Unit.Helpers.WeakEventReferenceTests.WeakEventReferenceWeakEventsFixLeaks" executed="True" success="True" time="0.003" asserts="3" />
+                                </results>
+                              </test-suite>
+                            </results>
+                          </test-suite>
+                          <test-suite name="Iterators" success="True" time="0.045" asserts="0">
+                            <results>
+                              <test-suite name="IteratorTests" success="True" time="0.045" asserts="0">
+                                <results>
+                                  <test-case name="Bindable.Linq.Tests.Unit.Iterators.IteratorTests.IListMethodsForceLoad" executed="True" success="True" time="0.028" asserts="64" />
+                                  <test-case name="Bindable.Linq.Tests.Unit.Iterators.IteratorTests.IteratorUnsubscribesFromItemWhenRemoved" executed="True" success="True" time="0.006" asserts="20" />
+                                  <test-case name="Bindable.Linq.Tests.Unit.Iterators.IteratorTests.IteratorWithDependenciesUnsubscribesFromAllSourceEventsWhenDisposed" executed="True" success="True" time="0.002" asserts="20" />
+                                  <test-case name="Bindable.Linq.Tests.Unit.Iterators.IteratorTests.IteratorWithDepenedenciesDoesNotEnumerateSourceUntilResultIsEnumerated" executed="True" success="True" time="0.002" asserts="5" />
+                                  <test-case name="Bindable.Linq.Tests.Unit.Iterators.IteratorTests.IteratorWithoutDependenciesUnsubscribesFromAllSourceEventsWhenDisposed" executed="True" success="True" time="0.002" asserts="15" />
+                                  <test-case name="Bindable.Linq.Tests.Unit.Iterators.IteratorTests.WriteMethodsThrowExceptions" executed="True" success="True" time="0.004" asserts="4" />
+                                </results>
+                              </test-suite>
+                            </results>
+                          </test-suite>
+                          <test-suite name="NumericAggregates" success="True" time="0.771" asserts="0">
+                            <results>
+                              <test-suite name="NumericTests" success="True" time="0.770" asserts="0">
+                                <results>
+                                  <test-case name="Bindable.Linq.Tests.Unit.NumericAggregates.NumericTests.DecimalTests" executed="True" success="True" time="0.188" asserts="52" />
+                                  <test-case name="Bindable.Linq.Tests.Unit.NumericAggregates.NumericTests.DoubleTests" executed="True" success="True" time="0.154" asserts="52" />
+                                  <test-case name="Bindable.Linq.Tests.Unit.NumericAggregates.NumericTests.FloatTests" executed="True" success="True" time="0.152" asserts="52" />
+                                  <test-case name="Bindable.Linq.Tests.Unit.NumericAggregates.NumericTests.Int32Tests" executed="True" success="True" time="0.114" asserts="52" />
+                                  <test-case name="Bindable.Linq.Tests.Unit.NumericAggregates.NumericTests.Int64AddTests" executed="True" success="True" time="0.159" asserts="52" />
+                                </results>
+                              </test-suite>
+                            </results>
+                          </test-suite>
+                        </results>
+                      </test-suite>
+                    </results>
+                  </test-suite>
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+    </results>
+  </test-suite>
+</test-results>

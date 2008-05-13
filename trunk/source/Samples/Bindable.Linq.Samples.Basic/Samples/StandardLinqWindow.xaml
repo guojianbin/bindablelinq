@@ -1,0 +1,117 @@
+﻿<Window 
+    x:Class="Bindable.Linq.SampleApplication.Samples.StandardLinqWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:test="clr-namespace:Bindable.Linq.SampleApplication"
+    Title="Standard LINQ Example" 
+    Height="600" 
+    Width="800"
+    x:Name="_this"
+    Background="{StaticResource Brush_DarkLightDarkLightBlue}"
+    WindowState="Maximized"
+    >
+    <Window.CommandBindings>
+        <CommandBinding Command="{x:Static test:Commands.Refresh}" Executed="RefreshCommand_Executed" />
+        <CommandBinding Command="{x:Static test:Commands.Delete}" Executed="DeleteCommand_Executed" />
+        <CommandBinding Command="{x:Static test:Commands.Add}" Executed="AddCommand_Executed" />
+    </Window.CommandBindings>
+    <Window.InputBindings>
+        <KeyBinding Command="{x:Static test:Commands.Refresh}" Key="F5" />
+        <KeyBinding Command="{x:Static test:Commands.Add}" Key="Add" />
+        <KeyBinding Command="{x:Static test:Commands.Add}" Key="Plus" />
+        <KeyBinding Command="{x:Static test:Commands.Delete}" Key="Delete" />
+    </Window.InputBindings>
+    
+    <!-- 
+    Content of the window 
+    -->
+    <DockPanel 
+        Margin="7"
+        >
+        <!-- 
+        Window title
+        -->
+        <Border
+            DockPanel.Dock="Top"
+            >
+            <TextBlock 
+                Style="{StaticResource App_TitleText}"
+                Margin="7"
+                >
+                Standard LINQ Example
+            </TextBlock>
+        </Border>
+
+        <!--
+        Contents
+        -->
+        <Border 
+            Background="{StaticResource App_BackgroundBrush}"
+            Margin="7"
+            CornerRadius="7"
+            Padding="7"
+            BorderThickness="1"
+            BorderBrush="#FFFFFF"
+            >
+            <DockPanel>
+                <!--
+                Toolbar
+                -->
+                <Border 
+                    DockPanel.Dock="Top"
+                    Margin="7"
+                    Style="{StaticResource Toolbar_BorderStyle}"
+                    >
+                    <DockPanel Margin="3.5">
+                        <Button 
+                            Margin="3.5" 
+                            Style="{StaticResource Toolbar_ButtonStyle}"
+                            Command="{x:Static test:Commands.Add}" 
+                            DockPanel.Dock="Left"
+                            >
+                            Add
+                        </Button>
+                        <Button
+                            Style="{StaticResource Toolbar_ButtonStyle}"
+                            Margin="3.5"
+                            Command="{x:Static test:Commands.Refresh}"
+                            DockPanel.Dock="Left"
+                            >
+                            Refresh
+                        </Button>
+
+                        <Label
+                            Margin="3.5"
+                            Style="{StaticResource Toolbar_NotifictionMessageBorderStyle}"
+                            DockPanel.Dock="Right"
+                            Width="50"
+                            >
+                            <TextBlock 
+                                TextAlignment="Center"
+                                Text="{Binding Path=Count}" 
+                                />
+                        </Label>
+                        <Label
+                            Margin="3.5"
+                            Style="{StaticResource Toolbar_NotifictionMessageBorderStyle}"
+                            IsEnabled="False"
+                            >
+                            Retrieving items, please wait...
+                        </Label>
+                    </DockPanel>
+                </Border>
+
+                <!-- 
+                Contacts list box
+                -->
+                <ListBox
+                    Margin="7" 
+                    Style="{StaticResource ContactTemplate_ListBoxStyle}"
+                    ItemsSource="{Binding }"
+                    />
+
+            </DockPanel>
+        </Border>
+
+    </DockPanel>
+</Window>

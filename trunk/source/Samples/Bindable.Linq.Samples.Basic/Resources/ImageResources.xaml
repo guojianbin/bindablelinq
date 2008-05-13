@@ -1,0 +1,40 @@
+﻿<ResourceDictionary 
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    >
+
+    <VisualBrush x:Key="Image_Delete">
+        <VisualBrush.Visual>
+            <Viewbox Stretch="Uniform" ClipToBounds="True">
+                <Canvas Width="800" Height="600" Canvas.Left="0" Canvas.Top="0">
+                    <Path Width="341.333" Height="341.334" Canvas.Left="213.303" Canvas.Top="139.433" Stretch="Fill" Fill="#FF990000" Data="F1 M 219.047,401.396L 310.343,310.1L 219.047,218.805C 211.388,211.145 211.388,198.727 219.047,191.068L 264.937,145.177C 272.596,137.519 285.016,137.519 292.675,145.177L 383.971,236.473L 475.264,145.177C 482.924,137.519 495.343,137.519 503.003,145.177L 548.892,191.068C 556.551,198.727 556.551,211.145 548.892,218.805L 457.596,310.1L 548.892,401.396C 556.551,409.055 556.551,421.472 548.892,429.133L 503.003,475.023C 495.343,482.683 482.924,482.683 475.264,475.023L 383.969,383.727L 292.675,475.023C 285.016,482.683 272.596,482.683 264.937,475.023L 219.047,429.133C 211.388,421.472 211.388,409.055 219.047,401.396 Z "/>
+                    <Path Width="331.853" Height="331.851" Canvas.Left="218.043" Canvas.Top="144.174" Stretch="Fill" Data="F1 M 222.4,425.78C 216.591,419.972 216.591,410.555 222.4,404.748L 317.047,310.1L 222.4,215.452C 216.591,209.644 216.591,200.228 222.4,194.419L 268.289,148.529C 274.097,142.723 283.515,142.723 289.323,148.529L 383.971,243.177L 478.617,148.529C 484.424,142.723 493.841,142.723 499.649,148.529L 545.539,194.419C 551.348,200.228 551.348,209.644 545.539,215.452L 450.892,310.1L 545.539,404.748C 551.348,410.555 551.348,419.972 545.539,425.78L 499.649,471.669C 493.841,477.477 484.424,477.477 478.617,471.669L 383.969,377.023L 289.323,471.669C 283.515,477.477 274.097,477.477 268.289,471.669L 222.4,425.78 Z ">
+                        <Path.Fill>
+                            <LinearGradientBrush StartPoint="0.473001,1.01526" EndPoint="0.527008,-0.0152551">
+                                <LinearGradientBrush.GradientStops>
+                                    <GradientStop Color="#FF990000" Offset="0"/>
+                                    <GradientStop Color="#FFFF0000" Offset="0.572433"/>
+                                    <GradientStop Color="#FFEB7B7B" Offset="0.990662"/>
+                                    <GradientStop Color="#FFEB7B7B" Offset="1"/>
+                                </LinearGradientBrush.GradientStops>
+                            </LinearGradientBrush>
+                        </Path.Fill>
+                    </Path>
+                    <Path Width="331.852" Height="209.407" Canvas.Left="216.533" Canvas.Top="267.803" Stretch="Fill" Data="F1 M 488.664,272.001L 449.38,311.284L 544.028,405.932C 549.836,411.74 549.836,421.156 544.028,426.965L 498.139,472.855C 492.331,478.663 482.915,478.663 477.105,472.855L 382.459,378.207L 287.809,472.855C 282.003,478.663 272.585,478.663 266.777,472.855L 220.888,426.965C 215.081,421.156 215.08,411.74 220.888,405.932L 315.535,311.284L 303.772,299.439C 359.24,270.665 420.872,261.52 488.664,272.001 Z ">
+                        <Path.Fill>
+                            <LinearGradientBrush StartPoint="0.652679,1.1282" EndPoint="0.26904,-0.0649851">
+                                <LinearGradientBrush.GradientStops>
+                                    <GradientStop Color="#FF990000" Offset="0"/>
+                                    <GradientStop Color="#FFFF0000" Offset="0.536377"/>
+                                    <GradientStop Color="#FFEB0202" Offset="0.89621"/>
+                                    <GradientStop Color="#FFEB0202" Offset="1"/>
+                                </LinearGradientBrush.GradientStops>
+                            </LinearGradientBrush>
+                        </Path.Fill>
+                    </Path>
+                </Canvas>
+            </Viewbox>
+        </VisualBrush.Visual>
+    </VisualBrush>
+
+</ResourceDictionary>

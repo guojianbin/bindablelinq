@@ -1,0 +1,91 @@
+﻿<Application 
+	xmlns="http://schemas.microsoft.com/client/2007"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+	x:Class="Bindable.Linq.Samples.Silverlight.App"
+	>
+    <Application.Resources>
+        
+        <Style x:Key="Style_WindowStyle" TargetType="Border">
+        </Style>
+
+        <Style x:Key="Style_HeaderTextBlock" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="Segoe UI" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="FontWeight" Value="Bold" />
+        </Style>
+        
+        <Style x:Key="Style_FieldTextBlock" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="Segoe UI" />
+            <Setter Property="FontSize" Value="13" />
+        </Style>
+
+        <Style x:Key="Style_FieldTextBox" TargetType="TextBox">
+            <Setter Property="FontFamily" Value="Segoe UI" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Grid>
+                            <Border x:Name="ELEMENT_Content" BorderThickness="1" BorderBrush="#AA000000" Padding="6,3,6,3" CornerRadius="3">
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                        <GradientStop Color="#FFE0E0E0" Offset="0"/>
+                                        <GradientStop Color="#FFFFFFFF" Offset="0.25"/>
+                                        <GradientStop Color="#FFFFFFFF" Offset="0.75"/>
+                                        <GradientStop Color="#FFE0E0E0" Offset="1"/>
+                                    </LinearGradientBrush>
+                                </Border.Background>
+                            </Border>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="Style_Panel" TargetType="Border">
+            <Setter Property="CornerRadius" Value="7" /> 
+            <Setter Property="Padding" Value="7" />
+            <Setter Property="Background" Value="#CCFFFFFF" />
+        </Style>
+
+        <Style x:Key="Style_ContactStyle" TargetType="ListBoxItem">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListBoxItem">
+                        <Border>
+                            <Grid Margin="3">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="32" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                
+                                <Image Grid.Column="0" Margin="0,0,3,0" Source="/Resources/Images/businessman.png" />
+                                
+                                <StackPanel Grid.Column="1" Orientation="Vertical">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Style="{StaticResource Style_HeaderTextBlock}" Text="{Binding Name}" Margin="3,0,0,0" />
+                                        <TextBlock Style="{StaticResource Style_FieldTextBlock}" Text="{Binding Company}" Margin="3,0,0,0" Foreground="Gray" FontStyle="Italic" />
+                                    </StackPanel>
+                                    <TextBlock Margin="3,0,0,0" Style="{StaticResource Style_FieldTextBlock}" Text="{Binding PhoneNumber}" />
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        
+        <Style x:Key="Style_ContactsList" TargetType="ListBox">
+            <Setter Property="ItemContainerStyle" Value="{StaticResource Style_ContactStyle}" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListBox">
+                        <ItemsPresenter />
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        
+    </Application.Resources>
+</Application>

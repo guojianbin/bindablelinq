@@ -1,0 +1,63 @@
+﻿<Window 
+	x:Class="Bindable.Linq.Samples.MessengerClient.MessengerWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:domain="clr-namespace:Bindable.Linq.Samples.MessengerClient.Domain"
+    Title="Bindable LINQ Messenger Client" Height="600" Width="400"
+    Background="{StaticResource Brush_WindowBackground}"
+    Icon="{StaticResource Image_ApplicationIcon}"
+	>
+	<Window.Resources>
+
+        <DataTemplate DataType="{x:Type domain:Contact}">
+            <Border Style="{StaticResource Style_ContactContainer}">
+                <DockPanel>
+                    <Border Style="{StaticResource Style_ContactImageFrame}">
+                        <Image 
+                            Style="{StaticResource Style_ContactImage}"
+                            DockPanel.Dock="Left" 
+                            Source="{Binding Path=Photo}"
+                            />
+                    </Border>
+                    <StackPanel Orientation="Vertical">
+                        <TextBlock Text="{Binding Path=Name}" Style="{StaticResource Style_ContactName}" Margin="9,0,0,0" />
+                        <TextBlock Text="{Binding Path=EmailAddress}"  Style="{StaticResource Style_ContactEmail}" Margin="9,0,0,0" />
+                        <TextBlock Text="{Binding Path=TagLine}"  Style="{StaticResource Style_ContactTagLine}" Margin="9,0,0,0" />
+                    </StackPanel>
+                </DockPanel>
+            </Border>
+        </DataTemplate>
+        
+    </Window.Resources>
+    
+    <DockPanel Margin="14" LastChildFill="True">
+        <DockPanel DockPanel.Dock="Top">
+            <StackPanel Orientation="Vertical">
+                <Border Style="{StaticResource Style_MessengerUserInfoArea}">
+                    <StackPanel Orientation="Vertical">
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </DockPanel>
+
+        <Border DockPanel.Dock="Bottom" Style="{StaticResource Style_MessengerFilterArea}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                
+                <TextBox 
+                    x:Name="_filterTextBox" 
+                    Grid.Column="1"
+                    KeyboardNavigation.DirectionalNavigation="None" 
+                    KeyboardNavigation.AcceptsReturn="False" 
+                    />
+            </Grid>
+        </Border>
+
+        <ItemsControl x:Name="_contactsListBox" Style="{StaticResource Style_ContactsList}" KeyboardNavigation.DirectionalNavigation="Continue">
+            
+        </ItemsControl>
+    </DockPanel>
+</Window>

@@ -1,0 +1,141 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{596CD3CA-117F-4B3B-BA4F-28317897F587}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Bindable.Linq.Tests</RootNamespace>
+    <AssemblyName>Bindable.Linq.Tests</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="nunit.core, Version=2.4.3.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\tools\nunit\bin\nunit.core.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.framework, Version=2.4.3.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\tools\nunit\bin\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Behaviour\Aggregators\AverageAggregatorTests.cs" />
+    <Compile Include="Behaviour\Aggregators\CustomAggregatorTests.cs" />
+    <Compile Include="Behaviour\Aggregators\MaxAggregatorTests.cs" />
+    <Compile Include="Behaviour\Aggregators\MinAggregatorTests.cs" />
+    <Compile Include="Behaviour\Aggregators\SumAggregatorTests.cs" />
+    <Compile Include="Behaviour\Dependencies\WhereDependenciesBehavior.cs" />
+    <Compile Include="TestHelpers\CollectionChangeSpecification.cs" />
+    <Compile Include="TestHelpers\CollectionChangeSpecifcationExtensions.cs" />
+    <Compile Include="TestHelpers\CollectionEventCatcher.cs" />
+    <Compile Include="TestHelpers\CompatibilityExpectation.cs" />
+    <Compile Include="TestHelpers\CompatibilityValidator.cs" />
+    <Compile Include="TestHelpers\EventCatcher.cs" />
+    <Compile Include="TestHelpers\Given.cs" />
+    <Compile Include="TestHelpers\IteratorTestExtensions.cs" />
+    <Compile Include="TestHelpers\IteratorTestState.cs" />
+    <Compile Include="TestHelpers\PropertyEventCatcher.cs" />
+    <Compile Include="TestHelpers\TestFixture.cs" />
+    <Compile Include="TestObjectModel\BindableObject.cs" />
+    <Compile Include="TestObjectModel\Contact.cs" />
+    <Compile Include="TestObjectModel\ContactSummary.cs" />
+    <Compile Include="Unit\Adapters\BindableCollectionAdapterTests.cs" />
+    <Compile Include="Unit\Adapters\BindingListAdapterTests.cs" />
+    <Compile Include="Unit\Aggregators\AggregatorTests.cs" />
+    <Compile Include="Unit\Aggregators\AverageAggregatorTests.cs" />
+    <Compile Include="Unit\Aggregators\CountAggregatorTests.cs" />
+    <Compile Include="Unit\Aggregators\CustomAggregatorTests.cs" />
+    <Compile Include="Unit\Aggregators\ElementAtAggregatorTests.cs" />
+    <Compile Include="Unit\Aggregators\MaxAggregatorTests.cs" />
+    <Compile Include="Unit\Aggregators\MinAggregatorTests.cs" />
+    <Compile Include="Unit\Aggregators\SumAggregatorTests.cs" />
+    <Compile Include="Unit\Dependencies\ExpressionAnalysis\ExpressionFlattenerTests.cs" />
+    <Compile Include="Unit\Dependencies\PropertyChangeDependencyTests.cs" />
+    <Compile Include="Unit\Collections\BindableCollectionTests.cs" />
+    <Compile Include="Unit\Eventing\CollectionChangePublisherTests.cs" />
+    <Compile Include="Unit\Eventing\CollectionChangeRecorderTests.cs" />
+    <Compile Include="Unit\Helpers\DefaultComparerTests.cs" />
+    <Compile Include="Unit\Helpers\ElementActionerTests.cs" />
+    <Compile Include="Unit\Helpers\ElementComparerFactoryTests.cs" />
+    <Compile Include="Unit\Helpers\SnapshotEnumeratorTests.cs" />
+    <Compile Include="Unit\Helpers\StateScopeTests.cs" />
+    <Compile Include="Unit\Helpers\WeakEventReferenceTests.cs" />
+    <Compile Include="Behaviour\Iterators\AsynchronousBehaviour.cs" />
+    <Compile Include="Behaviour\Iterators\GroupByBehaviour.cs" />
+    <Compile Include="Behaviour\Iterators\OrderByBehaviour.cs" />
+    <Compile Include="Behaviour\Iterators\PollBehaviour.cs" />
+    <Compile Include="Behaviour\Iterators\SelectBehaviour.cs" />
+    <Compile Include="Behaviour\Iterators\UnionBehaviour.cs" />
+    <Compile Include="Behaviour\Iterators\WhereBehaviour.cs" />
+    <Compile Include="Unit\Helpers\WeakTimerTests.cs" />
+    <Compile Include="Unit\Aggregators\Numerics\NumericTests.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Unit\Iterators\AsynchronousIteratorTests.cs" />
+    <Compile Include="Unit\Iterators\GroupByIteratorTests.cs" />
+    <Compile Include="Unit\Iterators\IteratorTests.cs" />
+    <Compile Include="Unit\Iterators\PollIteratorTests.cs" />
+    <Compile Include="Unit\Iterators\ProjectionRegisterTests.cs" />
+    <Compile Include="Unit\Iterators\SelectIteratorTests.cs" />
+    <Compile Include="Unit\Iterators\StateManagerTests.cs" />
+    <Compile Include="Unit\Iterators\UnionIteratorTests.cs" />
+    <Compile Include="Unit\Iterators\WhereIteratorTests.cs" />
+    <Compile Include="Unit\Operators\IfOperatorTests.cs" />
+    <Compile Include="Unit\Operators\OperatorTests.cs" />
+    <Compile Include="Unit\Operators\ProjectOperatorTests.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Bindable.Linq\Bindable.Linq.csproj">
+      <Project>{1BD32C0F-5FDE-4913-AEED-13840ACBF4E0}</Project>
+      <Name>BindingOriented.SyncLinq</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="SyncLINQ.NCover.bat" />
+    <None Include="SyncLINQ.nunit" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

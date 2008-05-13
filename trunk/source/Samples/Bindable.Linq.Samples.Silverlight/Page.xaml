@@ -1,0 +1,115 @@
+﻿<UserControl 
+	x:Class="Bindable.Linq.Samples.Silverlight.Page"
+    xmlns="http://schemas.microsoft.com/client/2007" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+    Width="550" Height="550"
+	>    
+    <Grid x:Name="LayoutRoot" Background="White">
+        <Border Style="{StaticResource Style_WindowStyle}" CornerRadius="14" Padding="14">
+            <Border.Background>
+                <ImageBrush ImageSource="/Resources/Images/Background.png" />
+            </Border.Background>            
+            
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <!-- Title -->
+                <Border Grid.Row="0" Style="{StaticResource Style_Panel}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Style="{StaticResource Style_HeaderTextBlock}" VerticalAlignment="Center" Grid.Column="0" Text="Bindable LINQ Address Book" Margin="3" />
+                    </Grid>
+                </Border>
+                
+                <!-- This area will hold the content -->
+                <Border Margin="0,7,0,7" Grid.Row="1" Style="{StaticResource Style_Panel}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+
+
+                        <!-- This area will hold the filter text box -->
+                        <Border Grid.Row="0" Style="{StaticResource Style_Panel}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+
+                                <TextBlock Style="{StaticResource Style_FieldTextBlock}" VerticalAlignment="Center" Grid.Column="0" Text="Filter:" Margin="3" />
+                                <TextBox Style="{StaticResource Style_FieldTextBox}" VerticalAlignment="Center" Grid.Column="1" x:Name="_filterTextBox" Margin="3" />
+                            </Grid>
+                        </Border>
+                    
+                        <!-- The list of contacts -->
+                        <ListBox Grid.Row="1" x:Name="_contactsList" Style="{StaticResource Style_ContactsList}">
+                            <ListBox.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel />
+                                </ItemsPanelTemplate>
+                            </ListBox.ItemsPanel>
+                        </ListBox>
+                    </Grid>
+                </Border>
+
+                <!-- This area will hold the "Add" section -->
+                <Border Grid.Row="2" Style="{StaticResource Style_Panel}" x:Name="_newItemPanel">
+                    <StackPanel Orientation="Vertical">
+                        <TextBlock Style="{StaticResource Style_HeaderTextBlock}" Margin="3" Text="Add a new contact" />
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            
+                            <TextBlock Style="{StaticResource Style_FieldTextBlock}" VerticalAlignment="Center" Grid.Row="0" Grid.Column="0" Margin="3" Text="Name:" />
+                            <TextBlock Style="{StaticResource Style_FieldTextBlock}" VerticalAlignment="Center" Grid.Row="1" Grid.Column="0" Margin="3" Text="Company:" />
+                            <TextBlock Style="{StaticResource Style_FieldTextBlock}" VerticalAlignment="Center" Grid.Row="2" Grid.Column="0" Margin="3" Text="Phone:" />
+                            
+                            <TextBox Style="{StaticResource Style_FieldTextBox}" VerticalAlignment="Center" Grid.Row="0" Grid.Column="1" Margin="3" Text="{Binding Name, Mode=TwoWay}" />
+                            <TextBox Style="{StaticResource Style_FieldTextBox}" VerticalAlignment="Center" Grid.Row="1" Grid.Column="1" Margin="3" Text="{Binding Company, Mode=TwoWay}" />
+                            <TextBox Style="{StaticResource Style_FieldTextBox}" VerticalAlignment="Center" Grid.Row="2" Grid.Column="1" Margin="3" Text="{Binding Phone, Mode=TwoWay}" />
+                            
+                            <Border Style="{StaticResource Style_Panel}" Grid.Row="0" Grid.Column="2" Margin="3" Grid.RowSpan="3">
+                                <StackPanel Orientation="Vertical">
+                                    <TextBlock Style="{StaticResource Style_FieldTextBlock}" Margin="3" Text="Finished?" />
+                                    <Button 
+                                        Margin="3"
+                                        Click="SaveButton_Click"
+                                        >
+                                        <TextBlock 
+                                            Style="{StaticResource Style_FieldTextBlock}" 
+                                            TextAlignment="Center"
+                                            >Save</TextBlock>
+                                    </Button>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

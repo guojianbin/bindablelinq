@@ -1,0 +1,197 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{081046F4-5579-4049-9361-EA9EF2D6AD53}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>BindingOriented.SyncLinq.Samples.MessengerClient</RootNamespace>
+    <AssemblyName>BindingOriented.SyncLinq.Samples.MessengerClient</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <WarningLevel>4</WarningLevel>
+    <ApplicationIcon>Resources\Images\Application.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="UIAutomationProvider">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WindowsBase">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="PresentationCore">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="PresentationFramework">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ApplicationDefinition Include="App.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </ApplicationDefinition>
+    <Page Include="MessengerWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Resources\BrushResources.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\ImageResources.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\StyleResources.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Compile Include="App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MessengerWindow.xaml.cs">
+      <DependentUpon>MessengerWindow.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Domain\Contact.cs" />
+    <Compile Include="Domain\ContactStatus.cs" />
+    <Compile Include="Helpers\InnerExtensions.cs" />
+    <Compile Include="MessengerService\AddContactEventArgs.cs" />
+    <Compile Include="MessengerService\IMessengerService.cs" />
+    <Compile Include="MessengerService\Simulator\Behaviors\TimerBehavior.cs" />
+    <Compile Include="MessengerService\Simulator\Behaviors\QuoteBehavior.cs" />
+    <Compile Include="MessengerService\Simulator\Behaviors\ConnectivityProblemsBehavior.cs" />
+    <Compile Include="MessengerService\Simulator\Behaviors\IBehavior.cs" />
+    <Compile Include="MessengerService\Simulator\ContactFactory.cs" />
+    <Compile Include="MessengerService\Simulator\Helpers\NameGenerator.cs" />
+    <Compile Include="MessengerService\Simulator\SimulationMessengerService.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <AppDesigner Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="MessengerService\Simulator\ContactImages\Female\01.png" />
+    <EmbeddedResource Include="MessengerService\Simulator\ContactImages\Female\02.png" />
+    <EmbeddedResource Include="MessengerService\Simulator\ContactImages\Female\03.png" />
+    <EmbeddedResource Include="MessengerService\Simulator\ContactImages\Female\04.png" />
+    <EmbeddedResource Include="MessengerService\Simulator\ContactImages\Female\05.png" />
+    <EmbeddedResource Include="MessengerService\Simulator\ContactImages\Female\06.png" />
+    <EmbeddedResource Include="MessengerService\Simulator\ContactImages\Female\07.png" />
+    <EmbeddedResource Include="MessengerService\Simulator\ContactImages\Female\08.png" />
+    <EmbeddedResource Include="MessengerService\Simulator\ContactImages\Female\09.png" />
+    <EmbeddedResource Include="MessengerService\Simulator\ContactImages\Female\10.png" />
+    <EmbeddedResource Include="MessengerService\Simulator\ContactImages\Female\11.png" />
+    <EmbeddedResource Include="MessengerService\Simulator\ContactImages\Female\12.png" />
+    <EmbeddedResource Include="MessengerService\Simulator\ContactImages\Female\13.png" />
+    <EmbeddedResource Include="MessengerService\Simulator\ContactImages\Female\14.png" />
+    <EmbeddedResource Include="MessengerService\Simulator\ContactImages\Female\15.png" />
+    <EmbeddedResource Include="MessengerService\Simulator\ContactImages\Female\16.png" />
+    <EmbeddedResource Include="MessengerService\Simulator\ContactImages\Female\17.png" />
+    <EmbeddedResource Include="MessengerService\Simulator\ContactImages\Female\18.png" />
+    <EmbeddedResource Include="MessengerService\Simulator\ContactImages\Female\19.png" />
+    <EmbeddedResource Include="MessengerService\Simulator\ContactImages\Female\20.png" />
+    <EmbeddedResource Include="MessengerService\Simulator\ContactImages\Female\21.png" />
+    <EmbeddedResource Include="MessengerService\Simulator\ContactImages\Female\22.png" />
+    <EmbeddedResource Include="MessengerService\Simulator\ContactImages\Female\23.png" />
+    <EmbeddedResource Include="MessengerService\Simulator\ContactImages\Female\24.png" />
+    <EmbeddedResource Include="MessengerService\Simulator\ContactImages\Female\25.png" />
+    <EmbeddedResource Include="MessengerService\Simulator\ContactImages\Female\00.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="MessengerService\Simulator\ContactImages\Male\01.png" />
+    <EmbeddedResource Include="MessengerService\Simulator\ContactImages\Male\02.png" />
+    <EmbeddedResource Include="MessengerService\Simulator\ContactImages\Male\03.png" />
+    <EmbeddedResource Include="MessengerService\Simulator\ContactImages\Male\04.png" />
+    <EmbeddedResource Include="MessengerService\Simulator\ContactImages\Male\05.png" />
+    <EmbeddedResource Include="MessengerService\Simulator\ContactImages\Male\06.png" />
+    <EmbeddedResource Include="MessengerService\Simulator\ContactImages\Male\07.png" />
+    <EmbeddedResource Include="MessengerService\Simulator\ContactImages\Male\08.png" />
+    <EmbeddedResource Include="MessengerService\Simulator\ContactImages\Male\09.png" />
+    <EmbeddedResource Include="MessengerService\Simulator\ContactImages\Male\10.png" />
+    <EmbeddedResource Include="MessengerService\Simulator\ContactImages\Male\11.png" />
+    <EmbeddedResource Include="MessengerService\Simulator\ContactImages\Male\12.png" />
+    <EmbeddedResource Include="MessengerService\Simulator\ContactImages\Male\13.png" />
+    <EmbeddedResource Include="MessengerService\Simulator\ContactImages\Male\14.png" />
+    <EmbeddedResource Include="MessengerService\Simulator\ContactImages\Male\15.png" />
+    <EmbeddedResource Include="MessengerService\Simulator\ContactImages\Male\00.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Bindable.Linq\Bindable.Linq.csproj">
+      <Project>{1BD32C0F-5FDE-4913-AEED-13840ACBF4E0}</Project>
+      <Name>BindingOriented.SyncLinq</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\BallGreen-16.png" />
+    <Resource Include="Resources\Images\BallRed-16.png" />
+    <Resource Include="Resources\Images\BallYellow-16.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\Application.ico" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
