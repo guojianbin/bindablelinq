@@ -127,8 +127,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="SyncLINQ.NCover.bat" />
-    <None Include="SyncLINQ.nunit" />
+    <None Include="Bindable.Linq.NCover.bat" />
+    <None Include="Bindable.Linq.nunit" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
