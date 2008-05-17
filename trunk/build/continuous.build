@@ -3,25 +3,27 @@
 	<property name="msbuild.path" value="C:\Windows\Microsoft.NET\Framework\v3.5" readonly="false" />
 	<property name="project.sourcedirectory" value="source" readonly="false" />
 	<property name="project.configuration" value="Debug" readonly="false" />
-	<property name="temp.output.directory" value="build/results" />
 	<property name="signing.directory" value="sdds" readonly="false" />
 	<property name="drop.directory" value="C:\Foo" readonly="false" />
 	<if test="${not property::exists('CCNetLabel')}">
         <property name="CCNetLabel" value="1.0.0.0" readonly="false" />
     </if>
-    
+    <if test="${not property::exists('CCNetArtifactDirectory')}">
+        <property name="CCNetArtifactDirectory" value="build/results" readonly="false" />
+    </if>
+        
 	<target name="prepare">
-        <mkdir dir="${temp.output.directory}" />
+        <mkdir dir="${CCNetArtifactDirectory}" />
         <mkdir dir="${project.sourcedirectory}\Bindable.Linq\bin\Silverlight" />
     </target>
 	
 	<target name="zip" depends="prepare">
-        <zip zipfile="${temp.output.directory}\Source-${CCNetLabel}.zip">
+        <zip zipfile="${CCNetArtifactDirectory}\Source-${CCNetLabel}.zip">
             <fileset basedir="source" prefix="bin">
                 <include name="**/*" />
             </fileset>
         </zip>
-	</target>  
+	</target>
 	
     <target name="sign">
         <copy
@@ -52,8 +54,5 @@
 	
 	<target name="publish" depends="rebuild">
         
-		
-		
 	</target>
-    
 </project>
