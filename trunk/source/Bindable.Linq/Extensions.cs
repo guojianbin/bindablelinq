@@ -3,12 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading;
 using System.Windows.Threading;
-using Bindable.Linq;
 using Bindable.Linq.Adapters;
 using Bindable.Linq.Aggregators;
 using Bindable.Linq.Aggregators.Numerics;
@@ -211,7 +207,7 @@ namespace Bindable.Linq
         }
 
         #endregion
-        
+
         #region Except (NOT)
 
         /// <summary>Produces the set difference of two sequences by using the default equality comparer to compare values.</summary>
@@ -558,7 +554,7 @@ namespace Bindable.Linq
             throw new NotImplementedException();
         }
 
-        #endregion 
+        #endregion
 
         #region OfType (DONE)
 
@@ -575,7 +571,7 @@ namespace Bindable.Linq
             IBindingConfiguration configuration = BindingConfigurations.Default;
             if (source is IConfigurable)
             {
-                configuration = ((IConfigurable) source).Configuration;
+                configuration = ((IConfigurable)source).Configuration;
             }
 
             return new BindableCollectionAdapter<TResult>(source, false, configuration);
@@ -2127,7 +2123,7 @@ namespace Bindable.Linq
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="source" /> or <paramref name="predicate" /> is null.</exception>
         /// <exception cref="T:System.InvalidOperationException">More than one element satisfies the condition in <paramref name="predicate" />.</exception>
-        public static IBindable<TSource> SingleOrDefault<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, bool>> predicate) 
+        public static IBindable<TSource> SingleOrDefault<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, bool>> predicate)
             where TSource : class
         {
             return source.FirstOrDefault(predicate);
@@ -2384,7 +2380,7 @@ namespace Bindable.Linq
         #endregion
 
         #region Operators
-        
+
         #region If (DONE)
 
         /// <summary>
@@ -2564,6 +2560,8 @@ namespace Bindable.Linq
 
         #endregion
 
+        #region Dependencies
+
         /// <summary>
         /// Extracts dependencies from the given expression and adds them to the iterator.
         /// </summary>
@@ -2581,11 +2579,60 @@ namespace Bindable.Linq
         }
 
         /// <summary>
-        /// Adds a dependency to
+        /// Adds a dependency for a given property on a given object external to the query.
         /// </summary>
         /// <typeparam name="TResult">The type of the result.</typeparam>
         /// <param name="query">The query.</param>
-        /// <param name="propertyPath">The property path.</param>
+        /// <param name="externalObject">The external object to monitor for changes. For example, this could be a regular 
+        /// class object, an object that implements <see cref="INotifyCollectionChanged" />, or a Windows Forms control.</param>
+        /// <param name="propertyPath">The property path. For example: "HomeAddress.Postcode".</param>
+        /// <returns></returns>
+        public static TResult WithDependency<TResult>(this TResult query, object externalObject, string propertyPath)
+            where TResult : IAcceptsDependencies
+        {
+            return query.WithDependency(new ExternalDependencyDefinition(propertyPath, externalObject));
+        }
+
+#if SILVERLIGHT
+
+        /// <summary>
+        /// Adds a dependency on a Silverlight dependency object.
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        /// <param name="query">The query.</param>
+        /// <param name="dependencyObject">A Silverlight dependency object.</param>
+        /// <param name="propertyPath">The name of a property on the dependency object.</param>
+        /// <returns></returns>
+        public static TResult WithDependency<TResult>(this TResult query, System.Windows.DependencyObject dependencyObject, string propertyPath)
+            where TResult : IAcceptsDependencies
+        {
+            return query.WithDependency(new ExternalDependencyDefinition(propertyPath, dependencyObject));
+        }
+
+#else
+
+        /// <summary>
+        /// Adds a dependency on a WPF dependency object.
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        /// <param name="query">The query.</param>
+        /// <param name="dependencyObject">A WPF dependency object.</param>
+        /// <param name="dependencyProperty">A WPF dependency property.</param>
+        /// <returns></returns>
+        public static TResult WithDependency<TResult>(this TResult query, System.Windows.DependencyObject dependencyObject, System.Windows.DependencyProperty dependencyProperty)
+            where TResult : IAcceptsDependencies
+        {
+            return query.WithDependency(new ExternalDependencyDefinition(dependencyProperty.Name, dependencyObject));
+        }
+
+#endif
+
+        /// <summary>
+        /// Adds a dependency on items in the source collection, given the path to a property.
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        /// <param name="query">The query.</param>
+        /// <param name="propertyPath">The property name or path. For example: "HomeAddress.Postcode".</param>
         /// <returns></returns>
         public static TResult WithDependency<TResult>(this TResult query, string propertyPath)
             where TResult : IAcceptsDependencies
@@ -2596,7 +2643,8 @@ namespace Bindable.Linq
         }
 
         /// <summary>
-        /// Adds a dependency to the Bindable LINQ query.
+        /// Adds a dependency to the Bindable LINQ query given a dependency definition. This allows developers to create custom 
+        /// dependency types by implementing the <see cref="IDependencyDefinition"/> interface.
         /// </summary>
         /// <typeparam name="TResult">The type of the result.</typeparam>
         /// <param name="query">The query.</param>
@@ -2605,7 +2653,7 @@ namespace Bindable.Linq
         public static TResult WithDependency<TResult>(this TResult query, IDependencyDefinition definition)
             where TResult : IAcceptsDependencies
         {
-            if (query != null)
+            if (query != null && definition != null)
             {
                 query.AcceptDependency(definition);
             }
@@ -2626,10 +2674,15 @@ namespace Bindable.Linq
             {
                 foreach (IDependencyDefinition definition in definitions)
                 {
-                    query.AcceptDependency(definition);
+                    if (definition != null)
+                    {
+                        query.AcceptDependency(definition);
+                    }
                 }
             }
             return query;
         }
+
+        #endregion
     }
 }

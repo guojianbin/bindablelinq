@@ -20,12 +20,13 @@ namespace Bindable.Linq.Dependencies.PathNavigation.Tokens
         private string _propertyName;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PropertyMonitor"/> class.
+        /// Initializes a new instance of the <see cref="MemberToken"/> class.
         /// </summary>
         /// <param name="currentTarget">The current target.</param>
         /// <param name="propertyName">Name of the property.</param>
         /// <param name="remainingPath">The remaining path.</param>
         /// <param name="changeDetectedCallback">The change detected callback.</param>
+        /// <param name="traverser">The traverser.</param>
         public MemberToken(object currentTarget, string propertyName, string remainingPath, Action<object, string> changeDetectedCallback, IPathNavigator traverser) 
         {
             _changeDetectedCallback = changeDetectedCallback;

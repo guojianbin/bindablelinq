@@ -18,13 +18,14 @@ namespace Bindable.Linq.Dependencies.PathNavigation.Tokens
         private DependencyProperty _dependencyProperty;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="WpfPropertyMonitor"/> class.
+        /// Initializes a new instance of the <see cref="WpfMemberToken"/> class.
         /// </summary>
         /// <param name="objectToObserve">The object to observe.</param>
         /// <param name="dependencyProperty">The dependency property.</param>
         /// <param name="propertyName">Name of the property.</param>
         /// <param name="remainingPath">The remaining path.</param>
         /// <param name="callback">The callback.</param>
+        /// <param name="pathNavigator">The path navigator.</param>
         public WpfMemberToken(DependencyObject objectToObserve, DependencyProperty dependencyProperty, string propertyName, string remainingPath, Action<object, string> callback, IPathNavigator pathNavigator)
             : base(objectToObserve, propertyName, remainingPath, callback, pathNavigator)
         {

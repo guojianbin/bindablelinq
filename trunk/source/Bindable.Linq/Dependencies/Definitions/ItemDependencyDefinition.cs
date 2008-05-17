@@ -20,7 +20,7 @@ namespace Bindable.Linq.Dependencies.Definitions
         private string _propertyPath;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ItemPropertyDependencyDefinition"/> class.
+        /// Initializes a new instance of the <see cref="ItemDependencyDefinition"/> class.
         /// </summary>
         /// <param name="propertyPath">The property path.</param>
         public ItemDependencyDefinition(string propertyPath)
@@ -29,7 +29,7 @@ namespace Bindable.Linq.Dependencies.Definitions
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ItemPropertyDependencyDefinition"/> class.
+        /// Initializes a new instance of the <see cref="ItemDependencyDefinition"/> class.
         /// </summary>
         /// <param name="propertyPath">The property path.</param>
         /// <param name="parameterName">Name of the parameter.</param>
@@ -82,6 +82,7 @@ namespace Bindable.Linq.Dependencies.Definitions
         /// </summary>
         /// <typeparam name="TElement">The type of the element.</typeparam>
         /// <param name="sourceElements">The source elements.</param>
+        /// <param name="pathNavigator">The path navigator.</param>
         /// <returns></returns>
         public IDependency ConstructForCollection<TElement>(IBindableCollectionInterceptor<TElement> sourceElements, IPathNavigator pathNavigator)
         {
@@ -93,6 +94,7 @@ namespace Bindable.Linq.Dependencies.Definitions
         /// </summary>
         /// <typeparam name="TElement">The type of the element.</typeparam>
         /// <param name="sourceElement">The source element.</param>
+        /// <param name="pathNavigator">The path navigator.</param>
         /// <returns></returns>
         public IDependency ConstructForElement<TElement>(TElement sourceElement, IPathNavigator pathNavigator)
         {

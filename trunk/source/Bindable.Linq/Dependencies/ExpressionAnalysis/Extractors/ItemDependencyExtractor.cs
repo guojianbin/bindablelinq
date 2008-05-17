@@ -7,12 +7,14 @@ using Bindable.Linq.Dependencies.Definitions;
 
 namespace Bindable.Linq.Dependencies.ExpressionAnalysis.Extractors
 {
+    /// <summary>
+    /// Extracts dependencies placed on child items within a query by looking for uses of <see cref="ParameterExpression"/>.
+    /// </summary>
     internal sealed class ItemDependencyExtractor : DependencyExtractor
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ItemPropertyDependencyExtractor"/> class.
+        /// Initializes a new instance of the <see cref="ItemDependencyExtractor"/> class.
         /// </summary>
-        /// <param name="itemParameterExpression">The item parameter expression.</param>
         public ItemDependencyExtractor()
         {
             

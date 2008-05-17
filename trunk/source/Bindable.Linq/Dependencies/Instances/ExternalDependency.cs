@@ -18,12 +18,13 @@ namespace Bindable.Linq.Dependencies.Instances
         private readonly LockScope _dependencyLock = new LockScope();
         private readonly IToken _rootMonitor;
         private Action<object> _elementChangedCallback;
-        
+
         /// <summary>
-        /// Initializes a new instance of the <see cref="ExternalObjectDependency"/> class.
+        /// Initializes a new instance of the <see cref="ExternalDependency"/> class.
         /// </summary>
         /// <param name="targetObject">The target object.</param>
         /// <param name="propertyPath">The property path.</param>
+        /// <param name="pathNavigator">The path navigator.</param>
         public ExternalDependency(object targetObject, string propertyPath, IPathNavigator pathNavigator)
         {
             _rootMonitor = pathNavigator.TraverseNext(targetObject, propertyPath, Element_PropertyChanged);

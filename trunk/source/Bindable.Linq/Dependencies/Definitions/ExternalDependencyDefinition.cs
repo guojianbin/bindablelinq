@@ -19,12 +19,11 @@ namespace Bindable.Linq.Dependencies.Definitions
         private object _targetObject;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ExternalPropertyDependencyDefinition"/> class.
+        /// Initializes a new instance of the <see cref="ExternalDependencyDefinition"/> class.
         /// </summary>
         /// <param name="propertyPath">The property path.</param>
         /// <param name="targetObject">The target object.</param>
-        public ExternalDependencyDefinition(string propertyPath,
-            object targetObject)
+        public ExternalDependencyDefinition(string propertyPath, object targetObject)
         {
             _propertyPath = propertyPath;
             _targetObject = targetObject;
@@ -73,6 +72,7 @@ namespace Bindable.Linq.Dependencies.Definitions
         /// </summary>
         /// <typeparam name="TElement">The type of the element.</typeparam>
         /// <param name="sourceElements">The source elements.</param>
+        /// <param name="pathNavigator">The path navigator.</param>
         /// <returns></returns>
         public IDependency ConstructForCollection<TElement>(IBindableCollectionInterceptor<TElement> sourceElements, IPathNavigator pathNavigator)
         {
@@ -84,6 +84,7 @@ namespace Bindable.Linq.Dependencies.Definitions
         /// </summary>
         /// <typeparam name="TElement">The type of the element.</typeparam>
         /// <param name="sourceElement">The source element.</param>
+        /// <param name="pathNavigator">The path navigator.</param>
         /// <returns></returns>
         public IDependency ConstructForElement<TElement>(TElement sourceElement, IPathNavigator pathNavigator)
         {

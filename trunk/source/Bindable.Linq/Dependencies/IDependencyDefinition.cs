@@ -33,6 +33,7 @@ namespace Bindable.Linq.Dependencies
         /// </summary>
         /// <typeparam name="TElement">The type of the element.</typeparam>
         /// <param name="sourceElements">The source elements.</param>
+        /// <param name="pathNavigator">The path navigator.</param>
         /// <returns></returns>
         IDependency ConstructForCollection<TElement>(IBindableCollectionInterceptor<TElement> sourceElements, IPathNavigator pathNavigator);
 
@@ -41,6 +42,7 @@ namespace Bindable.Linq.Dependencies
         /// </summary>
         /// <typeparam name="TElement">The type of the element.</typeparam>
         /// <param name="sourceElement">The source element.</param>
+        /// <param name="pathNavigator">The path navigator.</param>
         /// <returns></returns>
         IDependency ConstructForElement<TElement>(TElement sourceElement, IPathNavigator pathNavigator);
     }

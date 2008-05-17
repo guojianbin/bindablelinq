@@ -18,7 +18,7 @@ namespace Bindable.Linq.Dependencies.PathNavigation
         private ITokenFactory[] _traversers;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PropertyPathTraverser"/> class.
+        /// Initializes a new instance of the <see cref="PathNavigator"/> class.
         /// </summary>
         /// <param name="traversers">The traversers.</param>
         public PathNavigator(params ITokenFactory[] traversers)
@@ -32,7 +32,9 @@ namespace Bindable.Linq.Dependencies.PathNavigation
         /// <param name="target">The target.</param>
         /// <param name="propertyPath">The property path.</param>
         /// <param name="callback">The callback.</param>
-        /// <returns>An appropriate <see cref="IPropertyMonitor"/> for the property.</returns>
+        /// <returns>
+        /// An appropriate <see cref="IToken"/> for the property.
+        /// </returns>
         public IToken TraverseNext(object target, string propertyPath, Action<object,string> callback)
         {
             propertyPath = propertyPath ?? string.Empty;

@@ -17,7 +17,9 @@ namespace Bindable.Linq.Dependencies.PathNavigation
         /// <param name="target">The target.</param>
         /// <param name="propertyPath">The property path.</param>
         /// <param name="callback">The callback.</param>
-        /// <returns>An appropriate <see cref="IPropertyMonitor"/> for the property.</returns>
+        /// <returns>
+        /// An appropriate <see cref="IToken"/> for the property.
+        /// </returns>
         IToken TraverseNext(object target, string propertyPath, Action<object, string> callback);
     }
 }

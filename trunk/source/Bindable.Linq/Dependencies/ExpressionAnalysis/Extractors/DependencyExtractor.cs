@@ -15,7 +15,7 @@ namespace Bindable.Linq.Dependencies.ExpressionAnalysis.Extractors
     internal abstract class DependencyExtractor : IDependencyExtractor
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="PropertyDependencyExtractor"/> class.
+        /// Initializes a new instance of the <see cref="DependencyExtractor"/> class.
         /// </summary>
         protected DependencyExtractor()
         {

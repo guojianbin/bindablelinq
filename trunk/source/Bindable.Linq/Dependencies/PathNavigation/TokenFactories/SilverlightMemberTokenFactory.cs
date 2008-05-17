@@ -19,8 +19,9 @@ namespace Bindable.Linq.Dependencies.PathNavigation.TokenFactories
         /// <param name="target">The target.</param>
         /// <param name="propertyPath">The property path.</param>
         /// <param name="callback">The callback.</param>
+        /// <param name="pathNavigator">The path navigator.</param>
         /// <returns>
-        /// An appropriate <see cref="IPropertyMonitor"/> for the property.
+        /// An appropriate <see cref="IToken"/> for the property.
         /// </returns>
         public IToken ParseNext(object target, string propertyPath, Action<object, string> callback, IPathNavigator pathNavigator)
         {

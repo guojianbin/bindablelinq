@@ -18,12 +18,13 @@ namespace Bindable.Linq.Dependencies.PathNavigation.Tokens
         private IPropertyReader<object> _propertyReader;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ClrPropertyMonitor"/> class.
+        /// Initializes a new instance of the <see cref="ClrMemberToken"/> class.
         /// </summary>
         /// <param name="objectToObserve">The object to observe.</param>
         /// <param name="propertyName">The property path.</param>
         /// <param name="remainingPath">The remaining path.</param>
         /// <param name="callback">The callback.</param>
+        /// <param name="pathNavigator">The path navigator.</param>
         public ClrMemberToken(object objectToObserve, string propertyName, string remainingPath, Action<object, string> callback, IPathNavigator pathNavigator)
             : base(objectToObserve, propertyName, remainingPath, callback, pathNavigator)
         {

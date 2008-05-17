@@ -26,10 +26,11 @@ namespace Bindable.Linq.Dependencies.Instances
         private string _propertyPath;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ItemPropertyDependency&lt;TElement&gt;"/> class.
+        /// Initializes a new instance of the <see cref="ItemDependency&lt;TElement&gt;"/> class.
         /// </summary>
         /// <param name="propertyPath">The property path.</param>
         /// <param name="sourceElements">The source elements.</param>
+        /// <param name="pathNavigator">The path navigator.</param>
         public ItemDependency(string propertyPath, IBindableCollectionInterceptor<TElement> sourceElements, IPathNavigator pathNavigator)
         {
             _pathNavigator = pathNavigator;

@@ -18,7 +18,7 @@ namespace Bindable.Linq.Dependencies.Definitions
         private string _propertyPath;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="StaticPropertyDependencyDefinition"/> class.
+        /// Initializes a new instance of the <see cref="StaticDependencyDefinition"/> class.
         /// </summary>
         /// <param name="propertyPath">The property path.</param>
         /// <param name="member">The member.</param>
@@ -71,6 +71,7 @@ namespace Bindable.Linq.Dependencies.Definitions
         /// </summary>
         /// <typeparam name="TElement">The type of the element.</typeparam>
         /// <param name="sourceElements">The source elements.</param>
+        /// <param name="pathNavigator">The path navigator.</param>
         /// <returns></returns>
         public IDependency ConstructForCollection<TElement>(IBindableCollectionInterceptor<TElement> sourceElements, IPathNavigator pathNavigator)
         {
@@ -82,6 +83,7 @@ namespace Bindable.Linq.Dependencies.Definitions
         /// </summary>
         /// <typeparam name="TElement">The type of the element.</typeparam>
         /// <param name="sourceElement">The source element.</param>
+        /// <param name="pathNavigator">The path navigator.</param>
         /// <returns></returns>
         public IDependency ConstructForElement<TElement>(TElement sourceElement, IPathNavigator pathNavigator)
         {
