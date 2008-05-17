@@ -21,7 +21,7 @@
                 <include name="**/*" />
             </fileset>
         </zip>
-	</target>
+	</target>  
 	
     <target name="sign">
         <copy
