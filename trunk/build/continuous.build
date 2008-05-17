@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<project name="Bindable LINQ" default="rebuild" basedir="..">
+	<property name="msbuild.path" value="C:\Windows\Microsoft.NET\Framework\v3.5" readonly="false" />
+	<property name="project.sourcedirectory" value="source" readonly="false" />
+	<property name="project.configuration" value="Debug" readonly="false" />
+	<property name="temp.output.directory" value="build/results" />
+	<property name="signing.directory" value="sdds" readonly="false" />
+	<property name="drop.directory" value="C:\Foo" readonly="false" />
+	<if test="${not property::exists('CCNetLabel')}">
+        <property name="CCNetLabel" value="1.0.0.0" readonly="false" />
+    </if>
+    
+	<target name="prepare">
+        <mkdir dir="${temp.output.directory}" />
+        <mkdir dir="${project.sourcedirectory}\Bindable.Linq\bin\Silverlight" />
+    </target>
+	
+	<target name="zip" depends="prepare">
+        <zip zipfile="${temp.output.directory}\Source-${CCNetLabel}.zip">
+            <fileset basedir="source" prefix="bin">
+                <include name="**/*" />
+            </fileset>
+        </zip>
+	</target>
+	
+    <target name="sign">
+        <copy
+			if="${directory::exists(signing.directory)}"
+			todir="source/Bindable.Linq/Properties/"
+			>
+			<fileset basedir="${signing.directory}">
+				<include name="**/*" />
+			</fileset>
+		</copy>
+    </target>
+	
+	<target name="rebuild" depends="prepare,zip,sign">
+		<!-- Build the solution -->
+        <exec program="${msbuild.path}\msbuild.exe">
+          <arg value="${project.sourcedirectory}\Bindable.Linq.sln" />
+          <arg value="/t:Rebuild" />
+          <arg value="/p:Configuration=Debug" />
+          <arg value="/nologo" />
+		</exec>
+		
+		<!-- Run the unit tests -->
+		<nunit2 failonerror="false">
+            <formatter type="Xml" usefile="false"/>
+			<test assemblyname="${project.sourcedirectory}\Bindable.Linq.Tests\bin\${project.configuration}\Bindable.Linq.Tests.dll"  />
+		</nunit2>
+	</target>
+	
+	<target name="publish" depends="rebuild">
+        
+		
+		
+	</target>
+    
+</project>
