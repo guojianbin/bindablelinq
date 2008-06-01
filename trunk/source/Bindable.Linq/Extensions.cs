@@ -830,7 +830,7 @@ namespace Bindable.Linq
         /// <typeparam name="TElement">The type of the element.</typeparam>
         /// <param name="bindableCollection">The bindable collection.</param>
         /// <returns></returns>
-        public static IBindingList ToBindingList<TElement>(this IBindableCollection<TElement> bindableCollection)
+        public static IBindingList ToBindingList<TElement>(this IBindableCollection<TElement> bindableCollection) where TElement: class
         {
             return new BindingListAdapter<TElement>(bindableCollection);
         }
