@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Bindable.Linq;
 
 namespace Bindable.Linq.Aggregators
 {
@@ -19,9 +15,8 @@ namespace Bindable.Linq.Aggregators
         /// <summary>
         /// Initializes a new instance of the <see cref="CustomAggregator&lt;TSource, TAccumulate&gt;"/> class.
         /// </summary>
-        public CustomAggregator(IBindableCollection<TSource> source,
-            TAccumulate seed,
-            Func<TAccumulate, TSource, TAccumulate> aggregator) : base(source)
+        public CustomAggregator(IBindableCollection<TSource> source, TAccumulate seed, Func<TAccumulate, TSource, TAccumulate> aggregator)
+            : base(source)
         {
             _aggregator = aggregator;
             _seed = seed;
@@ -34,11 +29,11 @@ namespace Bindable.Linq.Aggregators
         protected override void AggregateOverride()
         {
             TAccumulate result = _seed;
-            foreach (TSource sourceItem in this.SourceCollection)
+            foreach (TSource sourceItem in SourceCollection)
             {
                 result = _aggregator(result, sourceItem);
             }
-            this.Current = result;
+            Current = result;
         }
     }
 }

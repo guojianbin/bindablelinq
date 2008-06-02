@@ -1,16 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Bindable.Linq.Dependencies.PathNavigation.Tokens;
+using System;
 
 namespace Bindable.Linq.Dependencies.PathNavigation.TokenFactories
 {
+    using Tokens;
+
     /// <summary>
     /// A parser for CLR properties.
     /// </summary>
     public sealed class ClrMemberTokenFactory : ITokenFactory
     {
+        #region ITokenFactory Members
         /// <summary>
         /// Creates an appropriate property monitor for the remaining property path string on the target object.
         /// </summary>
@@ -39,5 +38,6 @@ namespace Bindable.Linq.Dependencies.PathNavigation.TokenFactories
             }
             return result;
         }
+        #endregion
     }
 }

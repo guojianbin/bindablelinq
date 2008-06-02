@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Bindable.Linq;
+using System;
 
 namespace Bindable.Linq.Operators
 {
@@ -13,7 +9,7 @@ namespace Bindable.Linq.Operators
     /// <typeparam name="TResult">The type of the result.</typeparam>
     internal sealed class ProjectOperator<TSource, TResult> : Operator<TSource, TResult>
     {
-        private Func<TSource, TResult> _projector;
+        private readonly Func<TSource, TResult> _projector;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ProjectOperator&lt;TSource, TResult&gt;"/> class.
@@ -31,14 +27,14 @@ namespace Bindable.Linq.Operators
         /// </summary>
         protected override void RefreshOverride()
         {
-            TSource source = this.Source.Current;
+            TSource source = Source.Current;
             if (source != null)
             {
-                this.Current = _projector(source);
+                Current = _projector(source);
             }
             else
             {
-                this.Current = default(TResult);
+                Current = default(TResult);
             }
         }
     }

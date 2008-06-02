@@ -1,171 +1,21 @@
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.Linq;
-using System.Text;
-using Bindable.Linq.Dependencies;
+using NUnit.Framework;
 using Bindable.Linq.Tests.TestHelpers;
 using Bindable.Linq.Tests.TestObjectModel;
-using NUnit.Framework;
 
 namespace Bindable.Linq.Tests.Behaviour.Iterators
 {
+
     [TestFixture]
     public class SelectBehaviour : TestFixture
     {
         [Test]
-        public void SelectIteratorInitializeNoProjection()
+        public void SelectIteratorAddMultipleItemsAnonymousProjectionAfterInitialize()
         {
             Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select())
-                .AndLinqEquivalent(inputs => inputs)
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WhenLoaded().ExpectNoEvents()
-                .AndExpectFinalCountOf(3);
-        }
-
-        [Test]
-        public void SelectIteratorInitializeKnownProjection()
-        {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new ContactSummary() { Summary = c.Name }))
-                .AndLinqEquivalent(inputs => inputs.Select(c => new ContactSummary() { Summary = c.Name }))
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WhenLoaded().ExpectNoEvents()
-                .AndExpectFinalCountOf(3);
-        }
-
-        [Test]
-        public void SelectIteratorInitializeAnonymousProjection()
-        {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new { Summary = c.Name }))
-                .AndLinqEquivalent(inputs => inputs.Select(c => new { Summary = c.Name }))
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WhenLoaded().ExpectNoEvents()
-                .AndExpectFinalCountOf(3);
-        }
-
-        [Test]
-        public void SelectIteratorAddSingleItemNoProjectionBeforeInitialize()
-        {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select())
-                .AndLinqEquivalent(inputs => inputs)
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WithoutInitializing()
-                .ThenAdd(John).ExpectNoEvents()
-                .ThenInitialize().ExpectNoEvents()
-                .AndExpectFinalCountOf(4);
-        }
-
-        [Test]
-        public void SelectIteratorAddSingleItemNoProjectionAfterInitialize()
-        {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select())
-                .AndLinqEquivalent(inputs => inputs)
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WhenLoaded()
-                .ThenAdd(John).ExpectEvent(Add.WithNewItems(John).WithNewIndex(3))
-                .AndExpectFinalCountOf(4);
-        }
-
-        [Test]
-        public void SelectIteratorAddSingleItemKnownProjectionBeforeInitialize()
-        {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new ContactSummary() { Summary = c.Name}))
-                .AndLinqEquivalent(inputs => inputs.Select(c => new ContactSummary() { Summary = c.Name }))
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WithoutInitializing()
-                .ThenAdd(John).ExpectNoEvents()
-                .ThenInitialize().ExpectNoEvents()
-                .AndExpectFinalCountOf(4);
-        }
-
-        [Test]
-        public void SelectIteratorAddSingleItemKnownProjectionAfterInitialize()
-        {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new ContactSummary() { Summary = c.Name }))
-                .AndLinqEquivalent(inputs => inputs.Select(c => new ContactSummary() { Summary = c.Name }))
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WhenLoaded()
-                .ThenAdd(John).ExpectEvent(Add.WithNewItemCount(1).WithNewIndex(3))
-                .AndExpectFinalCountOf(4);
-        }
-
-        [Test]
-        public void SelectIteratorAddSingleItemAnonymousProjectionBeforeInitialize()
-        {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new ContactSummary() { Summary = c.Name }))
-                .AndLinqEquivalent(inputs => inputs.Select(c => new ContactSummary() { Summary = c.Name }))
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WithoutInitializing()
-                .ThenAdd(John).ExpectNoEvents()
-                .ThenInitialize().ExpectNoEvents()
-                .AndExpectFinalCountOf(4);
-        }
-
-        [Test]
-        public void SelectIteratorAddSingleItemAnonymousProjectionAfterInitialize()
-        {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new { Summary = c.Name }))
-                .AndLinqEquivalent(inputs => inputs.Select(c => new { Summary = c.Name }))
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WhenLoaded()
-                .ThenAdd(John).ExpectEvent(Add.WithNewItemCount(1).WithNewIndex(3))
-                .AndExpectFinalCountOf(4);
-        }
-
-        [Test]
-        public void SelectIteratorAddMultipleItemsNoProjectionBeforeInitialize()
-        {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select())
-                .AndLinqEquivalent(inputs => inputs)
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WithoutInitializing()
-                .ThenAdd(John, Mick).ExpectNoEvents()
-                .ThenInitialize().ExpectNoEvents()
-                .AndExpectFinalCountOf(5);
-        }
-
-        [Test]
-        public void SelectIteratorAddMultipleItemsNoProjectionAfterInitialize()
-        {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select())
-                .AndLinqEquivalent(inputs => inputs)
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WhenLoaded()
-                .ThenAdd(John, Mick, Simon).ExpectEvent(Add.WithNewItems(John, Mick, Simon).WithNewIndex(3))
-                .AndExpectFinalCountOf(6);
-        }
-
-        [Test]
-        public void SelectIteratorAddMultipleItemsKnownProjectionBeforeInitialize()
-        {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new ContactSummary() { Summary = c.Name }))
-                .AndLinqEquivalent(inputs => inputs.Select(c => new ContactSummary() { Summary = c.Name }))
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WithoutInitializing()
-                .ThenAdd(John, Mick).ExpectNoEvents()
-                .ThenInitialize().ExpectNoEvents()
-                .AndExpectFinalCountOf(5);
-        }
-
-        [Test]
-        public void SelectIteratorAddMultipleItemsKnownProjectionAfterInitialize()
-        {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new ContactSummary() { Summary = c.Name }))
-                .AndLinqEquivalent(inputs => inputs.Select(c => new ContactSummary() { Summary = c.Name }))
+                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new {Summary = c.Name}))
+                .AndLinqEquivalent(inputs => inputs.Select(c => new {Summary = c.Name}))
                 .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
                 .WhenLoaded()
                 .ThenAdd(John, Mick, Simon).ExpectEvent(Add.WithNewItemCount(3).WithNewIndex(3))
@@ -175,422 +25,535 @@ namespace Bindable.Linq.Tests.Behaviour.Iterators
         [Test]
         public void SelectIteratorAddMultipleItemsAnonymousProjectionBeforeInitialize()
         {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new { Summary = c.Name }))
-                .AndLinqEquivalent(inputs => inputs.Select(c => new { Summary = c.Name }))
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WithoutInitializing()
-                .ThenAdd(John, Mick).ExpectNoEvents()
-                .ThenInitialize().ExpectNoEvents()
-                .AndExpectFinalCountOf(5);
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new {Summary = c.Name})).AndLinqEquivalent(inputs => inputs.Select(c => new {Summary = c.Name})).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WithoutInitializing().ThenAdd(John, Mick).ExpectNoEvents().ThenInitialize().ExpectNoEvents().AndExpectFinalCountOf(5);
         }
 
         [Test]
-        public void SelectIteratorAddMultipleItemsAnonymousProjectionAfterInitialize()
+        public void SelectIteratorAddMultipleItemsKnownProjectionAfterInitialize()
         {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new { Summary = c.Name }))
-                .AndLinqEquivalent(inputs => inputs.Select(c => new { Summary = c.Name }))
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WhenLoaded()
-                .ThenAdd(John, Mick, Simon).ExpectEvent(Add.WithNewItemCount(3).WithNewIndex(3))
-                .AndExpectFinalCountOf(6);
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new ContactSummary {Summary = c.Name})).AndLinqEquivalent(inputs => inputs.Select(c => new ContactSummary {Summary = c.Name})).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WhenLoaded().ThenAdd(John, Mick, Simon).ExpectEvent(Add.WithNewItemCount(3).WithNewIndex(3)).AndExpectFinalCountOf(6);
         }
 
         [Test]
-        public void SelectIteratorRemoveSingleExistingItemNoProjectionBeforeInitialize()
+        public void SelectIteratorAddMultipleItemsKnownProjectionBeforeInitialize()
         {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select())
-                .AndLinqEquivalent(inputs => inputs)
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WithoutInitializing().ExpectNoEvents()
-                .ThenRemove(Mike).ExpectNoEvents()
-                .AndExpectFinalCountOf(2);
-        }
-        
-        [Test]
-        public void SelectIteratorRemoveSingleExistingItemNoProjectionAfterInitialize()
-        {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select())
-                .AndLinqEquivalent(inputs => inputs)
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WhenLoaded()
-                .ThenRemove(Mike).ExpectEvent(Remove.WithOldItems(Mike).WithOldIndex(0))
-                .AndExpectFinalCountOf(2);
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new ContactSummary {Summary = c.Name})).AndLinqEquivalent(inputs => inputs.Select(c => new ContactSummary {Summary = c.Name})).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WithoutInitializing().ThenAdd(John, Mick).ExpectNoEvents().ThenInitialize().ExpectNoEvents().AndExpectFinalCountOf(5);
         }
 
         [Test]
-        public void SelectIteratorRemoveSingleNonExistingItemNoProjectionBeforeInitialize()
+        public void SelectIteratorAddMultipleItemsNoProjectionAfterInitialize()
         {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select())
-                .AndLinqEquivalent(inputs => inputs)
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WithoutInitializing().ExpectNoEvents()
-                .ThenRemove(Clancy).ExpectNoEvents()
-                .AndExpectFinalCountOf(3);
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select()).AndLinqEquivalent(inputs => inputs).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WhenLoaded().ThenAdd(John, Mick, Simon).ExpectEvent(Add.WithNewItems(John, Mick, Simon).WithNewIndex(3)).AndExpectFinalCountOf(6);
         }
 
         [Test]
-        public void SelectIteratorRemoveSingleNonExistingItemNoProjectionAfterInitialize()
+        public void SelectIteratorAddMultipleItemsNoProjectionBeforeInitialize()
         {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select())
-                .AndLinqEquivalent(inputs => inputs)
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WhenLoaded()
-                .ThenRemove(Clancy).ExpectNoEvents()
-                .AndExpectFinalCountOf(3);
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select()).AndLinqEquivalent(inputs => inputs).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WithoutInitializing().ThenAdd(John, Mick).ExpectNoEvents().ThenInitialize().ExpectNoEvents().AndExpectFinalCountOf(5);
         }
 
         [Test]
-        public void SelectIteratorRemoveSingleExistingItemKnownProjectionBeforeInitialize()
+        public void SelectIteratorAddSingleItemAnonymousProjectionAfterInitialize()
         {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new ContactSummary() { Summary = c.Name.ToLower() }))
-                .AndLinqEquivalent(inputs => inputs.Select(c => new ContactSummary() { Summary = c.Name.ToLower() }))
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WithoutInitializing().ExpectNoEvents()
-                .ThenRemove(Mike).ExpectNoEvents()
-                .AndExpectFinalCountOf(2);
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new {Summary = c.Name})).AndLinqEquivalent(inputs => inputs.Select(c => new {Summary = c.Name})).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WhenLoaded().ThenAdd(John).ExpectEvent(Add.WithNewItemCount(1).WithNewIndex(3)).AndExpectFinalCountOf(4);
         }
 
         [Test]
-        public void SelectIteratorRemoveSingleExistingItemKnownProjectionAfterInitialize()
+        public void SelectIteratorAddSingleItemAnonymousProjectionBeforeInitialize()
         {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new ContactSummary() { Summary = c.Name.ToLower() }))
-                .AndLinqEquivalent(inputs => inputs.Select(c => new ContactSummary() { Summary = c.Name.ToLower() }))
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WhenLoaded()
-                .ThenRemove(Mike).ExpectEvent(Remove.WithOldItemCount(1).WithOldIndex(0))
-                .AndExpectFinalCountOf(2);
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new ContactSummary {Summary = c.Name})).AndLinqEquivalent(inputs => inputs.Select(c => new ContactSummary {Summary = c.Name})).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WithoutInitializing().ThenAdd(John).ExpectNoEvents().ThenInitialize().ExpectNoEvents().AndExpectFinalCountOf(4);
         }
 
         [Test]
-        public void SelectIteratorRemoveSingleNonExistingItemKnownProjectionBeforeInitialize()
+        public void SelectIteratorAddSingleItemKnownProjectionAfterInitialize()
         {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new ContactSummary() { Summary = c.Name.ToLower() }))
-                .AndLinqEquivalent(inputs => inputs.Select(c => new ContactSummary() { Summary = c.Name.ToLower() }))
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WithoutInitializing().ExpectNoEvents()
-                .ThenRemove(Clancy).ExpectNoEvents()
-                .AndExpectFinalCountOf(3);
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new ContactSummary {Summary = c.Name})).AndLinqEquivalent(inputs => inputs.Select(c => new ContactSummary {Summary = c.Name})).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WhenLoaded().ThenAdd(John).ExpectEvent(Add.WithNewItemCount(1).WithNewIndex(3)).AndExpectFinalCountOf(4);
         }
 
         [Test]
-        public void SelectIteratorRemoveSingleNonExistingItemKnownProjectionAfterInitialize()
+        public void SelectIteratorAddSingleItemKnownProjectionBeforeInitialize()
         {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new ContactSummary() { Summary = c.Name.ToLower() }))
-                .AndLinqEquivalent(inputs => inputs.Select(c => new ContactSummary() { Summary = c.Name.ToLower() }))
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WhenLoaded()
-                .ThenRemove(Clancy).ExpectNoEvents()
-                .AndExpectFinalCountOf(3);
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new ContactSummary {Summary = c.Name})).AndLinqEquivalent(inputs => inputs.Select(c => new ContactSummary {Summary = c.Name})).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WithoutInitializing().ThenAdd(John).ExpectNoEvents().ThenInitialize().ExpectNoEvents().AndExpectFinalCountOf(4);
         }
 
         [Test]
-        public void SelectIteratorRemoveSingleExistingItemAnonymousProjectionBeforeInitialize()
+        public void SelectIteratorAddSingleItemNoProjectionAfterInitialize()
         {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new { Summary = c.Name.ToLower() }))
-                .AndLinqEquivalent(inputs => inputs.Select(c => new { Summary = c.Name.ToLower() }))
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WithoutInitializing().ExpectNoEvents()
-                .ThenRemove(Mike).ExpectNoEvents()
-                .AndExpectFinalCountOf(2);
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select()).AndLinqEquivalent(inputs => inputs).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WhenLoaded().ThenAdd(John).ExpectEvent(Add.WithNewItems(John).WithNewIndex(3)).AndExpectFinalCountOf(4);
         }
 
         [Test]
-        public void SelectIteratorRemoveSingleExistingItemAnonymousProjectionAfterInitialize()
+        public void SelectIteratorAddSingleItemNoProjectionBeforeInitialize()
         {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new { Summary = c.Name.ToLower() }))
-                .AndLinqEquivalent(inputs => inputs.Select(c => new { Summary = c.Name.ToLower() }))
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WhenLoaded()
-                .ThenRemove(Mike).ExpectEvent(Remove.WithOldItemCount(1).WithOldIndex(0))
-                .AndExpectFinalCountOf(2);
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select()).AndLinqEquivalent(inputs => inputs).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WithoutInitializing().ThenAdd(John).ExpectNoEvents().ThenInitialize().ExpectNoEvents().AndExpectFinalCountOf(4);
         }
 
         [Test]
-        public void SelectIteratorRemoveSingleNonExistingItemAnonymousProjectionBeforeInitialize()
+        public void SelectIteratorInitializeAnonymousProjection()
         {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new { Summary = c.Name.ToLower() }))
-                .AndLinqEquivalent(inputs => inputs.Select(c => new { Summary = c.Name.ToLower() }))
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WithoutInitializing().ExpectNoEvents()
-                .ThenRemove(Clancy).ExpectNoEvents()
-                .AndExpectFinalCountOf(3);
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new {Summary = c.Name})).AndLinqEquivalent(inputs => inputs.Select(c => new {Summary = c.Name})).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WhenLoaded().ExpectNoEvents().AndExpectFinalCountOf(3);
         }
 
         [Test]
-        public void SelectIteratorRemoveSingleNonExistingItemAnonymousProjectionAfterInitialize()
+        public void SelectIteratorInitializeKnownProjection()
         {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new { Summary = c.Name.ToLower() }))
-                .AndLinqEquivalent(inputs => inputs.Select(c => new { Summary = c.Name.ToLower() }))
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WhenLoaded()
-                .ThenRemove(Clancy).ExpectNoEvents()
-                .AndExpectFinalCountOf(3);
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new ContactSummary {Summary = c.Name})).AndLinqEquivalent(inputs => inputs.Select(c => new ContactSummary {Summary = c.Name})).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WhenLoaded().ExpectNoEvents().AndExpectFinalCountOf(3);
         }
 
         [Test]
-        public void SelectIteratorRemoveMultipleExistingItemsNoProjectionBeforeInitialize()
+        public void SelectIteratorInitializeNoProjection()
         {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select())
-                .AndLinqEquivalent(inputs => inputs)
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WithoutInitializing().ExpectNoEvents()
-                .ThenRemove(Mike, Tom).ExpectNoEvents()
-                .AndExpectFinalCountOf(1);
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select()).AndLinqEquivalent(inputs => inputs).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WhenLoaded().ExpectNoEvents().AndExpectFinalCountOf(3);
         }
 
         [Test]
-        public void SelectIteratorRemoveMultipleExistingItemsNoProjectionAfterInitialize()
+        public void SelectIteratorMoveSingleExistingItemNoProjectionAfterInitialize()
         {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select())
-                .AndLinqEquivalent(inputs => inputs)
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WhenLoaded().ExpectNoEvents()
-                .ThenRemove(Mike, Tom).ExpectEvent(Remove.WithOldItems(Mike, Tom).WithOldIndex(0))
-                .AndExpectFinalCountOf(1);
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select()).AndLinqEquivalent(inputs => inputs).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WhenLoaded().ExpectNoEvents().ThenMove(2, Mike).ExpectEvent(Move.WithOldItemCount(1).WithNewIndex(2).WithOldIndex(0)).AndExpectFinalCountOf(3);
         }
 
         [Test]
-        public void SelectIteratorRemoveMultipleNonExistingItemsNoProjectionBeforeInitialize()
+        public void SelectIteratorMoveSingleExistingItemNoProjectionBeforeInitialize()
         {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select())
-                .AndLinqEquivalent(inputs => inputs)
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WithoutInitializing().ExpectNoEvents()
-                .ThenRemove(Brian, Harry).ExpectNoEvents()
-                .AndExpectFinalCountOf(3);
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select()).AndLinqEquivalent(inputs => inputs).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WithoutInitializing().ExpectNoEvents().ThenMove(2, Mike).ExpectNoEvents().AndExpectFinalCountOf(3);
         }
 
         [Test]
-        public void SelectIteratorRemoveMultipleNonExistingItemsNoProjectionAfterInitialize()
+        public void SelectIteratorMoveSingleExistingItemPastRangeNoProjectionBeforeInitialize()
         {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select())
-                .AndLinqEquivalent(inputs => inputs)
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WhenLoaded().ExpectNoEvents()
-                .ThenRemove(Brian, Harry).ExpectNoEvents()
-                .AndExpectFinalCountOf(3);
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select()).AndLinqEquivalent(inputs => inputs).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WithoutInitializing().ExpectNoEvents().ThenMove(12, Mike).ExpectNoEvents().AndExpectFinalCountOf(3);
         }
 
         [Test]
-        public void SelectIteratorRemoveMultiplePartlyExistingItemsNoProjectionBeforeInitialize()
+        public void SelectIteratorMoveSingleNonExistingItemNoProjectionAfterInitialize()
         {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select())
-                .AndLinqEquivalent(inputs => inputs)
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WithoutInitializing().ExpectNoEvents()
-                .ThenRemove(Tom, Harry).ExpectNoEvents()
-                .AndExpectFinalCountOf(2);
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select()).AndLinqEquivalent(inputs => inputs).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WhenLoaded().ExpectNoEvents().ThenMove(2, Gordon).ExpectEvent(Add.WithNewItemCount(1).WithNewIndex(2)).AndExpectFinalCountOf(4);
         }
 
         [Test]
-        public void SelectIteratorRemoveMultiplePartlyExistingItemsNoProjectionAfterInitialize()
+        public void SelectIteratorMoveSingleNonExistingItemNoProjectionBeforeInitialize()
         {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select())
-                .AndLinqEquivalent(inputs => inputs)
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WhenLoaded().ExpectNoEvents()
-                .ThenRemove(Tom, Harry).ExpectEvent(Remove.WithOldItems(Tom).WithOldIndex(1))
-                .AndExpectFinalCountOf(2);
-        }
-
-        [Test]
-        public void SelectIteratorRemoveMultipleExistingItemsKnownProjectionBeforeInitialize()
-        {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new ContactSummary() { Summary = c.Name.ToUpper() }))
-                .AndLinqEquivalent(inputs => inputs.Select(c => new ContactSummary() { Summary = c.Name.ToUpper() }))
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WithoutInitializing().ExpectNoEvents()
-                .ThenRemove(Mike, Tom).ExpectNoEvents()
-                .AndExpectFinalCountOf(1);
-        }
-
-        [Test]
-        public void SelectIteratorRemoveMultipleExistingItemsKnownProjectionAfterInitialize()
-        {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new ContactSummary() { Summary = c.Name.ToUpper() }))
-                .AndLinqEquivalent(inputs => inputs.Select(c => new ContactSummary() { Summary = c.Name.ToUpper() }))
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WhenLoaded().ExpectNoEvents()
-                .ThenRemove(Mike, Tom).ExpectEvent(Remove.WithOldItemCount(2).WithOldIndex(0))
-                .AndExpectFinalCountOf(1);
-        }
-
-        [Test]
-        public void SelectIteratorRemoveMultipleNonExistingItemsKnownProjectionBeforeInitialize()
-        {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new ContactSummary() { Summary = c.Name.ToUpper() }))
-                .AndLinqEquivalent(inputs => inputs.Select(c => new ContactSummary() { Summary = c.Name.ToUpper() }))
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WithoutInitializing().ExpectNoEvents()
-                .ThenRemove(Brian, Harry).ExpectNoEvents()
-                .AndExpectFinalCountOf(3);
-        }
-
-        [Test]
-        public void SelectIteratorRemoveMultipleNonExistingItemsKnownProjectionAfterInitialize()
-        {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new ContactSummary() { Summary = c.Name.ToUpper() }))
-                .AndLinqEquivalent(inputs => inputs.Select(c => new ContactSummary() { Summary = c.Name.ToUpper() }))
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WhenLoaded().ExpectNoEvents()
-                .ThenRemove(Brian, Harry).ExpectNoEvents()
-                .AndExpectFinalCountOf(3);
-        }
-
-        [Test]
-        public void SelectIteratorRemoveMultiplePartlyExistingItemsKnownProjectionBeforeInitialize()
-        {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new ContactSummary() { Summary = c.Name.ToUpper() }))
-                .AndLinqEquivalent(inputs => inputs.Select(c => new ContactSummary() { Summary = c.Name.ToUpper() }))
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WithoutInitializing().ExpectNoEvents()
-                .ThenRemove(Tom, Harry).ExpectNoEvents()
-                .AndExpectFinalCountOf(2);
-        }
-
-        [Test]
-        public void SelectIteratorRemoveMultiplePartlyExistingItemsKnownProjectionAfterInitialize()
-        {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new ContactSummary() { Summary = c.Name.ToUpper() }))
-                .AndLinqEquivalent(inputs => inputs.Select(c => new ContactSummary() { Summary = c.Name.ToUpper() }))
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WhenLoaded().ExpectNoEvents()
-                .ThenRemove(Tom, Harry).ExpectEvent(Remove.WithOldItemCount(1).WithOldIndex(1))
-                .AndExpectFinalCountOf(2);
-        }
-
-        [Test]
-        public void SelectIteratorRemoveMultipleExistingItemsAnonymousProjectionBeforeInitialize()
-        {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new { Summary = c.Name.ToUpper() }))
-                .AndLinqEquivalent(inputs => inputs.Select(c => new { Summary = c.Name.ToUpper() }))
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WithoutInitializing().ExpectNoEvents()
-                .ThenRemove(Mike, Tom).ExpectNoEvents()
-                .AndExpectFinalCountOf(1);
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select()).AndLinqEquivalent(inputs => inputs).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WithoutInitializing().ExpectNoEvents().ThenMove(2, Gordon).ExpectNoEvents().AndExpectFinalCountOf(4);
         }
 
         [Test]
         public void SelectIteratorRemoveMultipleExistingItemsAnonymousProjectionAfterInitialize()
         {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new { Summary = c.Name.ToUpper() }))
-                .AndLinqEquivalent(inputs => inputs.Select(c => new { Summary = c.Name.ToUpper() }))
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WhenLoaded().ExpectNoEvents()
-                .ThenRemove(Mike, Tom).ExpectEvent(Remove.WithOldItemCount(2).WithOldIndex(0))
-                .AndExpectFinalCountOf(1);
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new {Summary = c.Name.ToUpper()})).AndLinqEquivalent(inputs => inputs.Select(c => new {Summary = c.Name.ToUpper()})).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WhenLoaded().ExpectNoEvents().ThenRemove(Mike, Tom).ExpectEvent(Remove.WithOldItemCount(2).WithOldIndex(0)).AndExpectFinalCountOf(1);
         }
 
         [Test]
-        public void SelectIteratorRemoveMultipleNonExistingItemsAnonymousProjectionBeforeInitialize()
+        public void SelectIteratorRemoveMultipleExistingItemsAnonymousProjectionBeforeInitialize()
         {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new { Summary = c.Name.ToUpper() }))
-                .AndLinqEquivalent(inputs => inputs.Select(c => new { Summary = c.Name.ToUpper() }))
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WithoutInitializing().ExpectNoEvents()
-                .ThenRemove(Brian, Harry).ExpectNoEvents()
-                .AndExpectFinalCountOf(3);
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new {Summary = c.Name.ToUpper()})).AndLinqEquivalent(inputs => inputs.Select(c => new {Summary = c.Name.ToUpper()})).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WithoutInitializing().ExpectNoEvents().ThenRemove(Mike, Tom).ExpectNoEvents().AndExpectFinalCountOf(1);
+        }
+
+        [Test]
+        public void SelectIteratorRemoveMultipleExistingItemsKnownProjectionAfterInitialize()
+        {
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new ContactSummary {Summary = c.Name.ToUpper()})).AndLinqEquivalent(inputs => inputs.Select(c => new ContactSummary {Summary = c.Name.ToUpper()})).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WhenLoaded().ExpectNoEvents().ThenRemove(Mike, Tom).ExpectEvent(Remove.WithOldItemCount(2).WithOldIndex(0)).AndExpectFinalCountOf(1);
+        }
+
+        [Test]
+        public void SelectIteratorRemoveMultipleExistingItemsKnownProjectionBeforeInitialize()
+        {
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new ContactSummary {Summary = c.Name.ToUpper()})).AndLinqEquivalent(inputs => inputs.Select(c => new ContactSummary {Summary = c.Name.ToUpper()})).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WithoutInitializing().ExpectNoEvents().ThenRemove(Mike, Tom).ExpectNoEvents().AndExpectFinalCountOf(1);
+        }
+
+        [Test]
+        public void SelectIteratorRemoveMultipleExistingItemsNoProjectionAfterInitialize()
+        {
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select()).AndLinqEquivalent(inputs => inputs).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WhenLoaded().ExpectNoEvents().ThenRemove(Mike, Tom).ExpectEvent(Remove.WithOldItems(Mike, Tom).WithOldIndex(0)).AndExpectFinalCountOf(1);
+        }
+
+        [Test]
+        public void SelectIteratorRemoveMultipleExistingItemsNoProjectionBeforeInitialize()
+        {
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select()).AndLinqEquivalent(inputs => inputs).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WithoutInitializing().ExpectNoEvents().ThenRemove(Mike, Tom).ExpectNoEvents().AndExpectFinalCountOf(1);
         }
 
         [Test]
         public void SelectIteratorRemoveMultipleNonExistingItemsAnonymousProjectionAfterInitialize()
         {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new { Summary = c.Name.ToUpper() }))
-                .AndLinqEquivalent(inputs => inputs.Select(c => new { Summary = c.Name.ToUpper() }))
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WhenLoaded().ExpectNoEvents()
-                .ThenRemove(Brian, Harry).ExpectNoEvents()
-                .AndExpectFinalCountOf(3);
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new {Summary = c.Name.ToUpper()})).AndLinqEquivalent(inputs => inputs.Select(c => new {Summary = c.Name.ToUpper()})).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WhenLoaded().ExpectNoEvents().ThenRemove(Brian, Harry).ExpectNoEvents().AndExpectFinalCountOf(3);
         }
 
         [Test]
-        public void SelectIteratorRemoveMultiplePartlyExistingItemsAnonymousProjectionBeforeInitialize()
+        public void SelectIteratorRemoveMultipleNonExistingItemsAnonymousProjectionBeforeInitialize()
         {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new { Summary = c.Name.ToUpper() }))
-                .AndLinqEquivalent(inputs => inputs.Select(c => new { Summary = c.Name.ToUpper() }))
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WithoutInitializing().ExpectNoEvents()
-                .ThenRemove(Tom, Harry).ExpectNoEvents()
-                .AndExpectFinalCountOf(2);
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new {Summary = c.Name.ToUpper()})).AndLinqEquivalent(inputs => inputs.Select(c => new {Summary = c.Name.ToUpper()})).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WithoutInitializing().ExpectNoEvents().ThenRemove(Brian, Harry).ExpectNoEvents().AndExpectFinalCountOf(3);
+        }
+
+        [Test]
+        public void SelectIteratorRemoveMultipleNonExistingItemsKnownProjectionAfterInitialize()
+        {
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new ContactSummary {Summary = c.Name.ToUpper()})).AndLinqEquivalent(inputs => inputs.Select(c => new ContactSummary {Summary = c.Name.ToUpper()})).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WhenLoaded().ExpectNoEvents().ThenRemove(Brian, Harry).ExpectNoEvents().AndExpectFinalCountOf(3);
+        }
+
+        [Test]
+        public void SelectIteratorRemoveMultipleNonExistingItemsKnownProjectionBeforeInitialize()
+        {
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new ContactSummary {Summary = c.Name.ToUpper()})).AndLinqEquivalent(inputs => inputs.Select(c => new ContactSummary {Summary = c.Name.ToUpper()})).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WithoutInitializing().ExpectNoEvents().ThenRemove(Brian, Harry).ExpectNoEvents().AndExpectFinalCountOf(3);
+        }
+
+        [Test]
+        public void SelectIteratorRemoveMultipleNonExistingItemsNoProjectionAfterInitialize()
+        {
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select()).AndLinqEquivalent(inputs => inputs).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WhenLoaded().ExpectNoEvents().ThenRemove(Brian, Harry).ExpectNoEvents().AndExpectFinalCountOf(3);
+        }
+
+        [Test]
+        public void SelectIteratorRemoveMultipleNonExistingItemsNoProjectionBeforeInitialize()
+        {
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select()).AndLinqEquivalent(inputs => inputs).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WithoutInitializing().ExpectNoEvents().ThenRemove(Brian, Harry).ExpectNoEvents().AndExpectFinalCountOf(3);
         }
 
         [Test]
         public void SelectIteratorRemoveMultiplePartlyExistingItemsAnonymousProjectionAfterInitialize()
         {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new { Summary = c.Name.ToUpper() }))
-                .AndLinqEquivalent(inputs => inputs.Select(c => new { Summary = c.Name.ToUpper() }))
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WhenLoaded().ExpectNoEvents()
-                .ThenRemove(Tom, Harry).ExpectEvent(Remove.WithOldItemCount(1).WithOldIndex(1))
-                .AndExpectFinalCountOf(2);
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new {Summary = c.Name.ToUpper()})).AndLinqEquivalent(inputs => inputs.Select(c => new {Summary = c.Name.ToUpper()})).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WhenLoaded().ExpectNoEvents().ThenRemove(Tom, Harry).ExpectEvent(Remove.WithOldItemCount(1).WithOldIndex(1)).AndExpectFinalCountOf(2);
         }
 
         [Test]
-        public void SelectIteratorReplaceSingleExistingItemNoProjectionBeforeInitialize()
+        public void SelectIteratorRemoveMultiplePartlyExistingItemsAnonymousProjectionBeforeInitialize()
         {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select())
-                .AndLinqEquivalent(inputs => inputs)
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WithoutInitializing().ExpectNoEvents()
-                .ThenReplace(Tom, Harry).ExpectNoEvents()
-                .AndExpectFinalCountOf(3);
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new {Summary = c.Name.ToUpper()})).AndLinqEquivalent(inputs => inputs.Select(c => new {Summary = c.Name.ToUpper()})).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WithoutInitializing().ExpectNoEvents().ThenRemove(Tom, Harry).ExpectNoEvents().AndExpectFinalCountOf(2);
+        }
+
+        [Test]
+        public void SelectIteratorRemoveMultiplePartlyExistingItemsKnownProjectionAfterInitialize()
+        {
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new ContactSummary {Summary = c.Name.ToUpper()})).AndLinqEquivalent(inputs => inputs.Select(c => new ContactSummary {Summary = c.Name.ToUpper()})).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WhenLoaded().ExpectNoEvents().ThenRemove(Tom, Harry).ExpectEvent(Remove.WithOldItemCount(1).WithOldIndex(1)).AndExpectFinalCountOf(2);
+        }
+
+        [Test]
+        public void SelectIteratorRemoveMultiplePartlyExistingItemsKnownProjectionBeforeInitialize()
+        {
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new ContactSummary {Summary = c.Name.ToUpper()})).AndLinqEquivalent(inputs => inputs.Select(c => new ContactSummary {Summary = c.Name.ToUpper()})).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WithoutInitializing().ExpectNoEvents().ThenRemove(Tom, Harry).ExpectNoEvents().AndExpectFinalCountOf(2);
+        }
+
+        [Test]
+        public void SelectIteratorRemoveMultiplePartlyExistingItemsNoProjectionAfterInitialize()
+        {
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select()).AndLinqEquivalent(inputs => inputs).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WhenLoaded().ExpectNoEvents().ThenRemove(Tom, Harry).ExpectEvent(Remove.WithOldItems(Tom).WithOldIndex(1)).AndExpectFinalCountOf(2);
+        }
+
+        [Test]
+        public void SelectIteratorRemoveMultiplePartlyExistingItemsNoProjectionBeforeInitialize()
+        {
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select()).AndLinqEquivalent(inputs => inputs).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WithoutInitializing().ExpectNoEvents().ThenRemove(Tom, Harry).ExpectNoEvents().AndExpectFinalCountOf(2);
+        }
+
+        [Test]
+        public void SelectIteratorRemoveSingleExistingItemAnonymousProjectionAfterInitialize()
+        {
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new {Summary = c.Name.ToLower()})).AndLinqEquivalent(inputs => inputs.Select(c => new {Summary = c.Name.ToLower()})).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WhenLoaded().ThenRemove(Mike).ExpectEvent(Remove.WithOldItemCount(1).WithOldIndex(0)).AndExpectFinalCountOf(2);
+        }
+
+        [Test]
+        public void SelectIteratorRemoveSingleExistingItemAnonymousProjectionBeforeInitialize()
+        {
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new {Summary = c.Name.ToLower()})).AndLinqEquivalent(inputs => inputs.Select(c => new {Summary = c.Name.ToLower()})).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WithoutInitializing().ExpectNoEvents().ThenRemove(Mike).ExpectNoEvents().AndExpectFinalCountOf(2);
+        }
+
+        [Test]
+        public void SelectIteratorRemoveSingleExistingItemKnownProjectionAfterInitialize()
+        {
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new ContactSummary {Summary = c.Name.ToLower()})).AndLinqEquivalent(inputs => inputs.Select(c => new ContactSummary {Summary = c.Name.ToLower()})).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WhenLoaded().ThenRemove(Mike).ExpectEvent(Remove.WithOldItemCount(1).WithOldIndex(0)).AndExpectFinalCountOf(2);
+        }
+
+        [Test]
+        public void SelectIteratorRemoveSingleExistingItemKnownProjectionBeforeInitialize()
+        {
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new ContactSummary {Summary = c.Name.ToLower()})).AndLinqEquivalent(inputs => inputs.Select(c => new ContactSummary {Summary = c.Name.ToLower()})).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WithoutInitializing().ExpectNoEvents().ThenRemove(Mike).ExpectNoEvents().AndExpectFinalCountOf(2);
+        }
+
+        [Test]
+        public void SelectIteratorRemoveSingleExistingItemNoProjectionAfterInitialize()
+        {
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select()).AndLinqEquivalent(inputs => inputs).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WhenLoaded().ThenRemove(Mike).ExpectEvent(Remove.WithOldItems(Mike).WithOldIndex(0)).AndExpectFinalCountOf(2);
+        }
+
+        [Test]
+        public void SelectIteratorRemoveSingleExistingItemNoProjectionBeforeInitialize()
+        {
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select()).AndLinqEquivalent(inputs => inputs).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WithoutInitializing().ExpectNoEvents().ThenRemove(Mike).ExpectNoEvents().AndExpectFinalCountOf(2);
+        }
+
+        [Test]
+        public void SelectIteratorRemoveSingleNonExistingItemAnonymousProjectionAfterInitialize()
+        {
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new {Summary = c.Name.ToLower()})).AndLinqEquivalent(inputs => inputs.Select(c => new {Summary = c.Name.ToLower()})).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WhenLoaded().ThenRemove(Clancy).ExpectNoEvents().AndExpectFinalCountOf(3);
+        }
+
+        [Test]
+        public void SelectIteratorRemoveSingleNonExistingItemAnonymousProjectionBeforeInitialize()
+        {
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new {Summary = c.Name.ToLower()})).AndLinqEquivalent(inputs => inputs.Select(c => new {Summary = c.Name.ToLower()})).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WithoutInitializing().ExpectNoEvents().ThenRemove(Clancy).ExpectNoEvents().AndExpectFinalCountOf(3);
+        }
+
+        [Test]
+        public void SelectIteratorRemoveSingleNonExistingItemKnownProjectionAfterInitialize()
+        {
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new ContactSummary {Summary = c.Name.ToLower()})).AndLinqEquivalent(inputs => inputs.Select(c => new ContactSummary {Summary = c.Name.ToLower()})).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WhenLoaded().ThenRemove(Clancy).ExpectNoEvents().AndExpectFinalCountOf(3);
+        }
+
+        [Test]
+        public void SelectIteratorRemoveSingleNonExistingItemKnownProjectionBeforeInitialize()
+        {
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new ContactSummary {Summary = c.Name.ToLower()})).AndLinqEquivalent(inputs => inputs.Select(c => new ContactSummary {Summary = c.Name.ToLower()})).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WithoutInitializing().ExpectNoEvents().ThenRemove(Clancy).ExpectNoEvents().AndExpectFinalCountOf(3);
+        }
+
+        [Test]
+        public void SelectIteratorRemoveSingleNonExistingItemNoProjectionAfterInitialize()
+        {
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select()).AndLinqEquivalent(inputs => inputs).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WhenLoaded().ThenRemove(Clancy).ExpectNoEvents().AndExpectFinalCountOf(3);
+        }
+
+        [Test]
+        public void SelectIteratorRemoveSingleNonExistingItemNoProjectionBeforeInitialize()
+        {
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select()).AndLinqEquivalent(inputs => inputs).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WithoutInitializing().ExpectNoEvents().ThenRemove(Clancy).ExpectNoEvents().AndExpectFinalCountOf(3);
+        }
+
+        [Test]
+        public void SelectIteratorReplaceMultipleExistingItemsAnonymousProjectionAfterInitialize()
+        {
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new {Summary = c.Name.Substring(0, 1)})).AndLinqEquivalent(inputs => inputs.Select(c => new {Summary = c.Name.Substring(0, 1)})).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WhenLoaded().ExpectNoEvents().ThenReplace(new[] {Tom, Jack}, new[] {Rick, Paul}).ExpectEvent(Replace.WithOldItemCount(2).WithNewItemCount(2).WithNewIndex(1)).AndExpectFinalCountOf(3);
+        }
+
+        [Test]
+        public void SelectIteratorReplaceMultipleExistingItemsAnonymousProjectionBeforeInitialize()
+        {
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new {Summary = c.Name.Substring(0, 1)})).AndLinqEquivalent(inputs => inputs.Select(c => new {Summary = c.Name.Substring(0, 1)})).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WithoutInitializing().ExpectNoEvents().ThenReplace(new[] {Tom, Jack}, new[] {Rick, Paul}).ExpectNoEvents().AndExpectFinalCountOf(3);
+        }
+
+        [Test]
+        public void SelectIteratorReplaceMultipleExistingItemsKnownProjectionAfterInitialize()
+        {
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new ContactSummary {Summary = c.Name.Substring(0, 1)})).AndLinqEquivalent(inputs => inputs.Select(c => new ContactSummary {Summary = c.Name.Substring(0, 1)})).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WhenLoaded().ExpectNoEvents().ThenReplace(new[] {Tom, Jack}, new[] {Rick, Paul}).ExpectEvent(Replace.WithOldItemCount(2).WithNewItemCount(2).WithOldIndex(1)).AndExpectFinalCountOf(3);
+        }
+
+        [Test]
+        public void SelectIteratorReplaceMultipleExistingItemsKnownProjectionBeforeInitialize()
+        {
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new ContactSummary {Summary = c.Name.Substring(0, 1)})).AndLinqEquivalent(inputs => inputs.Select(c => new ContactSummary {Summary = c.Name.Substring(0, 1)})).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WithoutInitializing().ExpectNoEvents().ThenReplace(new[] {Tom, Jack}, new[] {Rick, Paul}).ExpectNoEvents().AndExpectFinalCountOf(3);
+        }
+
+        [Test]
+        public void SelectIteratorReplaceMultipleExistingItemsNoProjectionAfterInitialize()
+        {
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select()).AndLinqEquivalent(inputs => inputs).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WhenLoaded().ExpectNoEvents().ThenReplace(new[] {Tom, Jack}, new[] {Rick, Paul}).ExpectEvent(Replace.WithOldItems(Tom, Jack).WithNewItems(Rick, Paul).WithOldIndex(1)).AndExpectFinalCountOf(3);
+        }
+
+        [Test]
+        public void SelectIteratorReplaceMultipleExistingItemsNoProjectionBeforeInitialize()
+        {
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select()).AndLinqEquivalent(inputs => inputs).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WithoutInitializing().ExpectNoEvents().ThenReplace(new[] {Tom, Jack}, new[] {Rick, Paul}).ExpectNoEvents().AndExpectFinalCountOf(3);
+        }
+
+        [Test]
+        public void SelectIteratorReplaceMultipleNonExistingItemsAnonymousProjectionAfterInitialize()
+        {
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new {Summary = c.Name.Substring(0, 1)})).AndLinqEquivalent(inputs => inputs.Select(c => new {Summary = c.Name.Substring(0, 1)})).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WhenLoaded().ExpectNoEvents().ThenReplace(new[] {Bubsy, Phil}, new[] {Rick, Paul, Jake}).ExpectEvent(Add.WithNewItemCount(3).WithNewIndex(3)).AndExpectFinalCountOf(6);
+        }
+
+        [Test]
+        public void SelectIteratorReplaceMultipleNonExistingItemsAnonymousProjectionBeforeInitialize()
+        {
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new {Summary = c.Name.Substring(0, 1)})).AndLinqEquivalent(inputs => inputs.Select(c => new {Summary = c.Name.Substring(0, 1)})).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WithoutInitializing().ExpectNoEvents().ThenReplace(new[] {Bubsy, Phil}, new[] {Rick, Paul, Tim}).ExpectNoEvents().AndExpectFinalCountOf(6);
+        }
+
+        [Test]
+        public void SelectIteratorReplaceMultipleNonExistingItemsKnownProjectionAfterInitialize()
+        {
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new ContactSummary {Summary = c.Name.Substring(0, 1)})).AndLinqEquivalent(inputs => inputs.Select(c => new ContactSummary {Summary = c.Name.Substring(0, 1)})).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WhenLoaded().ExpectNoEvents().ThenReplace(new[] {Bubsy, Phil}, new[] {Rick, Paul, Jake}).ExpectEvent(Add.WithNewItemCount(3).WithNewIndex(3)).AndExpectFinalCountOf(6);
+        }
+
+        [Test]
+        public void SelectIteratorReplaceMultipleNonExistingItemsKnownProjectionBeforeInitialize()
+        {
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new ContactSummary {Summary = c.Name.Substring(0, 1)})).AndLinqEquivalent(inputs => inputs.Select(c => new ContactSummary {Summary = c.Name.Substring(0, 1)})).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WithoutInitializing().ExpectNoEvents().ThenReplace(new[] {Bubsy, Phil}, new[] {Rick, Paul, Tim}).ExpectNoEvents().AndExpectFinalCountOf(6);
+        }
+
+        [Test]
+        public void SelectIteratorReplaceMultipleNonExistingItemsNoProjectionAfterInitialize()
+        {
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select()).AndLinqEquivalent(inputs => inputs).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WhenLoaded().ExpectNoEvents().ThenReplace(new[] {Bubsy, Phil}, new[] {Rick, Paul, Jake}).ExpectEvent(Add.WithNewItems(Rick, Paul, Jake).WithNewIndex(3)).AndExpectFinalCountOf(6);
+        }
+
+        [Test]
+        public void SelectIteratorReplaceMultipleNonExistingItemsNoProjectionBeforeInitialize()
+        {
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select()).AndLinqEquivalent(inputs => inputs).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WithoutInitializing().ExpectNoEvents().ThenReplace(new[] {Bubsy, Phil}, new[] {Rick, Paul, Tim}).ExpectNoEvents().AndExpectFinalCountOf(6);
+        }
+
+        [Test]
+        public void SelectIteratorReplaceMultiplePartlyExistingItemsAnonymousProjectionAfterInitialize()
+        {
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new {Summary = c.Name.Substring(0, 1)})).AndLinqEquivalent(inputs => inputs.Select(c => new {Summary = c.Name.Substring(0, 1)})).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WhenLoaded().ExpectNoEvents().ThenReplace(new[] {Tom, Phil}, new[] {Rick, Paul}).ExpectEvent(Replace.WithOldItemCount(1).WithNewItemCount(1).WithNewIndex(1)).ExpectEvent(Add.WithNewItemCount(1).WithNewIndex(3)).AndExpectFinalCountOf(4);
+        }
+
+        [Test]
+        public void SelectIteratorReplaceMultiplePartlyExistingItemsAnonymousProjectionBeforeInitialize()
+        {
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new {Summary = c.Name.Substring(0, 1)})).AndLinqEquivalent(inputs => inputs.Select(c => new {Summary = c.Name.Substring(0, 1)})).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WithoutInitializing().ExpectNoEvents().ThenReplace(new[] {Tom, Phil}, new[] {Rick, Paul}).ExpectNoEvents().AndExpectFinalCountOf(4);
+        }
+
+        [Test]
+        public void SelectIteratorReplaceMultiplePartlyExistingItemsKnownProjectionAfterInitialize()
+        {
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new ContactSummary {Summary = c.Name.Substring(0, 1)})).AndLinqEquivalent(inputs => inputs.Select(c => new ContactSummary {Summary = c.Name.Substring(0, 1)})).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WhenLoaded().ExpectNoEvents().ThenReplace(new[] {Tom, Phil}, new[] {Rick, Paul}).ExpectEvent(Replace.WithOldItemCount(1).WithNewItemCount(1).WithOldIndex(1)).ExpectEvent(Add.WithNewItemCount(1).WithNewIndex(3)).AndExpectFinalCountOf(4);
+        }
+
+        [Test]
+        public void SelectIteratorReplaceMultiplePartlyExistingItemsKnownProjectionBeforeInitialize()
+        {
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new ContactSummary {Summary = c.Name.Substring(0, 1)})).AndLinqEquivalent(inputs => inputs.Select(c => new ContactSummary {Summary = c.Name.Substring(0, 1)})).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WithoutInitializing().ExpectNoEvents().ThenReplace(new[] {Tom, Phil}, new[] {Rick, Paul}).ExpectNoEvents().AndExpectFinalCountOf(4);
+        }
+
+        [Test]
+        public void SelectIteratorReplaceMultiplePartlyExistingItemsNoProjectionAfterInitialize()
+        {
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select()).AndLinqEquivalent(inputs => inputs).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WhenLoaded().ExpectNoEvents().ThenReplace(new[] {Tom, Phil}, new[] {Rick, Paul}).ExpectEvent(Replace.WithOldItems(Tom).WithNewItems(Rick).WithOldIndex(1)).ExpectEvent(Add.WithNewItems(Paul).WithNewIndex(3)).AndExpectFinalCountOf(4);
+        }
+
+        [Test]
+        public void SelectIteratorReplaceMultiplePartlyExistingItemsNoProjectionBeforeInitialize()
+        {
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select()).AndLinqEquivalent(inputs => inputs).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WithoutInitializing().ExpectNoEvents().ThenReplace(new[] {Tom, Phil}, new[] {Rick, Paul}).ExpectNoEvents().AndExpectFinalCountOf(4);
+        }
+
+        [Test]
+        public void SelectIteratorReplaceMultiplePartlyExistingItemsWithLessAnonymousProjectionAfterInitialize()
+        {
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new {Summary = c.Name.Substring(0, 1)})).AndLinqEquivalent(inputs => inputs.Select(c => new {Summary = c.Name.Substring(0, 1)})).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WhenLoaded().ExpectNoEvents().ThenReplace(new[] {Tom, Phil, Ryan}, new[] {Rick, Paul}).ExpectEvent(Replace.WithOldItemCount(1).WithNewItemCount(1).WithNewIndex(1)).ExpectEvent(Add.WithNewItemCount(1).WithNewIndex(3)).AndExpectFinalCountOf(4);
+        }
+
+        [Test]
+        public void SelectIteratorReplaceMultiplePartlyExistingItemsWithLessAnonymousProjectionBeforeInitialize()
+        {
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new {Summary = c.Name.Substring(0, 1)})).AndLinqEquivalent(inputs => inputs.Select(c => new {Summary = c.Name.Substring(0, 1)})).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WithoutInitializing().ExpectNoEvents().ThenReplace(new[] {Tom, Phil, Ryan}, new[] {Rick, Paul}).ExpectNoEvents().AndExpectFinalCountOf(4);
+        }
+
+        [Test]
+        public void SelectIteratorReplaceMultiplePartlyExistingItemsWithLessKnownProjectionAfterInitialize()
+        {
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new ContactSummary {Summary = c.Name.Substring(0, 1)})).AndLinqEquivalent(inputs => inputs.Select(c => new ContactSummary {Summary = c.Name.Substring(0, 1)})).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WhenLoaded().ExpectNoEvents().ThenReplace(new[] {Tom, Phil, Ryan}, new[] {Rick, Paul}).ExpectEvent(Replace.WithOldItemCount(1).WithNewItemCount(1).WithOldIndex(1)).ExpectEvent(Add.WithNewItemCount(1).WithNewIndex(3)).AndExpectFinalCountOf(4);
+        }
+
+        [Test]
+        public void SelectIteratorReplaceMultiplePartlyExistingItemsWithLessKnownProjectionBeforeInitialize()
+        {
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new ContactSummary {Summary = c.Name.Substring(0, 1)})).AndLinqEquivalent(inputs => inputs.Select(c => new ContactSummary {Summary = c.Name.Substring(0, 1)})).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WithoutInitializing().ExpectNoEvents().ThenReplace(new[] {Tom, Phil, Ryan}, new[] {Rick, Paul}).ExpectNoEvents().AndExpectFinalCountOf(4);
+        }
+
+        [Test]
+        public void SelectIteratorReplaceMultiplePartlyExistingItemsWithLessNoProjectionAfterInitialize()
+        {
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select()).AndLinqEquivalent(inputs => inputs).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WhenLoaded().ExpectNoEvents().ThenReplace(new[] {Tom, Phil, Ryan}, new[] {Rick, Paul}).ExpectEvent(Replace.WithOldItems(Tom).WithNewItems(Rick).WithOldIndex(1)).ExpectEvent(Add.WithNewItems(Paul).WithNewIndex(3)).AndExpectFinalCountOf(4);
+        }
+
+        [Test]
+        public void SelectIteratorReplaceMultiplePartlyExistingItemsWithLessNoProjectionBeforeInitialize()
+        {
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select()).AndLinqEquivalent(inputs => inputs).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WithoutInitializing().ExpectNoEvents().ThenReplace(new[] {Tom, Phil, Ryan}, new[] {Rick, Paul}).ExpectNoEvents().AndExpectFinalCountOf(4);
+        }
+
+        [Test]
+        public void SelectIteratorReplaceMultiplePartlyExistingItemsWithMoreAnonymousProjectionAfterInitialize()
+        {
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new {Summary = c.Name.Substring(0, 1)})).AndLinqEquivalent(inputs => inputs.Select(c => new {Summary = c.Name.Substring(0, 1)})).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WhenLoaded().ExpectNoEvents().ThenReplace(new[] {Tom, Phil}, new[] {Rick, Paul, Jake}).ExpectEvent(Replace.WithOldItemCount(1).WithNewItemCount(1).WithNewIndex(1)).ExpectEvent(Add.WithNewItemCount(2).WithNewIndex(3)).AndExpectFinalCountOf(5);
+        }
+
+        [Test]
+        public void SelectIteratorReplaceMultiplePartlyExistingItemsWithMoreAnonymousProjectionBeforeInitialize()
+        {
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new {Summary = c.Name.Substring(0, 1)})).AndLinqEquivalent(inputs => inputs.Select(c => new {Summary = c.Name.Substring(0, 1)})).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WithoutInitializing().ExpectNoEvents().ThenReplace(new[] {Tom, Phil}, new[] {Rick, Paul, Tim}).ExpectNoEvents().AndExpectFinalCountOf(5);
+        }
+
+        [Test]
+        public void SelectIteratorReplaceMultiplePartlyExistingItemsWithMoreKnownProjectionAfterInitialize()
+        {
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new ContactSummary {Summary = c.Name.Substring(0, 1)})).AndLinqEquivalent(inputs => inputs.Select(c => new ContactSummary {Summary = c.Name.Substring(0, 1)})).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WhenLoaded().ExpectNoEvents().ThenReplace(new[] {Tom, Phil}, new[] {Rick, Paul, Jake}).ExpectEvent(Replace.WithOldItemCount(1).WithNewItemCount(1).WithOldIndex(1)).ExpectEvent(Add.WithNewItemCount(2).WithNewIndex(3)).AndExpectFinalCountOf(5);
+        }
+
+        [Test]
+        public void SelectIteratorReplaceMultiplePartlyExistingItemsWithMoreKnownProjectionBeforeInitialize()
+        {
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new ContactSummary {Summary = c.Name.Substring(0, 1)})).AndLinqEquivalent(inputs => inputs.Select(c => new ContactSummary {Summary = c.Name.Substring(0, 1)})).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WithoutInitializing().ExpectNoEvents().ThenReplace(new[] {Tom, Phil}, new[] {Rick, Paul, Tim}).ExpectNoEvents().AndExpectFinalCountOf(5);
+        }
+
+        [Test]
+        public void SelectIteratorReplaceMultiplePartlyExistingItemsWithMoreNoProjectionAfterInitialize()
+        {
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select()).AndLinqEquivalent(inputs => inputs).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WhenLoaded().ExpectNoEvents().ThenReplace(new[] {Tom, Phil}, new[] {Rick, Paul, Jake}).ExpectEvent(Replace.WithOldItems(Tom).WithNewItems(Rick).WithOldIndex(1)).ExpectEvent(Add.WithNewItems(Paul, Jake).WithNewIndex(3)).AndExpectFinalCountOf(5);
+        }
+
+        [Test]
+        public void SelectIteratorReplaceMultiplePartlyExistingItemsWithMoreNoProjectionBeforeInitialize()
+        {
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select()).AndLinqEquivalent(inputs => inputs).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WithoutInitializing().ExpectNoEvents().ThenReplace(new[] {Tom, Phil}, new[] {Rick, Paul, Tim}).ExpectNoEvents().AndExpectFinalCountOf(5);
+        }
+
+        [Test]
+        public void SelectIteratorReplaceSingleExistingItemAnonymousProjectionAfterInitialize()
+        {
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new {Summary = c.Name.ToLower()})).AndLinqEquivalent(inputs => inputs.Select(c => new {Summary = c.Name.ToLower()})).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WhenLoaded().ExpectNoEvents().ThenReplace(Tom, Harry).ExpectEvent(Replace.WithOldItemCount(1).WithNewItemCount(1).WithOldIndex(1)).AndExpectFinalCountOf(3);
+        }
+
+        [Test]
+        public void SelectIteratorReplaceSingleExistingItemAnonymousProjectionBeforeInitialize()
+        {
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new {Summary = c.Name.ToLower()})).AndLinqEquivalent(inputs => inputs.Select(c => new {Summary = c.Name.ToLower()})).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WithoutInitializing().ExpectNoEvents().ThenReplace(Tom, Harry).ExpectNoEvents().AndExpectFinalCountOf(3);
+        }
+
+        [Test]
+        public void SelectIteratorReplaceSingleExistingItemKnownProjectionAfterInitialize()
+        {
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new ContactSummary {Summary = c.Name.ToLower()})).AndLinqEquivalent(inputs => inputs.Select(c => new ContactSummary {Summary = c.Name.ToLower()})).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WhenLoaded().ExpectNoEvents().ThenReplace(Tom, Harry).ExpectEvent(Replace.WithOldItemCount(1).WithNewItemCount(1).WithOldIndex(1)).AndExpectFinalCountOf(3);
+        }
+
+        [Test]
+        public void SelectIteratorReplaceSingleExistingItemKnownProjectionBeforeInitialize()
+        {
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new ContactSummary {Summary = c.Name.ToLower()})).AndLinqEquivalent(inputs => inputs.Select(c => new ContactSummary {Summary = c.Name.ToLower()})).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WithoutInitializing().ExpectNoEvents().ThenReplace(Tom, Harry).ExpectNoEvents().AndExpectFinalCountOf(3);
         }
 
         [Test]
         public void SelectIteratorReplaceSingleExistingItemNoProjectionAfterInitialize()
         {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select())
-                .AndLinqEquivalent(inputs => inputs)
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WhenLoaded().ExpectNoEvents()
-                .ThenReplace(Tom, Harry).ExpectEvent(Replace.WithOldItems(Tom).WithNewItems(Harry).WithOldIndex(1))
-                .AndExpectFinalCountOf(3);
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select()).AndLinqEquivalent(inputs => inputs).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WhenLoaded().ExpectNoEvents().ThenReplace(Tom, Harry).ExpectEvent(Replace.WithOldItems(Tom).WithNewItems(Harry).WithOldIndex(1)).AndExpectFinalCountOf(3);
         }
 
         [Test]
-        public void SelectIteratorReplaceSingleNonExistingItemNoProjectionBeforeInitialize()
+        public void SelectIteratorReplaceSingleExistingItemNoProjectionBeforeInitialize()
         {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select())
-                .AndLinqEquivalent(inputs => inputs)
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WithoutInitializing().ExpectNoEvents()
-                .ThenReplace(Rick, Harry).ExpectNoEvents()
-                .AndExpectFinalCountOf(4);
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select()).AndLinqEquivalent(inputs => inputs).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WithoutInitializing().ExpectNoEvents().ThenReplace(Tom, Harry).ExpectNoEvents().AndExpectFinalCountOf(3);
+        }
+
+        [Test]
+        public void SelectIteratorReplaceSingleNonExistingItemAnonymousProjectionAfterInitialize()
+        {
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new {Summary = c.Name.ToLower()})).AndLinqEquivalent(inputs => inputs.Select(c => new {Summary = c.Name.ToLower()})).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WhenLoaded().ExpectNoEvents().ThenReplace(Rick, Harry).ExpectEvent(Add.WithNewItemCount(1).WithNewIndex(3)).AndExpectFinalCountOf(4);
+        }
+
+        [Test]
+        public void SelectIteratorReplaceSingleNonExistingItemAnonymousProjectionBeforeInitialize()
+        {
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new {Summary = c.Name.ToLower()})).AndLinqEquivalent(inputs => inputs.Select(c => new {Summary = c.Name.ToLower()})).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WithoutInitializing().ExpectNoEvents().ThenReplace(Rick, Harry).ExpectNoEvents().AndExpectFinalCountOf(4);
+        }
+
+        [Test]
+        public void SelectIteratorReplaceSingleNonExistingItemKnownProjectionAfterInitialize()
+        {
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new ContactSummary {Summary = c.Name.ToLower()})).AndLinqEquivalent(inputs => inputs.Select(c => new ContactSummary {Summary = c.Name.ToLower()})).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WhenLoaded().ExpectNoEvents().ThenReplace(Rick, Harry).ExpectEvent(Add.WithNewItemCount(1).WithNewIndex(3)).AndExpectFinalCountOf(4);
+        }
+
+        [Test]
+        public void SelectIteratorReplaceSingleNonExistingItemKnownProjectionBeforeInitialize()
+        {
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new ContactSummary {Summary = c.Name.ToLower()})).AndLinqEquivalent(inputs => inputs.Select(c => new ContactSummary {Summary = c.Name.ToLower()})).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WithoutInitializing().ExpectNoEvents().ThenReplace(Rick, Harry).ExpectNoEvents().AndExpectFinalCountOf(4);
         }
 
         [Test]
@@ -598,555 +561,13 @@ namespace Bindable.Linq.Tests.Behaviour.Iterators
         {
             // Special attention: since the original item didn't exist, it can't be replaced. However, 
             // the new item should be added instead
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select())
-                .AndLinqEquivalent(inputs => inputs)
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WhenLoaded().ExpectNoEvents()
-                .ThenReplace(Rick, Harry).ExpectEvent(Add.WithNewItems(Harry).WithNewIndex(3))
-                .AndExpectFinalCountOf(4);
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select()).AndLinqEquivalent(inputs => inputs).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WhenLoaded().ExpectNoEvents().ThenReplace(Rick, Harry).ExpectEvent(Add.WithNewItems(Harry).WithNewIndex(3)).AndExpectFinalCountOf(4);
         }
 
         [Test]
-        public void SelectIteratorReplaceSingleExistingItemKnownProjectionBeforeInitialize()
+        public void SelectIteratorReplaceSingleNonExistingItemNoProjectionBeforeInitialize()
         {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new ContactSummary() { Summary = c.Name.ToLower() }))
-                .AndLinqEquivalent(inputs => inputs.Select(c => new ContactSummary() { Summary = c.Name.ToLower() }))
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WithoutInitializing().ExpectNoEvents()
-                .ThenReplace(Tom, Harry).ExpectNoEvents()
-                .AndExpectFinalCountOf(3);
-        }
-
-        [Test]
-        public void SelectIteratorReplaceSingleExistingItemKnownProjectionAfterInitialize()
-        {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new ContactSummary() { Summary = c.Name.ToLower() }))
-                .AndLinqEquivalent(inputs => inputs.Select(c => new ContactSummary() { Summary = c.Name.ToLower() }))
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WhenLoaded().ExpectNoEvents()
-                .ThenReplace(Tom, Harry).ExpectEvent(Replace.WithOldItemCount(1).WithNewItemCount(1).WithOldIndex(1))
-                .AndExpectFinalCountOf(3);
-        }
-
-        [Test]
-        public void SelectIteratorReplaceSingleNonExistingItemKnownProjectionBeforeInitialize()
-        {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new ContactSummary() { Summary = c.Name.ToLower() }))
-                .AndLinqEquivalent(inputs => inputs.Select(c => new ContactSummary() { Summary = c.Name.ToLower() }))
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WithoutInitializing().ExpectNoEvents()
-                .ThenReplace(Rick, Harry).ExpectNoEvents()
-                .AndExpectFinalCountOf(4);
-        }
-
-        [Test]
-        public void SelectIteratorReplaceSingleNonExistingItemKnownProjectionAfterInitialize()
-        {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new ContactSummary() { Summary = c.Name.ToLower() }))
-                .AndLinqEquivalent(inputs => inputs.Select(c => new ContactSummary() { Summary = c.Name.ToLower() }))
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WhenLoaded().ExpectNoEvents()
-                .ThenReplace(Rick, Harry).ExpectEvent(Add.WithNewItemCount(1).WithNewIndex(3))
-                .AndExpectFinalCountOf(4);
-        }
-
-
-
-        [Test]
-        public void SelectIteratorReplaceSingleExistingItemAnonymousProjectionBeforeInitialize()
-        {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new { Summary = c.Name.ToLower() }))
-                .AndLinqEquivalent(inputs => inputs.Select(c => new { Summary = c.Name.ToLower() }))
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WithoutInitializing().ExpectNoEvents()
-                .ThenReplace(Tom, Harry).ExpectNoEvents()
-                .AndExpectFinalCountOf(3);
-        }
-
-        [Test]
-        public void SelectIteratorReplaceSingleExistingItemAnonymousProjectionAfterInitialize()
-        {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new { Summary = c.Name.ToLower() }))
-                .AndLinqEquivalent(inputs => inputs.Select(c => new { Summary = c.Name.ToLower() }))
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WhenLoaded().ExpectNoEvents()
-                .ThenReplace(Tom, Harry).ExpectEvent(Replace.WithOldItemCount(1).WithNewItemCount(1).WithOldIndex(1))
-                .AndExpectFinalCountOf(3);
-        }
-
-        [Test]
-        public void SelectIteratorReplaceSingleNonExistingItemAnonymousProjectionBeforeInitialize()
-        {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new { Summary = c.Name.ToLower() }))
-                .AndLinqEquivalent(inputs => inputs.Select(c => new { Summary = c.Name.ToLower() }))
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WithoutInitializing().ExpectNoEvents()
-                .ThenReplace(Rick, Harry).ExpectNoEvents()
-                .AndExpectFinalCountOf(4);
-        }
-
-        [Test]
-        public void SelectIteratorReplaceSingleNonExistingItemAnonymousProjectionAfterInitialize()
-        {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new { Summary = c.Name.ToLower() }))
-                .AndLinqEquivalent(inputs => inputs.Select(c => new { Summary = c.Name.ToLower() }))
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WhenLoaded().ExpectNoEvents()
-                .ThenReplace(Rick, Harry).ExpectEvent(Add.WithNewItemCount(1).WithNewIndex(3))
-                .AndExpectFinalCountOf(4);
-        }
-
-        [Test]
-        public void SelectIteratorReplaceMultipleExistingItemsNoProjectionBeforeInitialize()
-        {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select())
-                .AndLinqEquivalent(inputs => inputs)
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WithoutInitializing().ExpectNoEvents()
-                .ThenReplace(new Contact[] { Tom, Jack }, new Contact[] { Rick, Paul }).ExpectNoEvents()
-                .AndExpectFinalCountOf(3);
-        }
-
-        [Test]
-        public void SelectIteratorReplaceMultipleExistingItemsNoProjectionAfterInitialize()
-        {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select())
-                .AndLinqEquivalent(inputs => inputs)
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WhenLoaded().ExpectNoEvents()
-                .ThenReplace(new Contact[] { Tom, Jack }, new Contact[] { Rick, Paul }).ExpectEvent(Replace.WithOldItems(Tom, Jack).WithNewItems(Rick, Paul).WithOldIndex(1))
-                .AndExpectFinalCountOf(3);
-        }
-
-        [Test]
-        public void SelectIteratorReplaceMultiplePartlyExistingItemsNoProjectionBeforeInitialize()
-        {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select())
-                .AndLinqEquivalent(inputs => inputs)
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WithoutInitializing().ExpectNoEvents()
-                .ThenReplace(new Contact[] { Tom, Phil }, new Contact[] { Rick, Paul }).ExpectNoEvents()
-                .AndExpectFinalCountOf(4);
-        }
-
-        [Test]
-        public void SelectIteratorReplaceMultiplePartlyExistingItemsNoProjectionAfterInitialize()
-        {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select())
-                .AndLinqEquivalent(inputs => inputs)
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WhenLoaded().ExpectNoEvents()
-                .ThenReplace(new Contact[] { Tom, Phil }, new Contact[] { Rick, Paul })
-                .ExpectEvent(Replace.WithOldItems(Tom).WithNewItems(Rick).WithOldIndex(1))
-                .ExpectEvent(Add.WithNewItems(Paul).WithNewIndex(3))
-                .AndExpectFinalCountOf(4);
-        }
-
-        [Test]
-        public void SelectIteratorReplaceMultiplePartlyExistingItemsWithLessNoProjectionBeforeInitialize()
-        {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select())
-                .AndLinqEquivalent(inputs => inputs)
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WithoutInitializing().ExpectNoEvents()
-                .ThenReplace(new Contact[] { Tom, Phil, Ryan }, new Contact[] { Rick, Paul }).ExpectNoEvents()
-                .AndExpectFinalCountOf(4);
-        }
-
-        [Test]
-        public void SelectIteratorReplaceMultiplePartlyExistingItemsWithLessNoProjectionAfterInitialize()
-        {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select())
-                .AndLinqEquivalent(inputs => inputs)
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WhenLoaded().ExpectNoEvents()
-                .ThenReplace(new Contact[] { Tom, Phil, Ryan }, new Contact[] { Rick, Paul })
-                .ExpectEvent(Replace.WithOldItems(Tom).WithNewItems(Rick).WithOldIndex(1))
-                .ExpectEvent(Add.WithNewItems(Paul).WithNewIndex(3))
-                .AndExpectFinalCountOf(4);
-        }
-
-        [Test]
-        public void SelectIteratorReplaceMultiplePartlyExistingItemsWithMoreNoProjectionBeforeInitialize()
-        {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select())
-                .AndLinqEquivalent(inputs => inputs)
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WithoutInitializing().ExpectNoEvents()
-                .ThenReplace(new Contact[] { Tom, Phil }, new Contact[] { Rick, Paul, Tim }).ExpectNoEvents()
-                .AndExpectFinalCountOf(5);
-        }
-
-        [Test]
-        public void SelectIteratorReplaceMultiplePartlyExistingItemsWithMoreNoProjectionAfterInitialize()
-        {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select())
-                .AndLinqEquivalent(inputs => inputs)
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WhenLoaded().ExpectNoEvents()
-                .ThenReplace(new Contact[] { Tom, Phil }, new Contact[] { Rick, Paul, Jake })
-                .ExpectEvent(Replace.WithOldItems(Tom).WithNewItems(Rick).WithOldIndex(1))
-                .ExpectEvent(Add.WithNewItems(Paul, Jake).WithNewIndex(3))
-                .AndExpectFinalCountOf(5);
-        }
-
-        [Test]
-        public void SelectIteratorReplaceMultipleNonExistingItemsNoProjectionBeforeInitialize()
-        {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select())
-                .AndLinqEquivalent(inputs => inputs)
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WithoutInitializing().ExpectNoEvents()
-                .ThenReplace(new Contact[] { Bubsy, Phil }, new Contact[] { Rick, Paul, Tim }).ExpectNoEvents()
-                .AndExpectFinalCountOf(6);
-        }
-
-        [Test]
-        public void SelectIteratorReplaceMultipleNonExistingItemsNoProjectionAfterInitialize()
-        {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select())
-                .AndLinqEquivalent(inputs => inputs)
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WhenLoaded().ExpectNoEvents()
-                .ThenReplace(new Contact[] { Bubsy, Phil }, new Contact[] { Rick, Paul, Jake })
-                .ExpectEvent(Add.WithNewItems(Rick, Paul, Jake).WithNewIndex(3))
-                .AndExpectFinalCountOf(6);
-        }
-
-        [Test]
-        public void SelectIteratorReplaceMultipleExistingItemsKnownProjectionBeforeInitialize()
-        {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new ContactSummary() { Summary = c.Name.Substring(0, 1) }))
-                .AndLinqEquivalent(inputs => inputs.Select(c => new ContactSummary() { Summary = c.Name.Substring(0, 1) }))
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WithoutInitializing().ExpectNoEvents()
-                .ThenReplace(new Contact[] { Tom, Jack }, new Contact[] { Rick, Paul }).ExpectNoEvents()
-                .AndExpectFinalCountOf(3);
-        }
-
-        [Test]
-        public void SelectIteratorReplaceMultipleExistingItemsKnownProjectionAfterInitialize()
-        {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new ContactSummary() { Summary = c.Name.Substring(0, 1) }))
-                .AndLinqEquivalent(inputs => inputs.Select(c => new ContactSummary() { Summary = c.Name.Substring(0, 1) }))
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WhenLoaded().ExpectNoEvents()
-                .ThenReplace(new Contact[] { Tom, Jack }, new Contact[] { Rick, Paul })
-                .ExpectEvent(Replace.WithOldItemCount(2).WithNewItemCount(2).WithOldIndex(1))
-                .AndExpectFinalCountOf(3);
-        }
-
-        [Test]
-        public void SelectIteratorReplaceMultiplePartlyExistingItemsKnownProjectionBeforeInitialize()
-        {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new ContactSummary() { Summary = c.Name.Substring(0, 1) }))
-                .AndLinqEquivalent(inputs => inputs.Select(c => new ContactSummary() { Summary = c.Name.Substring(0, 1) }))
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WithoutInitializing().ExpectNoEvents()
-                .ThenReplace(new Contact[] { Tom, Phil }, new Contact[] { Rick, Paul }).ExpectNoEvents()
-                .AndExpectFinalCountOf(4);
-        }
-
-        [Test]
-        public void SelectIteratorReplaceMultiplePartlyExistingItemsKnownProjectionAfterInitialize()
-        {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new ContactSummary() { Summary = c.Name.Substring(0, 1) }))
-                .AndLinqEquivalent(inputs => inputs.Select(c => new ContactSummary() { Summary = c.Name.Substring(0, 1) }))
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WhenLoaded().ExpectNoEvents()
-                .ThenReplace(new Contact[] { Tom, Phil }, new Contact[] { Rick, Paul })
-                .ExpectEvent(Replace.WithOldItemCount(1).WithNewItemCount(1).WithOldIndex(1))
-                .ExpectEvent(Add.WithNewItemCount(1).WithNewIndex(3))
-                .AndExpectFinalCountOf(4);
-        }
-
-        [Test]
-        public void SelectIteratorReplaceMultiplePartlyExistingItemsWithLessKnownProjectionBeforeInitialize()
-        {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new ContactSummary() { Summary = c.Name.Substring(0, 1) }))
-                .AndLinqEquivalent(inputs => inputs.Select(c => new ContactSummary() { Summary = c.Name.Substring(0, 1) }))
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WithoutInitializing().ExpectNoEvents()
-                .ThenReplace(new Contact[] { Tom, Phil, Ryan }, new Contact[] { Rick, Paul }).ExpectNoEvents()
-                .AndExpectFinalCountOf(4);
-        }
-
-        [Test]
-        public void SelectIteratorReplaceMultiplePartlyExistingItemsWithLessKnownProjectionAfterInitialize()
-        {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new ContactSummary() { Summary = c.Name.Substring(0, 1) }))
-                .AndLinqEquivalent(inputs => inputs.Select(c => new ContactSummary() { Summary = c.Name.Substring(0, 1) }))
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WhenLoaded().ExpectNoEvents()
-                .ThenReplace(new Contact[] { Tom, Phil, Ryan }, new Contact[] { Rick, Paul })
-                .ExpectEvent(Replace.WithOldItemCount(1).WithNewItemCount(1).WithOldIndex(1))
-                .ExpectEvent(Add.WithNewItemCount(1).WithNewIndex(3))
-                .AndExpectFinalCountOf(4);
-        }
-
-        [Test]
-        public void SelectIteratorReplaceMultiplePartlyExistingItemsWithMoreKnownProjectionBeforeInitialize()
-        {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new ContactSummary() { Summary = c.Name.Substring(0, 1) }))
-                .AndLinqEquivalent(inputs => inputs.Select(c => new ContactSummary() { Summary = c.Name.Substring(0, 1) }))
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WithoutInitializing().ExpectNoEvents()
-                .ThenReplace(new Contact[] { Tom, Phil }, new Contact[] { Rick, Paul, Tim }).ExpectNoEvents()
-                .AndExpectFinalCountOf(5);
-        }
-
-        [Test]
-        public void SelectIteratorReplaceMultiplePartlyExistingItemsWithMoreKnownProjectionAfterInitialize()
-        {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new ContactSummary() { Summary = c.Name.Substring(0, 1) }))
-                .AndLinqEquivalent(inputs => inputs.Select(c => new ContactSummary() { Summary = c.Name.Substring(0, 1) }))
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WhenLoaded().ExpectNoEvents()
-                .ThenReplace(new Contact[] { Tom, Phil }, new Contact[] { Rick, Paul, Jake })
-                .ExpectEvent(Replace.WithOldItemCount(1).WithNewItemCount(1).WithOldIndex(1))
-                .ExpectEvent(Add.WithNewItemCount(2).WithNewIndex(3))
-                .AndExpectFinalCountOf(5);
-        }
-
-        [Test]
-        public void SelectIteratorReplaceMultipleNonExistingItemsKnownProjectionBeforeInitialize()
-        {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new ContactSummary() { Summary = c.Name.Substring(0, 1) }))
-                .AndLinqEquivalent(inputs => inputs.Select(c => new ContactSummary() { Summary = c.Name.Substring(0, 1) }))
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WithoutInitializing().ExpectNoEvents()
-                .ThenReplace(new Contact[] { Bubsy, Phil }, new Contact[] { Rick, Paul, Tim }).ExpectNoEvents()
-                .AndExpectFinalCountOf(6);
-        }
-
-        [Test]
-        public void SelectIteratorReplaceMultipleNonExistingItemsKnownProjectionAfterInitialize()
-        {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new ContactSummary() { Summary = c.Name.Substring(0, 1) }))
-                .AndLinqEquivalent(inputs => inputs.Select(c => new ContactSummary() { Summary = c.Name.Substring(0, 1) }))
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WhenLoaded().ExpectNoEvents()
-                .ThenReplace(new Contact[] { Bubsy, Phil }, new Contact[] { Rick, Paul, Jake })
-                .ExpectEvent(Add.WithNewItemCount(3).WithNewIndex(3))
-                .AndExpectFinalCountOf(6);
-        }
-
-        [Test]
-        public void SelectIteratorReplaceMultipleExistingItemsAnonymousProjectionBeforeInitialize()
-        {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new { Summary = c.Name.Substring(0, 1) }))
-                .AndLinqEquivalent(inputs => inputs.Select(c => new { Summary = c.Name.Substring(0, 1) }))
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WithoutInitializing().ExpectNoEvents()
-                .ThenReplace(new Contact[] { Tom, Jack }, new Contact[] { Rick, Paul }).ExpectNoEvents()
-                .AndExpectFinalCountOf(3);
-        }
-
-        [Test]
-        public void SelectIteratorReplaceMultipleExistingItemsAnonymousProjectionAfterInitialize()
-        {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new { Summary = c.Name.Substring(0, 1) }))
-                .AndLinqEquivalent(inputs => inputs.Select(c => new { Summary = c.Name.Substring(0, 1) }))
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WhenLoaded().ExpectNoEvents()
-                .ThenReplace(new Contact[] { Tom, Jack }, new Contact[] { Rick, Paul })
-                .ExpectEvent(Replace.WithOldItemCount(2).WithNewItemCount(2).WithNewIndex(1))
-                .AndExpectFinalCountOf(3);
-        }
-
-        [Test]
-        public void SelectIteratorReplaceMultiplePartlyExistingItemsAnonymousProjectionBeforeInitialize()
-        {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new { Summary = c.Name.Substring(0, 1) }))
-                .AndLinqEquivalent(inputs => inputs.Select(c => new { Summary = c.Name.Substring(0, 1) }))
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WithoutInitializing().ExpectNoEvents()
-                .ThenReplace(new Contact[] { Tom, Phil }, new Contact[] { Rick, Paul }).ExpectNoEvents()
-                .AndExpectFinalCountOf(4);
-        }
-
-        [Test]
-        public void SelectIteratorReplaceMultiplePartlyExistingItemsAnonymousProjectionAfterInitialize()
-        {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new { Summary = c.Name.Substring(0, 1) }))
-                .AndLinqEquivalent(inputs => inputs.Select(c => new { Summary = c.Name.Substring(0, 1) }))
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WhenLoaded().ExpectNoEvents()
-                .ThenReplace(new Contact[] { Tom, Phil }, new Contact[] { Rick, Paul })
-                .ExpectEvent(Replace.WithOldItemCount(1).WithNewItemCount(1).WithNewIndex(1))
-                .ExpectEvent(Add.WithNewItemCount(1).WithNewIndex(3))
-                .AndExpectFinalCountOf(4);
-        }
-
-        [Test]
-        public void SelectIteratorReplaceMultiplePartlyExistingItemsWithLessAnonymousProjectionBeforeInitialize()
-        {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new { Summary = c.Name.Substring(0, 1) }))
-                .AndLinqEquivalent(inputs => inputs.Select(c => new { Summary = c.Name.Substring(0, 1) }))
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WithoutInitializing().ExpectNoEvents()
-                .ThenReplace(new Contact[] { Tom, Phil, Ryan }, new Contact[] { Rick, Paul }).ExpectNoEvents()
-                .AndExpectFinalCountOf(4);
-        }
-
-        [Test]
-        public void SelectIteratorReplaceMultiplePartlyExistingItemsWithLessAnonymousProjectionAfterInitialize()
-        {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new { Summary = c.Name.Substring(0, 1) }))
-                .AndLinqEquivalent(inputs => inputs.Select(c => new { Summary = c.Name.Substring(0, 1) }))
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WhenLoaded().ExpectNoEvents()
-                .ThenReplace(new Contact[] { Tom, Phil, Ryan }, new Contact[] { Rick, Paul })
-                .ExpectEvent(Replace.WithOldItemCount(1).WithNewItemCount(1).WithNewIndex(1))
-                .ExpectEvent(Add.WithNewItemCount(1).WithNewIndex(3))
-                .AndExpectFinalCountOf(4);
-        }
-
-        [Test]
-        public void SelectIteratorReplaceMultiplePartlyExistingItemsWithMoreAnonymousProjectionBeforeInitialize()
-        {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new { Summary = c.Name.Substring(0, 1) }))
-                .AndLinqEquivalent(inputs => inputs.Select(c => new { Summary = c.Name.Substring(0, 1) }))
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WithoutInitializing().ExpectNoEvents()
-                .ThenReplace(new Contact[] { Tom, Phil }, new Contact[] { Rick, Paul, Tim }).ExpectNoEvents()
-                .AndExpectFinalCountOf(5);
-        }
-
-        [Test]
-        public void SelectIteratorReplaceMultiplePartlyExistingItemsWithMoreAnonymousProjectionAfterInitialize()
-        {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new { Summary = c.Name.Substring(0, 1) }))
-                .AndLinqEquivalent(inputs => inputs.Select(c => new { Summary = c.Name.Substring(0, 1) }))
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WhenLoaded().ExpectNoEvents()
-                .ThenReplace(new Contact[] { Tom, Phil }, new Contact[] { Rick, Paul, Jake })
-                .ExpectEvent(Replace.WithOldItemCount(1).WithNewItemCount(1).WithNewIndex(1))
-                .ExpectEvent(Add.WithNewItemCount(2).WithNewIndex(3))
-                .AndExpectFinalCountOf(5);
-        }
-
-        [Test]
-        public void SelectIteratorReplaceMultipleNonExistingItemsAnonymousProjectionBeforeInitialize()
-        {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new { Summary = c.Name.Substring(0, 1) }))
-                .AndLinqEquivalent(inputs => inputs.Select(c => new { Summary = c.Name.Substring(0, 1) }))
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WithoutInitializing().ExpectNoEvents()
-                .ThenReplace(new Contact[] { Bubsy, Phil }, new Contact[] { Rick, Paul, Tim }).ExpectNoEvents()
-                .AndExpectFinalCountOf(6);
-        }
-
-        [Test]
-        public void SelectIteratorReplaceMultipleNonExistingItemsAnonymousProjectionAfterInitialize()
-        {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new { Summary = c.Name.Substring(0, 1) }))
-                .AndLinqEquivalent(inputs => inputs.Select(c => new { Summary = c.Name.Substring(0, 1) }))
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WhenLoaded().ExpectNoEvents()
-                .ThenReplace(new Contact[] { Bubsy, Phil }, new Contact[] { Rick, Paul, Jake })
-                .ExpectEvent(Add.WithNewItemCount(3).WithNewIndex(3))
-                .AndExpectFinalCountOf(6);
-        }
-
-        [Test]
-        public void SelectIteratorMoveSingleExistingItemNoProjectionBeforeInitialize()
-        {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select())
-                .AndLinqEquivalent(inputs => inputs)
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WithoutInitializing().ExpectNoEvents()
-                .ThenMove(2, Mike).ExpectNoEvents()
-                .AndExpectFinalCountOf(3);
-        }
-
-        [Test]
-        public void SelectIteratorMoveSingleExistingItemNoProjectionAfterInitialize()
-        {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select())
-                .AndLinqEquivalent(inputs => inputs)
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WhenLoaded().ExpectNoEvents()
-                .ThenMove(2, Mike)
-                .ExpectEvent(Move.WithOldItemCount(1).WithNewIndex(2).WithOldIndex(0))
-                .AndExpectFinalCountOf(3);
-        }
-
-        [Test]
-        public void SelectIteratorMoveSingleNonExistingItemNoProjectionBeforeInitialize()
-        {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select())
-                .AndLinqEquivalent(inputs => inputs)
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WithoutInitializing().ExpectNoEvents()
-                .ThenMove(2, Gordon).ExpectNoEvents()
-                .AndExpectFinalCountOf(4);
-        }
-
-        [Test]
-        public void SelectIteratorMoveSingleNonExistingItemNoProjectionAfterInitialize()
-        {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select())
-                .AndLinqEquivalent(inputs => inputs)
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WhenLoaded().ExpectNoEvents()
-                .ThenMove(2, Gordon).ExpectEvent(Add.WithNewItemCount(1).WithNewIndex(2))
-                .AndExpectFinalCountOf(4);
-        }
-
-        [Test]
-        public void SelectIteratorMoveSingleExistingItemPastRangeNoProjectionBeforeInitialize()
-        {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select())
-                .AndLinqEquivalent(inputs => inputs)
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WithoutInitializing().ExpectNoEvents()
-                .ThenMove(12, Mike).ExpectNoEvents()
-                .AndExpectFinalCountOf(3);
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select()).AndLinqEquivalent(inputs => inputs).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WithoutInitializing().ExpectNoEvents().ThenReplace(Rick, Harry).ExpectNoEvents().AndExpectFinalCountOf(4);
         }
 
         //[Test]
@@ -1376,19 +797,6 @@ namespace Bindable.Linq.Tests.Behaviour.Iterators
         //        .ThenMove(12, Gordon).ExpectEvent(Add, 1, 3)
         //        .AndExpectFinalCountOf(4);
         //}
-
-
-
-
-
-
-
-
-
-
-
-
-
 
         //[Test]
         //public void SelectIteratorMoveMultipleExistingItemsWithinRangeNoProjectionBeforeInitialize()

@@ -72,6 +72,7 @@
     <Compile Include="TestHelpers\IteratorTestExtensions.cs" />
     <Compile Include="TestHelpers\IteratorTestState.cs" />
     <Compile Include="TestHelpers\PropertyEventCatcher.cs" />
+    <Compile Include="TestHelpers\TestDispatcher.cs" />
     <Compile Include="TestHelpers\TestFixture.cs" />
     <Compile Include="TestObjectModel\BindableObject.cs" />
     <Compile Include="TestObjectModel\Contact.cs" />
@@ -89,7 +90,6 @@
     <Compile Include="Unit\Dependencies\ExpressionAnalysis\ExpressionFlattenerTests.cs" />
     <Compile Include="Unit\Dependencies\PropertyChangeDependencyTests.cs" />
     <Compile Include="Unit\Collections\BindableCollectionTests.cs" />
-    <Compile Include="Unit\Eventing\CollectionChangePublisherTests.cs" />
     <Compile Include="Unit\Eventing\CollectionChangeRecorderTests.cs" />
     <Compile Include="Unit\Helpers\DefaultComparerTests.cs" />
     <Compile Include="Unit\Helpers\ElementActionerTests.cs" />

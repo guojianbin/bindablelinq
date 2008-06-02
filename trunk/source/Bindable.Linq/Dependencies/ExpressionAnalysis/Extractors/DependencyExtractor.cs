@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using Bindable.Linq.Dependencies.ExpressionAnalysis;
+using System;
 
 namespace Bindable.Linq.Dependencies.ExpressionAnalysis.Extractors
 {
+    using System.Collections.Generic;
+    using System.Linq.Expressions;
+
     /// <summary>
     /// Serves as a base class for dependency extractors that create dependencies against properties. 
     /// These dependencies have one thing in common: They only look for MemberAccess expressions, and 
@@ -14,13 +12,7 @@ namespace Bindable.Linq.Dependencies.ExpressionAnalysis.Extractors
     /// </summary>
     internal abstract class DependencyExtractor : IDependencyExtractor
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DependencyExtractor"/> class.
-        /// </summary>
-        protected DependencyExtractor()
-        {
-        }
-
+        #region IDependencyExtractor Members
         /// <summary>
         /// Extracts any dependencies within the specified LINQ expression.
         /// </summary>
@@ -28,10 +20,10 @@ namespace Bindable.Linq.Dependencies.ExpressionAnalysis.Extractors
         /// <returns></returns>
         public IEnumerable<IDependencyDefinition> Extract(Expression expression)
         {
-            List<IDependencyDefinition> results = new List<IDependencyDefinition>();
+            var results = new List<IDependencyDefinition>();
 
             // Find the root member access expressions
-            ExpressionFlattener analyser = new ExpressionFlattener(expression, ExpressionType.MemberAccess);
+            var analyser = new ExpressionFlattener(expression, ExpressionType.MemberAccess);
             IEnumerable<Expression> memberExpressions = analyser.Expressions;
 
             // Turn each one into the appropriate dependency
@@ -43,7 +35,7 @@ namespace Bindable.Linq.Dependencies.ExpressionAnalysis.Extractors
 
                 if (childExpression is MemberExpression)
                 {
-                    MemberExpression childMemberExpression = (MemberExpression) childExpression;
+                    var childMemberExpression = (MemberExpression) childExpression;
                     propertyPath = childMemberExpression.Member.Name;
                     currentExpression = childMemberExpression.Expression;
                     traverse = true;
@@ -51,7 +43,7 @@ namespace Bindable.Linq.Dependencies.ExpressionAnalysis.Extractors
                     {
                         if (currentExpression is MemberExpression)
                         {
-                            MemberExpression nextMemberExpression = (MemberExpression) currentExpression;
+                            var nextMemberExpression = (MemberExpression) currentExpression;
                             propertyPath = nextMemberExpression.Member.Name + "." + propertyPath;
                             if (nextMemberExpression.Expression != null)
                             {
@@ -78,6 +70,7 @@ namespace Bindable.Linq.Dependencies.ExpressionAnalysis.Extractors
             }
             return results;
         }
+        #endregion
 
         /// <summary>
         /// When overridden in a derived class, extracts the appropriate dependency from the root of the expression.

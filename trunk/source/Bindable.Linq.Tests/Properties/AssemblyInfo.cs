@@ -1,10 +1,9 @@
 using System;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Windows.Markup;
 
 // General
+
 [assembly: AssemblyTitle("Bindable.Linq.Tests")]
 [assembly: AssemblyDescription("Bindable LINQ is a set of LINQ extensions that enable data binding over standard LINQ queries.")]
 [assembly: AssemblyConfiguration("Debug")]
@@ -13,8 +12,10 @@ using System.Windows.Markup;
 [assembly: AssemblyCopyright("Copyright Paul Stovell 2007-2008")]
 [assembly: AssemblyCulture("")]
 // Versioning
+
 [assembly: Guid("33cd8a76-aba8-40b4-8aa1-30d00ec5d31c")]
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
 // Compatibility
+
 [assembly: ComVisible(false)]

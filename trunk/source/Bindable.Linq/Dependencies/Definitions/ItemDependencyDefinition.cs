@@ -1,31 +1,23 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Bindable.Linq;
-using Bindable.Linq.Collections;
-using Bindable.Linq.Dependencies;
-using Bindable.Linq.Dependencies.PathNavigation;
-using Bindable.Linq.Dependencies.Instances;
+using System;
 
 namespace Bindable.Linq.Dependencies.Definitions
 {
+    using Collections;
+    using Instances;
+    using PathNavigation;
+
     /// <summary>
     /// Defines a dependency on a property on an item where the item implements the INotifyPropertyChanged interface.
     /// </summary>
     public sealed class ItemDependencyDefinition : IDependencyDefinition
     {
-        private string _parameterName;
-        private string _propertyPath;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="ItemDependencyDefinition"/> class.
         /// </summary>
         /// <param name="propertyPath">The property path.</param>
         public ItemDependencyDefinition(string propertyPath)
         {
-            _propertyPath = propertyPath;
+            PropertyPath = propertyPath;
         }
 
         /// <summary>
@@ -35,30 +27,23 @@ namespace Bindable.Linq.Dependencies.Definitions
         /// <param name="parameterName">Name of the parameter.</param>
         public ItemDependencyDefinition(string propertyPath, string parameterName)
         {
-            _propertyPath = propertyPath;
-            _parameterName = parameterName;
+            PropertyPath = propertyPath;
+            ParameterName = parameterName;
         }
 
         /// <summary>
         /// Gets or sets the name of the parameter.
         /// </summary>
         /// <value>The name of the parameter.</value>
-        public string ParameterName
-        {
-            get { return _parameterName; }
-            set { _parameterName = value; }
-        }
+        public string ParameterName { get; set; }
 
         /// <summary>
         /// Gets or sets the property path.
         /// </summary>
         /// <value>The property path.</value>
-        public string PropertyPath
-        {
-            get { return _propertyPath; }
-            set { _propertyPath = value; }
-        }
-        
+        public string PropertyPath { get; set; }
+
+        #region IDependencyDefinition Members
         /// <summary>
         /// Determines whether this instance can construct dependencies for a collection.
         /// </summary>
@@ -86,7 +71,7 @@ namespace Bindable.Linq.Dependencies.Definitions
         /// <returns></returns>
         public IDependency ConstructForCollection<TElement>(IBindableCollectionInterceptor<TElement> sourceElements, IPathNavigator pathNavigator)
         {
-            return new ItemDependency<TElement>(this.PropertyPath, sourceElements, pathNavigator);
+            return new ItemDependency<TElement>(PropertyPath, sourceElements, pathNavigator);
         }
 
         /// <summary>
@@ -100,6 +85,7 @@ namespace Bindable.Linq.Dependencies.Definitions
         {
             throw new NotSupportedException();
         }
+        #endregion
 
         /// <summary>
         /// Returns a <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
@@ -109,7 +95,7 @@ namespace Bindable.Linq.Dependencies.Definitions
         /// </returns>
         public override string ToString()
         {
-            return string.Format("{0}: '{1}' on '{2}'", this.GetType().Name, this.PropertyPath, this.ParameterName);
+            return string.Format("{0}: '{1}' on '{2}'", GetType().Name, PropertyPath, ParameterName);
         }
     }
 }

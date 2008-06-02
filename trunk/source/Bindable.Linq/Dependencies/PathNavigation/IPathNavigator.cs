@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Bindable.Linq.Dependencies.PathNavigation.Tokens;
+using System;
 
 namespace Bindable.Linq.Dependencies.PathNavigation
 {
+    using Tokens;
+
     /// <summary>
     /// An interface implemented by classes which can traverse a property path.
     /// </summary>

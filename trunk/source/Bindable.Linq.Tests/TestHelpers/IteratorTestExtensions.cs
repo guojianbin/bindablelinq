@@ -1,19 +1,15 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Linq;
-using System.Text;
-using Bindable.Linq.Collections;
-using Bindable.Linq.Dependencies;
-using Bindable.Linq.Helpers;
-using Bindable.Linq.Tests.TestObjectModel;
-using NUnit.Framework;
-using System.Threading;
-using System.Diagnostics;
+using System;
 
 namespace Bindable.Linq.Tests.TestHelpers
 {
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.Collections.Specialized;
+    using System.Diagnostics;
+    using System.Threading;
+    using Collections;
+    using NUnit.Framework;
+
     /// <summary>
     /// Contains a number of extension methods used for writing unit tests against the various iterators.
     /// </summary>
@@ -24,7 +20,7 @@ namespace Bindable.Linq.Tests.TestHelpers
         /// </summary>
         public static IteratorTestState<TInput, TResult> WithSyncLinqQuery<TInput, TResult>(this IEnumerable<TInput> inputs, Func<IEnumerable<TInput>, IBindableCollection<TResult>> queryCreator)
         {
-            IteratorTestState<TInput, TResult> testState = new IteratorTestState<TInput, TResult>();
+            var testState = new IteratorTestState<TInput, TResult>();
             testState.Inputs = inputs;
             testState.SyncLinqQuery = queryCreator(testState.Inputs);
             return testState;
@@ -111,7 +107,7 @@ namespace Bindable.Linq.Tests.TestHelpers
             {
                 changeAction(testInputs);
             }
-        
+
             return testState;
         }
 
@@ -145,9 +141,7 @@ namespace Bindable.Linq.Tests.TestHelpers
             var testInputs = testState.Inputs as BindableCollection<TInput>;
             if (testInputs != null)
             {
-                testInputs.Replace(
-                    oldItem,
-                    newItem);
+                testInputs.Replace(oldItem, newItem);
             }
             return testState;
         }
@@ -161,9 +155,7 @@ namespace Bindable.Linq.Tests.TestHelpers
             var testInputs = testState.Inputs as BindableCollection<TInput>;
             if (testInputs != null)
             {
-                testInputs.ReplaceRange(
-                    oldNames,
-                    newNames);
+                testInputs.ReplaceRange(oldNames, newNames);
             }
             return testState;
         }
@@ -211,7 +203,7 @@ namespace Bindable.Linq.Tests.TestHelpers
         public static IteratorTestState<TInput, TResult> ThenRefresh<TInput, TResult>(this IteratorTestState<TInput, TResult> testState)
         {
             Trace.WriteLine("Executing step: ThenRefresh");
-            ((IBindableQuery)testState.Results).Refresh();
+            ((IBindableQuery) testState.Results).Refresh();
             return testState;
         }
 
@@ -244,6 +236,13 @@ namespace Bindable.Linq.Tests.TestHelpers
             return testState;
         }
 
+        public static IteratorTestState<TInput, TResult> ExpectGreaterOrEqual<TInput, TResult>(this IteratorTestState<TInput, TResult> testState, int actual, int expected)
+        {
+            Trace.WriteLine("Executing step: ExpectGreaterOrEqual");
+            Assert.GreaterOrEqual(actual, expected);
+            return testState;
+        }
+
         /// <summary>
         /// Asserts that no events were raised by the last action.
         /// </summary>
@@ -264,7 +263,7 @@ namespace Bindable.Linq.Tests.TestHelpers
         public static IteratorTestState<TInput, TResult> ExpectEvent<TInput, TResult>(this IteratorTestState<TInput, TResult> testState, CollectionChangeSpecification specification)
         {
             Trace.WriteLine("Executing step: Expect Event: " + specification.Description);
-            var lastEvent = GetLastEvent(specification.GroupIndex, testState);
+            NotifyCollectionChangedEventArgs lastEvent = GetLastEvent(specification.GroupIndex, testState);
             Assert.IsNotNull(lastEvent, "An event was expected at this point: {0}", specification.Description);
             specification.CompareTo(lastEvent);
             return testState;
@@ -273,7 +272,7 @@ namespace Bindable.Linq.Tests.TestHelpers
         public static IteratorTestState<TInput, TResult> ExpectNoEventsOnGroup<TInput, TResult>(this IteratorTestState<TInput, TResult> testState, int childIndex)
         {
             Trace.WriteLine("Executing step: ExpectNoEventsOnGroup: " + childIndex);
-            var lastEvent = GetLastEvent(childIndex, testState);
+            NotifyCollectionChangedEventArgs lastEvent = GetLastEvent(childIndex, testState);
             Assert.IsNull(lastEvent, "No events were expected at this point");
             return testState;
         }
@@ -330,7 +329,7 @@ namespace Bindable.Linq.Tests.TestHelpers
             int result = 0;
             if (testState.Results is IBindableQuery)
             {
-                result = ((IBindableQuery)testState.Results).CurrentCount;
+                result = ((IBindableQuery) testState.Results).CurrentCount;
             }
             return result;
         }
@@ -357,7 +356,7 @@ namespace Bindable.Linq.Tests.TestHelpers
 
             if (publisher != null)
             {
-                return testState.Events.DequeueNextEvent((INotifyCollectionChanged)publisher);
+                return testState.Events.DequeueNextEvent((INotifyCollectionChanged) publisher);
             }
             return null;
         }

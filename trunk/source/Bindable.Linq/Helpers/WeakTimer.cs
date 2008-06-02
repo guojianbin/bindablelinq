@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
+using System;
 
 namespace Bindable.Linq.Helpers
 {
+    using System.Threading;
+
     internal sealed class WeakTimer : IDisposable
     {
         private readonly WeakReference _callbackReference;
@@ -17,6 +15,14 @@ namespace Bindable.Linq.Helpers
             _pollTime = pollTime;
             _callbackReference = new WeakReference(callback, true);
         }
+
+        #region IDisposable Members
+        public void Dispose()
+        {
+            Pause();
+            _timer.Dispose();
+        }
+        #endregion
 
         public void Start()
         {
@@ -41,17 +47,11 @@ namespace Bindable.Linq.Helpers
 
         private void TimerTickCallback(object o)
         {
-            Action action = _callbackReference.Target as Action;
+            var action = _callbackReference.Target as Action;
             if (action != null)
             {
                 action();
             }
-        }
-    
-        public void  Dispose()
-        {
-            Pause();
-            _timer.Dispose();
         }
     }
 }

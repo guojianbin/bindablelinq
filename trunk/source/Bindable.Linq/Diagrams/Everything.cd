@@ -48,7 +48,7 @@
   <Comment CommentText="Rather than having each Bindable LINQ operation raise its own events, the classes will delegate to an event Publisher defined in this area. The publisher system allows events to be converted between the different event models supported by Bindable LINQ - Windows Forms' ListChanged versus WPF's CollectionChanged is an example. ">
     <Position X="63.227" Y="6.147" Height="1.787" Width="2.366" />
   </Comment>
-  <Comment CommentText="The publisher has the ability to create recorders. These allow classes such as the BindableColleciton to perform operations and record an event, but not have it raised yet. The recorder abstracts a lot of the rules around how the same kind of event can be combined into one. Once any locks have been released and it is safe to raise the events, the RaiseAll method can be used, which will send all of the events to the Publisher. ">
+  <Comment CommentText="The publisher has the ability to create transactions. These allow classes such as the BindableColleciton to perform operations and record an event, but not have it raised yet. The transaction abstracts a lot of the rules around how the same kind of event can be combined into one. Once any locks have been released and it is safe to raise the events, the RaiseAll method can be used, which will send all of the events to the Publisher. ">
     <Position X="63.221" Y="9.239" Height="2.286" Width="2.366" />
   </Comment>
   <Comment CommentText="These observers are used so that Bindable LINQ queries can easily monitor events on collections of items. They abstract the use of weak references and unwiring events when the objects are removed or disposed. Note: these classes may be removed, since their functionality is duplicated partly by dependencies and partly by the ElementActioner class. ">
@@ -141,7 +141,7 @@
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
-  <Class Name="Bindable.Linq.Eventing.CollectionChangedPublisher&lt;TElement&gt;" BaseTypeListCollapsed="true">
+  <Class Name="Bindable.Linq.Transactions.CollectionChangedPublisher&lt;TElement&gt;" BaseTypeListCollapsed="true">
     <Position X="69.25" Y="6" Width="3" />
     <Compartments>
       <Compartment Name="Fields" Collapsed="true" />
@@ -152,14 +152,14 @@
     </TypeIdentifier>
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
-  <Class Name="Bindable.Linq.Eventing.CollectionChangeRecorder&lt;TElement&gt;" BaseTypeListCollapsed="true">
+  <Class Name="Bindable.Linq.Transactions.CollectionChangetransaction&lt;TElement&gt;" BaseTypeListCollapsed="true">
     <Position X="69.25" Y="9.25" Width="3" />
     <Compartments>
       <Compartment Name="Fields" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
       <HashCode>AAAGgAAAECAAAEQAAAAAAAQAAAAAAQAAAAAAAgAAgAA=</HashCode>
-      <FileName>Eventing\CollectionChangeRecorder.cs</FileName>
+      <FileName>Eventing\CollectionChangetransaction.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
@@ -235,7 +235,7 @@
       <FileName>Iterators\ItemSorter.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="Bindable.Linq.Helpers.LockScope" BaseTypeListCollapsed="true">
+  <Class Name="Bindable.Linq.Helpers.object" BaseTypeListCollapsed="true">
     <Position X="61.25" Y="53" Width="2.5" />
     <Compartments>
       <Compartment Name="Private" Collapsed="true" />
@@ -243,7 +243,7 @@
     </Compartments>
     <TypeIdentifier>
       <HashCode>AAAAAAQAAAAAAAgAAAAAgAAAAAEECAAAAAAJAQAAAgA=</HashCode>
-      <FileName>Helpers\LockScope.cs</FileName>
+      <FileName>Helpers\object.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
@@ -362,7 +362,7 @@
       <Compartment Name="Fields" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>AAAAJAAAAAAggAgAAAAAAAAAAAEAAgAACAAAAACAACA=</HashCode>
+      <HashCode>AAAAJAAAAAAggQhAAAAAAAAAAAEAAgAACAAAAACAACA=</HashCode>
       <FileName>Iterators\PollIterator.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -782,18 +782,18 @@
       <FileName>Dependencies\IDependencyDefinition.cs</FileName>
     </TypeIdentifier>
   </Interface>
-  <Interface Name="Bindable.Linq.Eventing.ICollectionChangedPublisher&lt;TElement&gt;">
+  <Interface Name="Bindable.Linq.Transactions.ICollectionChangedPublisher&lt;TElement&gt;">
     <Position X="66" Y="6" Width="3" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAIAAAAAAgAAAAAAAAAAAAAAAAAAABAA=</HashCode>
       <FileName>Eventing\ICollectionChangedPublisher.cs</FileName>
     </TypeIdentifier>
   </Interface>
-  <Interface Name="Bindable.Linq.Eventing.ICollectionChangedRecorder&lt;TElement&gt;">
+  <Interface Name="Bindable.Linq.Transactions.ICollectionChangedtransaction&lt;TElement&gt;">
     <Position X="66" Y="9.25" Width="3" />
     <TypeIdentifier>
       <HashCode>AAACgAAAAAAAAEAAAAAAAAQAAAAAAAAAAAAAAgAAgAA=</HashCode>
-      <FileName>Eventing\ICollectionChangedRecorder.cs</FileName>
+      <FileName>Eventing\ICollectionChangedtransaction.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Interface Name="Bindable.Linq.IBindable&lt;TValue&gt;">
@@ -908,7 +908,7 @@
       <FileName>Dependencies\PathNavigation\IPathNavigator.cs</FileName>
     </TypeIdentifier>
   </Interface>
-  <Enum Name="Bindable.Linq.Eventing.CollectionChangeMode" Collapsed="true">
+  <Enum Name="Bindable.Linq.Transactions.CollectionChangeMode" Collapsed="true">
     <Position X="66.25" Y="8.25" Width="2.25" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAgAAAAAAAQAAAAAAAAAAAAAA=</HashCode>

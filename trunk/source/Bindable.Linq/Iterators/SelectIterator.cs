@@ -1,25 +1,15 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Diagnostics;
-using System.Globalization;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using Bindable.Linq.Dependencies;
-using Bindable.Linq.Helpers;
-using Bindable.Linq;
 
 namespace Bindable.Linq.Iterators
 {
+    using System.Collections.Generic;
+
     /// <summary>
     /// The Iterator created when performing a select and projection into another type.
     /// </summary>
     /// <typeparam name="TSource">The type of source item.</typeparam>
     /// <typeparam name="TResult">The type of result item.</typeparam>
-    internal sealed class SelectIterator<TSource, TResult> : 
-        Iterator<TSource, TResult>
+    internal sealed class SelectIterator<TSource, TResult> : Iterator<TSource, TResult>
         where TSource : class
     {
         private readonly ProjectionRegister<TSource, TResult> _projectionRegister;
@@ -29,8 +19,8 @@ namespace Bindable.Linq.Iterators
         /// </summary>
         /// <param name="sourceCollection">The source collection.</param>
         /// <param name="projector">The projector.</param>
-        public SelectIterator(IBindableCollection<TSource> sourceCollection,
-            Func<TSource, TResult> projector) : base(sourceCollection)
+        public SelectIterator(IBindableCollection<TSource> sourceCollection, Func<TSource, TResult> projector)
+            : base(sourceCollection)
         {
             _projectionRegister = new ProjectionRegister<TSource, TResult>(projector);
         }
@@ -50,7 +40,7 @@ namespace Bindable.Linq.Iterators
         /// </summary>
         protected override void LoadSourceCollection()
         {
-            this.ReactToAddRange(0, this.SourceCollection);
+            ReactToAddRange(0, SourceCollection);
         }
 
         /// <summary>
@@ -58,11 +48,10 @@ namespace Bindable.Linq.Iterators
         /// </summary>
         /// <param name="sourceStartingIndex">Index of the source starting.</param>
         /// <param name="addedItems">The added items.</param>
-        protected override void ReactToAddRange(int sourceStartingIndex,
-            IEnumerable<TSource> addedItems)
+        protected override void ReactToAddRange(int sourceStartingIndex, IEnumerable<TSource> addedItems)
         {
-            IEnumerable<TResult> projectedItems = this.ProjectionRegister.CreateOrGetProjections(addedItems);
-            this.ResultCollection.AddOrInsertRange(sourceStartingIndex, projectedItems);
+            IEnumerable<TResult> projectedItems = ProjectionRegister.CreateOrGetProjections(addedItems);
+            ResultCollection.AddOrInsertRange(sourceStartingIndex, projectedItems);
         }
 
         /// <summary>
@@ -70,11 +59,10 @@ namespace Bindable.Linq.Iterators
         /// </summary>
         /// <param name="sourceStartingIndex">Index of the source starting.</param>
         /// <param name="movedItems">The moved items.</param>
-        protected override void ReactToMoveRange(int sourceStartingIndex,
-            IEnumerable<TSource> movedItems)
+        protected override void ReactToMoveRange(int sourceStartingIndex, IEnumerable<TSource> movedItems)
         {
-            IEnumerable<TResult> projectedItems = this.ProjectionRegister.CreateOrGetProjections(movedItems);
-            this.ResultCollection.MoveRange(sourceStartingIndex, projectedItems);
+            IEnumerable<TResult> projectedItems = ProjectionRegister.CreateOrGetProjections(movedItems);
+            ResultCollection.MoveRange(sourceStartingIndex, projectedItems);
         }
 
         /// <summary>
@@ -83,9 +71,9 @@ namespace Bindable.Linq.Iterators
         /// <param name="removedItems">The removed items.</param>
         protected override void ReactToRemoveRange(IEnumerable<TSource> removedItems)
         {
-            IEnumerable<TResult> projectedItems = this.ProjectionRegister.GetProjections(removedItems);
-            this.ResultCollection.RemoveRange(projectedItems);
-            this.ProjectionRegister.RemoveRange(removedItems);
+            IEnumerable<TResult> projectedItems = ProjectionRegister.GetProjections(removedItems);
+            ResultCollection.RemoveRange(projectedItems);
+            ProjectionRegister.RemoveRange(removedItems);
         }
 
         /// <summary>
@@ -93,11 +81,10 @@ namespace Bindable.Linq.Iterators
         /// </summary>
         /// <param name="oldItems">The old items.</param>
         /// <param name="newItems">The new items.</param>
-        protected override void ReactToReplaceRange(IEnumerable<TSource> oldItems,
-            IEnumerable<TSource> newItems)
+        protected override void ReactToReplaceRange(IEnumerable<TSource> oldItems, IEnumerable<TSource> newItems)
         {
-            this.ResultCollection.ReplaceRange(this.ProjectionRegister.GetProjections(oldItems), this.ProjectionRegister.CreateOrGetProjections(newItems));
-            this.ProjectionRegister.RemoveRange(oldItems);
+            ResultCollection.ReplaceRange(ProjectionRegister.GetProjections(oldItems), ProjectionRegister.CreateOrGetProjections(newItems));
+            ProjectionRegister.RemoveRange(oldItems);
         }
 
         /// <summary>
@@ -107,10 +94,10 @@ namespace Bindable.Linq.Iterators
         /// <param name="propertyName">Name of the property.</param>
         protected override void ReactToItemPropertyChanged(TSource item, string propertyName)
         {
-            object existing = this.ProjectionRegister.GetExistingProjection(item);
+            object existing = ProjectionRegister.GetExistingProjection(item);
             if (existing is TResult)
             {
-                this.ResultCollection.Replace((TResult)existing, this.ProjectionRegister.ReProject(item));
+                ResultCollection.Replace((TResult) existing, ProjectionRegister.ReProject(item));
             }
         }
 
@@ -121,7 +108,7 @@ namespace Bindable.Linq.Iterators
         /// <remarks>Warning: No locks should be held when invoking this method.</remarks>
         protected override void ResetOverride()
         {
-            this.ProjectionRegister.Clear();
+            ProjectionRegister.Clear();
             base.ResetOverride();
         }
 
@@ -130,7 +117,7 @@ namespace Bindable.Linq.Iterators
         /// </summary>
         protected override void DisposeOverride()
         {
-            this.ProjectionRegister.Dispose();
+            ProjectionRegister.Dispose();
         }
     }
 }

@@ -1,17 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Bindable.Linq.Aggregators;
-using Bindable.Linq.Dependencies;
-using Bindable.Linq.Aggregators.Numerics;
-using Bindable.Linq.Tests.TestHelpers;
-using NUnit.Framework;
-using Bindable.Linq.Helpers;
-using Bindable.Linq.Collections;
+using System;
 
 namespace Bindable.Linq.Tests.Behaviour.Aggregators
 {
+    using Collections;
+    using NUnit.Framework;
+    using TestHelpers;
+
     /// <summary>
     /// Contains unit tests for the <see cref="T:MaxAggregator`1"/> class.
     /// </summary>
@@ -24,9 +18,9 @@ namespace Bindable.Linq.Tests.Behaviour.Aggregators
         [Test]
         public void MaxAggregatorCalculate()
         {
-            object[] numbers = new object[] { 1, 2, 4 };
+            var numbers = new object[] {1, 2, 4};
             IBindable<int> aggregator = numbers.AsBindable<object, int>().Max();
-            PropertyEventCatcher eventCatcher = new PropertyEventCatcher(aggregator);
+            var eventCatcher = new PropertyEventCatcher(aggregator);
             Assert.AreEqual(4, aggregator.Current);
             Assert.AreEqual(1, eventCatcher.Count);
         }
@@ -37,10 +31,10 @@ namespace Bindable.Linq.Tests.Behaviour.Aggregators
         [Test]
         public void MaxAggregatorCollectionChangeCausesRefresh()
         {
-            BindableCollection<object> numbers = new BindableCollection<object>();
+            var numbers = new BindableCollection<object>();
             numbers.AddRange(1, 2, 4);
             IBindable<int> aggregator = numbers.AsBindable<object, int>().Max();
-            PropertyEventCatcher eventCatcher = new PropertyEventCatcher(aggregator);
+            var eventCatcher = new PropertyEventCatcher(aggregator);
             Assert.AreEqual(4, aggregator.Current);
             Assert.AreEqual(1, eventCatcher.Count);
 

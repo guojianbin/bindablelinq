@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System;
 
 namespace Bindable.Linq.Tests.Unit.Aggregators
 {
-    class SumAggregatorTests
-    {
-    }
+    internal class SumAggregatorTests {}
 }

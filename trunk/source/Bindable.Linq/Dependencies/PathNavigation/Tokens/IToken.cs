@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System;
 
 namespace Bindable.Linq.Dependencies.PathNavigation.Tokens
 {
@@ -18,7 +15,7 @@ namespace Bindable.Linq.Dependencies.PathNavigation.Tokens
         /// </summary>
         /// <value>The next monitor.</value>
         IToken NextToken { get; }
-        
+
         /// <summary>
         /// Acquires the target.
         /// </summary>

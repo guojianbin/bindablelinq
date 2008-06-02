@@ -1,7 +1,4 @@
-﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Bindable.Linq.Aggregators.Numerics
 {
@@ -18,10 +15,10 @@ namespace Bindable.Linq.Aggregators.Numerics
         /// <returns></returns>
         public int Sum(IEnumerable<int> sourceCollection)
         {
-            int result = default(int);
+            var result = default(int);
             if (sourceCollection != null)
             {
-                foreach (int item in sourceCollection)
+                foreach (var item in sourceCollection)
                 {
                     result += item;
                 }
@@ -36,12 +33,12 @@ namespace Bindable.Linq.Aggregators.Numerics
         /// <returns></returns>
         public double Average(IEnumerable<int> sourceCollection)
         {
-            double result = default(double);
+            var result = default(double);
 
-            int count = 0;
+            var count = 0;
             if (sourceCollection != null)
             {
-                foreach (int item in sourceCollection)
+                foreach (var item in sourceCollection)
                 {
                     result += item;
                     count++;
@@ -65,13 +62,12 @@ namespace Bindable.Linq.Aggregators.Numerics
         /// <returns></returns>
         public int Min(IEnumerable<int> sourceCollection)
         {
-            int result = default(int);
+            var result = default(int);
 
-            bool firstItem = true;
+            var firstItem = true;
             if (sourceCollection != null)
             {
-
-                foreach (int item in sourceCollection)
+                foreach (var item in sourceCollection)
                 {
                     if (firstItem || item < result)
                     {
@@ -79,7 +75,6 @@ namespace Bindable.Linq.Aggregators.Numerics
                         firstItem = false;
                     }
                 }
-
             }
 
             return result;
@@ -92,13 +87,12 @@ namespace Bindable.Linq.Aggregators.Numerics
         /// <returns></returns>
         public int Max(IEnumerable<int> sourceCollection)
         {
-            int result = default(int);
+            var result = default(int);
 
-            bool firstItem = true;
+            var firstItem = true;
             if (sourceCollection != null)
             {
-
-                foreach (int item in sourceCollection)
+                foreach (var item in sourceCollection)
                 {
                     if (firstItem || item > result)
                     {
@@ -106,7 +100,6 @@ namespace Bindable.Linq.Aggregators.Numerics
                         firstItem = false;
                     }
                 }
-
             }
 
             return result;
@@ -121,19 +114,17 @@ namespace Bindable.Linq.Aggregators.Numerics
         /// <returns></returns>
         public int? Sum(IEnumerable<int?> sourceCollection)
         {
-            int result = default(int);
+            var result = default(int);
 
             if (sourceCollection != null)
             {
-
-                foreach (int? item in sourceCollection)
+                foreach (var item in sourceCollection)
                 {
                     if (item != null)
                     {
                         result += item.Value;
                     }
                 }
-
             }
 
             return result;
@@ -146,13 +137,12 @@ namespace Bindable.Linq.Aggregators.Numerics
         /// <returns></returns>
         public double? Average(IEnumerable<int?> sourceCollection)
         {
-            double result = default(double);
+            var result = default(double);
 
-            int count = 0;
+            var count = 0;
             if (sourceCollection != null)
             {
-
-                foreach (int? item in sourceCollection)
+                foreach (var item in sourceCollection)
                 {
                     if (item != null)
                     {
@@ -160,7 +150,6 @@ namespace Bindable.Linq.Aggregators.Numerics
                         count++;
                     }
                 }
-
             }
 
             if (count == 0)
@@ -180,13 +169,12 @@ namespace Bindable.Linq.Aggregators.Numerics
         /// <returns></returns>
         public int? Min(IEnumerable<int?> sourceCollection)
         {
-            int result = default(int);
+            var result = default(int);
 
-            bool firstItem = true;
+            var firstItem = true;
             if (sourceCollection != null)
             {
-
-                foreach (int? item in sourceCollection)
+                foreach (var item in sourceCollection)
                 {
                     if (item != null)
                     {
@@ -196,7 +184,6 @@ namespace Bindable.Linq.Aggregators.Numerics
                             firstItem = false;
                         }
                     }
-
                 }
             }
 
@@ -217,13 +204,12 @@ namespace Bindable.Linq.Aggregators.Numerics
         /// <returns></returns>
         public int? Max(IEnumerable<int?> sourceCollection)
         {
-            int result = default(int);
+            var result = default(int);
 
-            bool firstItem = true;
+            var firstItem = true;
             if (sourceCollection != null)
             {
-
-                foreach (int? item in sourceCollection)
+                foreach (var item in sourceCollection)
                 {
                     if (item != null)
                     {
@@ -234,7 +220,6 @@ namespace Bindable.Linq.Aggregators.Numerics
                         }
                     }
                 }
-
             }
 
             if (firstItem)

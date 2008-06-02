@@ -1,9 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using Bindable.Linq.Helpers;
 
 namespace Bindable.Linq.Helpers
 {
@@ -35,15 +30,13 @@ namespace Bindable.Linq.Helpers
     public sealed class StateScope : IDisposable
     {
         private readonly StateScopeChangedCallback _callback;
-        private readonly LockScope _stateScopeLock = new LockScope();
+        private readonly object _stateScopeLock = new object();
         private int _childrenCount;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="StateScope"/> class.
         /// </summary>
-        public StateScope()
-        {
-        }
+        public StateScope() {}
 
         /// <summary>
         /// Initializes a new instance of the <see cref="StateScope"/> class.
@@ -68,7 +61,7 @@ namespace Bindable.Linq.Helpers
         /// </summary>
         void IDisposable.Dispose()
         {
-            this.Leave();
+            Leave();
         }
         #endregion
 
@@ -78,11 +71,11 @@ namespace Bindable.Linq.Helpers
         public StateScope Enter()
         {
             bool raiseCallback = false;
-            using (_stateScopeLock.Enter(this))
+            lock (_stateScopeLock)
             {
-                bool wasWithin = this.IsWithin;
+                bool wasWithin = IsWithin;
                 _childrenCount++;
-                if (wasWithin != this.IsWithin && _callback != null)
+                if (wasWithin != IsWithin && _callback != null)
                 {
                     raiseCallback = true;
                 }
@@ -100,13 +93,13 @@ namespace Bindable.Linq.Helpers
         public void Leave()
         {
             bool raiseCallback = false;
-            using (_stateScopeLock.Enter(this))
+            lock (_stateScopeLock)
             {
                 if (_childrenCount > 0)
                 {
-                    bool wasWithin = this.IsWithin;
+                    bool wasWithin = IsWithin;
                     _childrenCount--;
-                    if (wasWithin != this.IsWithin && _callback != null)
+                    if (wasWithin != IsWithin && _callback != null)
                     {
                         raiseCallback = true;
                     }

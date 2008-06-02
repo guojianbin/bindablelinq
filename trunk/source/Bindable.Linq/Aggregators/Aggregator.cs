@@ -1,32 +1,26 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using Bindable.Linq;
+using Bindable.Linq.Configuration;
 using Bindable.Linq.Dependencies;
 using Bindable.Linq.Helpers;
-using Bindable.Linq.Configuration;
+using Bindable.Linq.Iterators;
 
 namespace Bindable.Linq.Aggregators
 {
     /// <summary>
     /// Serves as a base class for all aggregate functions. From Bindable LINQ's perspective,
-    /// an <see cref="T:Aggregator`2"/> is a LINQ operation which tranforms a collection of items
-    /// into an item. This makes it different to an <see cref="T:Iterator`2"/> which
+    /// an <see cref="Aggregator{TSource,TResult}"/> is a LINQ operation which tranforms a collection of items
+    /// into an item. This makes it different to an <see cref="Iterator{TSource,TResult}"/> which
     /// transforms a collection into another collection, or an <see cref="T:Operator`2"/>
     /// which transforms one item into another.
     /// </summary>
     /// <typeparam name="TSource">The type of the source.</typeparam>
     /// <typeparam name="TResult">The type of the result.</typeparam>
-    public abstract class Aggregator<TSource, TResult> : 
-        IBindable<TResult>,
-        IConfigurable,
-        IDisposable
+    public abstract class Aggregator<TSource, TResult> : IBindable<TResult>, IConfigurable, IDisposable
     {
         private static readonly PropertyChangedEventArgs CurrentPropertyChangedEventArgs = new PropertyChangedEventArgs("Current");
-        private readonly LockScope _aggregatorLock = new LockScope();
+        private readonly object _aggregatorLock = new object();
         private readonly StateScope _calculatingState;
         private readonly CollectionChangeObserver _collectionChangedObserver;
         private readonly IBindableCollection<TSource> _sourceCollection;
@@ -37,7 +31,7 @@ namespace Bindable.Linq.Aggregators
         /// Initializes a new instance of the <see cref="Aggregator&lt;TSource, TResult&gt;"/> class.
         /// </summary>
         /// <param name="sourceCollection">The source collection.</param>
-        public Aggregator(IBindableCollection<TSource> sourceCollection)
+        protected Aggregator(IBindableCollection<TSource> sourceCollection)
         {
             _collectionChangedObserver = new CollectionChangeObserver(SourceCollection_CollectionChanged);
             _calculatingState = new StateScope();
@@ -46,14 +40,9 @@ namespace Bindable.Linq.Aggregators
         }
 
         /// <summary>
-        /// Occurs when a property value changes.
-        /// </summary>
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        /// <summary>
         /// Gets the lock object on this aggregate.
         /// </summary>
-        protected LockScope AggregateLock
+        protected object AggregateLock
         {
             get { return _aggregatorLock; }
         }
@@ -74,6 +63,12 @@ namespace Bindable.Linq.Aggregators
             get { return _sourceCollection; }
         }
 
+        #region IBindable<TResult> Members
+        /// <summary>
+        /// Occurs when a property value changes.
+        /// </summary>
+        public event PropertyChangedEventHandler PropertyChanged;
+
         /// <summary>
         /// The resulting value. Rather than being returned directly, the value is housed
         /// within the <see cref="T:IBindableElement`1"/> container so that it can be updated when
@@ -90,7 +85,7 @@ namespace Bindable.Linq.Aggregators
             protected set
             {
                 bool valueChanged = false;
-                using (this.AggregateLock.Enter(this))
+                lock (AggregateLock)
                 {
                     if (!Equals(_value, value))
                     {
@@ -106,6 +101,25 @@ namespace Bindable.Linq.Aggregators
         }
 
         /// <summary>
+        /// Refreshes the value by forcing it to be recalculated or reconsidered.
+        /// </summary>
+        public void Refresh()
+        {
+            Aggregate();
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            _calculatingState.Leave();
+            GC.SuppressFinalize(this);
+        }
+        #endregion
+
+        #region IConfigurable Members
+        /// <summary>
         /// Gets the configuration.
         /// </summary>
         public IBindingConfiguration Configuration
@@ -113,21 +127,14 @@ namespace Bindable.Linq.Aggregators
             get
             {
                 IBindingConfiguration result = BindingConfigurations.Default;
-                if (this.SourceCollection is IConfigurable)
+                if (SourceCollection is IConfigurable)
                 {
-                    result = ((IConfigurable)this.SourceCollection).Configuration;
+                    result = ((IConfigurable)SourceCollection).Configuration;
                 }
                 return result;
             }
         }
-
-        /// <summary>
-        /// Refreshes the value by forcing it to be recalculated or reconsidered.
-        /// </summary>
-        public void Refresh()
-        {
-            this.Aggregate();
-        }
+        #endregion
 
         /// <summary>
         /// When overridden in a derived class, provides the aggregator the opportunity to calculate the 
@@ -137,7 +144,7 @@ namespace Bindable.Linq.Aggregators
 
         private void Aggregate()
         {
-            using (this.CalculatingState.Enter())
+            using (CalculatingState.Enter())
             {
                 AggregateOverride();
             }
@@ -147,7 +154,7 @@ namespace Bindable.Linq.Aggregators
         {
             bool calculationNeeded = false;
 
-            using (this.AggregateLock.Enter(this))
+            lock (AggregateLock)
             {
                 if (_isSourceCollectionLoaded == false)
                 {
@@ -164,7 +171,7 @@ namespace Bindable.Linq.Aggregators
 
         private void SourceCollection_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            this.Refresh();
+            Refresh();
         }
 
         /// <summary>
@@ -173,19 +180,10 @@ namespace Bindable.Linq.Aggregators
         /// <param name="e">The <see cref="System.ComponentModel.PropertyChangedEventArgs"/> instance containing the event data.</param>
         protected virtual void OnPropertyChanged(PropertyChangedEventArgs e)
         {
-            if (this.PropertyChanged != null)
+            if (PropertyChanged != null)
             {
-                this.PropertyChanged(this, e);
+                PropertyChanged(this, e);
             }
-        }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            _calculatingState.Leave();
-            GC.SuppressFinalize(this);
         }
     }
 }

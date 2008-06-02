@@ -1,21 +1,14 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
 
 namespace Bindable.Linq.Tests.TestObjectModel
 {
+    using System.ComponentModel;
+
     /// <summary>
     /// Base class for sample business objects.
     /// </summary>
     public class BindableObject : INotifyPropertyChanged
     {
-        /// <summary>
-        /// Occurs when a property value changes.
-        /// </summary>
-        public event PropertyChangedEventHandler PropertyChanged;
-
         /// <summary>
         /// Gets a value indicating whether this instance has property changed subscribers.
         /// </summary>
@@ -24,11 +17,15 @@ namespace Bindable.Linq.Tests.TestObjectModel
         /// </value>
         public bool HasPropertyChangedSubscribers
         {
-            get
-            {
-                return PropertyChanged != null;
-            }
+            get { return PropertyChanged != null; }
         }
+
+        #region INotifyPropertyChanged Members
+        /// <summary>
+        /// Occurs when a property value changes.
+        /// </summary>
+        public event PropertyChangedEventHandler PropertyChanged;
+        #endregion
 
         /// <summary>
         /// Raises the <see cref="E:PropertyChanged"/> event.
@@ -36,9 +33,9 @@ namespace Bindable.Linq.Tests.TestObjectModel
         /// <param name="e">The <see cref="System.ComponentModel.PropertyChangedEventArgs"/> instance containing the event data.</param>
         protected virtual void OnPropertyChanged(PropertyChangedEventArgs e)
         {
-            if (this.PropertyChanged != null)
+            if (PropertyChanged != null)
             {
-                this.PropertyChanged(this, e);
+                PropertyChanged(this, e);
             }
         }
     }

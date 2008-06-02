@@ -1,24 +1,17 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Windows;
-using Bindable.Linq;
-using Bindable.Linq.Collections;
-using Bindable.Linq.Configuration;
-using Bindable.Linq.Dependencies;
-using Bindable.Linq.Dependencies.ExpressionAnalysis;
-using Bindable.Linq.Eventing;
-using Bindable.Linq.Helpers;
-
 namespace Bindable.Linq.Iterators
 {
+    using System;
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.Collections.Specialized;
+    using System.ComponentModel;
+    using System.Globalization;
+    using System.Linq;
+    using Collections;
+    using Configuration;
+    using Dependencies;
+    using Helpers;
+
     /// <summary>
     /// Serves as a base class for all Bindable LINQ Iterator containers. Iterators are Bindable LINQ operations 
     /// which take one or more collections of items, and return a collection of items. This is in contrast
@@ -35,22 +28,19 @@ namespace Bindable.Linq.Iterators
     /// http://msdn2.microsoft.com/en-gb/library/aa970683.aspx#data_binding.
     /// </para>
     /// </remarks>
-    public abstract class Iterator<TSource, TResult> : 
-        IBindableQuery<TResult>, 
-        IList, 
-        IAcceptsDependencies
+    public abstract class Iterator<TSource, TResult> : IBindableQuery<TResult>, IList, IAcceptsDependencies
         where TSource : class
     {
-        private readonly LockScope _iteratorLock = new LockScope();
-        private readonly StateScope _isLoadingState;
         private readonly StateScope _collectionChangedSuspendedState;
+        private readonly List<IDependency> _dependencies;
+        private readonly StateScope _isLoadingState;
+        private readonly object _iteratorLock = new object();
+        private readonly BindableCollection<TResult> _resultCollection;
+        private readonly IBindableCollectionInterceptor<TSource> _sourceCollection;
         private readonly EventHandler<NotifyCollectionChangedEventArgs> _sourceCollection_CollectionChanged;
         private readonly EventHandler<PropertyChangedEventArgs> _sourceCollection_PropertyChanged;
         private readonly CollectionChangeObserver _sourceCollectionChangedObserver;
         private readonly PropertyChangeObserver _sourceCollectionPropertyChangedObserver;
-        private readonly IBindableCollectionInterceptor<TSource> _sourceCollection;
-        private readonly BindableCollection<TResult> _resultCollection;
-        private readonly List<IDependency> _dependencies;
         private LoadState _sourceCollectionState;
 
         /// <summary>
@@ -59,10 +49,10 @@ namespace Bindable.Linq.Iterators
         protected Iterator(IBindableCollection<TSource> sourceCollection)
         {
             _dependencies = new List<IDependency>();
-            
+
             _sourceCollection_CollectionChanged = SourceCollection_CollectionChanged;
             _sourceCollection_PropertyChanged = SourceCollection_PropertyChanged;
-            
+
             _isLoadingState = new StateScope(delegate { OnPropertyChanged(PropertyChangedCache.IsLoading); });
             _collectionChangedSuspendedState = new StateScope();
             _resultCollection = new BindableCollection<TResult>();
@@ -121,25 +111,30 @@ namespace Bindable.Linq.Iterators
 
         /// <summary>
         /// Gets an object used for a monitor whenever we need to lock in this class or derived classes. 
-        /// Note that this lock will use a timeout when locked, and so any code may throw 
-        /// <see cref="T:LockAttemptTimeoutException">LockAttemptTimeoutExceptions</see>.
         /// </summary>
-        protected LockScope IteratorLock
+        protected object IteratorLock
         {
             get { return _iteratorLock; }
         }
 
+        #region IBindableQuery<TResult> Members
         /// <summary>
-        /// Occurs when the items in this Iterator change.
+        /// Releases unmanaged and - optionally - managed resources
         /// </summary>
-        /// <remarks>Warning: No locks should be held when raising this event.</remarks>
-        public event NotifyCollectionChangedEventHandler CollectionChanged;
-
-        /// <summary>
-        /// Occurs when a property on this Iterator changes.
-        /// </summary>
-        /// <remarks>Warning: No locks should be held when raising this event.</remarks>
-        public event PropertyChangedEventHandler PropertyChanged;
+        public void Dispose()
+        {
+            DisposeOverride();
+            _sourceCollectionPropertyChangedObserver.Dispose();
+            _sourceCollectionChangedObserver.Dispose();
+            lock (IteratorLock)
+            {
+                foreach (IDependency dependency in _dependencies)
+                {
+                    dependency.Dispose();
+                }
+            }
+            _sourceCollection.Dispose();
+        }
 
         /// <summary>
         /// Gets a value indicating whether this Iterator is currently retrieving items from any of its
@@ -149,10 +144,10 @@ namespace Bindable.Linq.Iterators
         {
             get
             {
-                bool loading = this.IsLoadingState.IsWithin;
+                bool loading = IsLoadingState.IsWithin;
                 if (!loading)
                 {
-                    ILoadable loadable = this.SourceCollection as ILoadable;
+                    var loadable = SourceCollection as ILoadable;
                     if (loadable != null)
                     {
                         if (loadable.IsLoading)
@@ -171,7 +166,7 @@ namespace Bindable.Linq.Iterators
         /// <value></value>
         public int CurrentCount
         {
-            get { return this.ResultCollection.Count; }
+            get { return ResultCollection.Count; }
         }
 
         /// <summary>
@@ -181,21 +176,20 @@ namespace Bindable.Linq.Iterators
         {
             get
             {
-                this.EnsureLoaded(LoadState.IfNotAlreadyLoaded);
-                return this.ResultCollection.Count;
+                EnsureLoaded(LoadState.IfNotAlreadyLoaded);
+                return ResultCollection.Count;
             }
         }
 
         /// <summary>
-        /// Gets the <see cref="T:TResult"/> at the specified index.
+        /// Gets the item at the specified index.
         /// </summary>
-        /// <value></value>
         public TResult this[int index]
         {
-            get 
-            { 
-                this.EnsureLoaded(LoadState.IfNotAlreadyLoaded);
-                return this.ResultCollection[index]; 
+            get
+            {
+                EnsureLoaded(LoadState.IfNotAlreadyLoaded);
+                return ResultCollection[index];
             }
             set { throw new NotSupportedException("This collection is read-only."); }
         }
@@ -205,12 +199,12 @@ namespace Bindable.Linq.Iterators
         /// </summary>
         public IBindingConfiguration Configuration
         {
-            get 
+            get
             {
                 IBindingConfiguration result = BindingConfigurations.Default;
-                if (this.SourceCollection is IConfigurable)
+                if (SourceCollection is IConfigurable)
                 {
-                    result = ((IConfigurable) this.SourceCollection).Configuration;
+                    result = ((IConfigurable) SourceCollection).Configuration;
                 }
                 return result;
             }
@@ -224,8 +218,8 @@ namespace Bindable.Linq.Iterators
         /// </returns>
         public IEnumerator<TResult> GetEnumerator()
         {
-            this.EnsureLoaded(LoadState.IfNotAlreadyLoaded);
-            return this.ResultCollection.GetEnumerator();
+            EnsureLoaded(LoadState.IfNotAlreadyLoaded);
+            return ResultCollection.GetEnumerator();
         }
 
         /// <summary>
@@ -236,13 +230,13 @@ namespace Bindable.Linq.Iterators
             // First, find out whether or not the source collection we have can be refreshed.
             bool isRefreshable = true;
             bool alreadyLoaded = false;
-            using (this.IteratorLock.Enter(this))
+            lock (IteratorLock)
             {
-                LoadState loadState = this.SourceCollectionState;
+                LoadState loadState = SourceCollectionState;
                 if (loadState == LoadState.EvenIfLoaded)
                 {
                     alreadyLoaded = true;
-                    IRefreshable refreshable = this.SourceCollection as IRefreshable;
+                    var refreshable = SourceCollection as IRefreshable;
                     if (refreshable == null)
                     {
                         isRefreshable = false;
@@ -255,171 +249,29 @@ namespace Bindable.Linq.Iterators
                 if (isRefreshable)
                 {
                     // The source collections can be refreshed
-                    IRefreshable refreshable = (IRefreshable)this.SourceCollection as IRefreshable;
+                    var refreshable = (IRefreshable) SourceCollection;
                     refreshable.Refresh();
                 }
                 else
                 {
                     // Not all sources could be refreshed. The best bet is to reset the iterator - this will 
                     // trigger a reload of all sources instead.
-                    this.Reset();
+                    Reset();
                 }
             }
         }
 
         /// <summary>
-        /// Processes all source collections.
+        /// Occurs when the items in this Iterator change.
         /// </summary>
-        /// <param name="loadState">
-        /// If LoadOption.UnloadedOnly, only collections which haven't already been loaded will 
-        /// be loaded. Otherwise, all collections will be forcibly loaded.
-        /// </param>
-        protected void EnsureLoaded(LoadState? loadState)
-        {
-            using (this.CollectionChangedSuspendedState.Enter())
-            {
-                bool performLoad = false;
-                using (this.IteratorLock.Enter(this))
-                {
-                    if (loadState == null || loadState == this.SourceCollectionState)
-                    {
-                        _sourceCollectionState = LoadState.EvenIfLoaded;
-                        performLoad = true;
-                    }
-                }
-                if (!performLoad)
-                {
-                    return;
-                }
-
-                // Note that we should not hold any locks at this point
-                using (this.IsLoadingState.Enter())
-                {
-                    this.LoadSourceCollection();
-                }
-            }
-        }
+        /// <remarks>Warning: No locks should be held when raising this event.</remarks>
+        public event NotifyCollectionChangedEventHandler CollectionChanged;
 
         /// <summary>
-        /// Resets the result collection of the Iterator and re-reads all of the source collections.
+        /// Occurs when a property on this Iterator changes.
         /// </summary>
-        protected void Reset()
-        {
-            // Within this block we don't want to allow CollectionChanged events to be raised, 
-            // because they may be raised multiple times. Instead, we'll suppress them and raise 
-            // a reset event when finished.
-            using (this.CollectionChangedSuspendedState.Enter())
-            {
-                using (this.IteratorLock.Enter(this))
-                {
-                    this.ResultCollection.Clear();
-                    this.ResetOverride();
-                }
-                this.EnsureLoaded(LoadState.EvenIfLoaded);
-            }
-            // Now we've reset ourselves, it's time to reload.
-            this.OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
-        }
-
-        /// <summary>
-        /// When implemented in a derived class, processes all items in a given source collection.
-        /// </summary>
-        /// <remarks>Warning: No locks should be held when invoking this method.</remarks>
-        protected abstract void LoadSourceCollection();
-
-        /// <summary>
-        /// When overridden in a derived class, processes an Add event over a range of items.
-        /// </summary>
-        /// <param name="sourceStartingIndex">Index of the source starting.</param>
-        /// <param name="addedItems">The added items.</param>
-        protected abstract void ReactToAddRange(int sourceStartingIndex, IEnumerable<TSource> addedItems);
-
-        /// <summary>
-        /// When overridden in a derived class, processes a Move event over a range of items.
-        /// </summary>
-        /// <param name="sourceStartingIndex">Index of the source starting.</param>
-        /// <param name="movedItems">The moved items.</param>
-        protected abstract void ReactToMoveRange(int sourceStartingIndex, IEnumerable<TSource> movedItems);
-
-        /// <summary>
-        /// When overridden in a derived class, processes a Remove event over a range of items.
-        /// </summary>
-        /// <param name="removedItems">The removed items.</param>
-        protected abstract void ReactToRemoveRange(IEnumerable<TSource> removedItems);
-
-        /// <summary>
-        /// When overridden in a derived class, processes a Replace event over a range of items.
-        /// </summary>
-        /// <param name="oldItems">The old items.</param>
-        /// <param name="newItems">The new items.</param>
-        protected abstract void ReactToReplaceRange(IEnumerable<TSource> oldItems, IEnumerable<TSource> newItems);
-
-        /// <summary>
-        /// When overridden in a derived class, processes a PropertyChanged event on a source item.
-        /// </summary>
-        /// <param name="item">The item.</param>
-        /// <param name="propertyName">Name of the property.</param>
-        protected abstract void ReactToItemPropertyChanged(TSource item, string propertyName);
-
-        /// <summary>
-        /// When overridden in a derived class, provides the derived class with the ability to perform custom actions when 
-        /// the collection is reset, before the sources are re-loaded.
-        /// </summary>
-        /// <remarks>Warning: No locks should be held when invoking this method.</remarks>
-        protected virtual void ResetOverride()
-        {
-        }
-
-        private void ResultCollection_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            this.OnCollectionChanged(e);
-        }
-
-        private void SourceCollection_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            // We do not handle CollectionChanged events from sources that are not loaded yet. 
-            // Check whether this is a valid source collection.
-            LoadState currentState = this.SourceCollectionState;
-            if (sender != this.SourceCollection || currentState == LoadState.IfNotAlreadyLoaded)
-            {
-                return;
-            }
-
-            // Reset or process the collection changed event. Note that no locks should be held at this 
-            // time.
-            switch (e.Action)
-            {
-                case NotifyCollectionChangedAction.Add:
-                    this.ReactToAddRange(e.NewStartingIndex, e.NewItems.Cast<TSource>());
-                    break;
-#if !SILVERLIGHT
-                case NotifyCollectionChangedAction.Move:
-                    this.ReactToMoveRange(e.NewStartingIndex, e.OldItems.Cast<TSource>());
-                    break;
-#endif
-                case NotifyCollectionChangedAction.Remove:
-                    this.ReactToRemoveRange(e.OldItems.Cast<TSource>());
-                    break;
-                case NotifyCollectionChangedAction.Replace:
-                    this.ReactToReplaceRange(e.OldItems.Cast<TSource>(), e.NewItems.Cast<TSource>());
-                    break;
-                case NotifyCollectionChangedAction.Reset:
-                    this.Reset();
-                    break;
-            }
-        }
-
-        private void SourceCollection_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            // We should bubble up "IsLoading" property changes, because a change in the IsLoading
-            // state of a source collection means a change in our own IsLoading state.
-            if (e.PropertyName == PropertyChangedCache.IsLoading.PropertyName)
-            {
-                this.OnPropertyChanged(PropertyChangedCache.IsLoading);
-            }
-        }
-
-        #region IAcceptsDependencies Members
+        /// <remarks>Warning: No locks should be held when raising this event.</remarks>
+        public event PropertyChangedEventHandler PropertyChanged;
 
         /// <summary>
         /// Accepts a dependency.
@@ -427,27 +279,33 @@ namespace Bindable.Linq.Iterators
         /// <param name="definition">The definition.</param>
         public void AcceptDependency(IDependencyDefinition definition)
         {
-            if (definition.AppliesToCollections())
+            if (!definition.AppliesToCollections())
             {
-                IDependency dependency = definition.ConstructForCollection(this.SourceCollection, this.Configuration.CreatePathNavigator());
-                dependency.SetReevaluateElementCallback(
-                    ((element, propertyName) => ReactToItemPropertyChanged((TSource)element, propertyName))
-                    );
-                dependency.SetReevaluateCallback(
-                    ((element) => this.Refresh())
-                    );
-                
-                using (this.IteratorLock.Enter(this))
-                {
-                    _dependencies.Add(dependency);
-                }
+                return;
+            }
+            IDependency dependency = definition.ConstructForCollection(SourceCollection, Configuration.CreatePathNavigator());
+            dependency.SetReevaluateElementCallback(((element, propertyName) => ReactToItemPropertyChanged((TSource) element, propertyName)));
+            dependency.SetReevaluateCallback(((element) => Reset()));
+
+            lock (IteratorLock)
+            {
+                _dependencies.Add(dependency);
             }
         }
 
+        /// <summary>
+        /// Returns an enumerator that iterates through a collection.
+        /// </summary>
+        /// <returns>
+        /// An <see cref="T:System.Collections.IEnumerator"/> object that can be used to iterate through the collection.
+        /// </returns>
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
         #endregion
 
         #region IList Members
-
         /// <summary>
         /// Adds an item to the <see cref="T:System.Collections.IList"/>.
         /// </summary>
@@ -472,10 +330,10 @@ namespace Bindable.Linq.Iterators
         {
             if (value is TResult)
             {
-                this.EnsureLoaded(LoadState.IfNotAlreadyLoaded);
-                using (this.IteratorLock.Enter(this))
+                EnsureLoaded(LoadState.IfNotAlreadyLoaded);
+                lock (IteratorLock)
                 {
-                    return this.ResultCollection.Contains((TResult)value);
+                    return ResultCollection.Contains((TResult) value);
                 }
             }
             return false;
@@ -492,10 +350,10 @@ namespace Bindable.Linq.Iterators
         {
             if (value is TResult)
             {
-                this.EnsureLoaded(LoadState.IfNotAlreadyLoaded);
-                using (this.IteratorLock.Enter(this))
+                EnsureLoaded(LoadState.IfNotAlreadyLoaded);
+                lock (IteratorLock)
                 {
-                    return this.ResultCollection.IndexOf((TResult)value);
+                    return ResultCollection.IndexOf((TResult) value);
                 }
             }
             return -1;
@@ -554,14 +412,8 @@ namespace Bindable.Linq.Iterators
         /// <value></value>
         object IList.this[int index]
         {
-            get
-            {
-                return this[index];
-            }
-            set
-            {
-                throw new NotSupportedException("This collection is read-only.");
-            }
+            get { return this[index]; }
+            set { throw new NotSupportedException("This collection is read-only."); }
         }
 
         /// <summary>
@@ -588,10 +440,10 @@ namespace Bindable.Linq.Iterators
         /// <exception cref="T:System.ArgumentException">The type of the source <see cref="T:System.Collections.ICollection"/> cannot be cast automatically to the type of the destination <paramref name="array"/>. </exception>
         public void CopyTo(Array array, int index)
         {
-            this.EnsureLoaded(LoadState.IfNotAlreadyLoaded);
-            using (this.IteratorLock.Enter(this))
+            EnsureLoaded(LoadState.IfNotAlreadyLoaded);
+            lock (IteratorLock)
             {
-                this.ResultCollection.CopyTo(array, index);
+                ResultCollection.CopyTo(array, index);
             }
         }
 
@@ -623,19 +475,152 @@ namespace Bindable.Linq.Iterators
         {
             throw new NotSupportedException("This collection is read-only.");
         }
+        #endregion
 
         /// <summary>
-        /// Returns an enumerator that iterates through a collection.
+        /// When overridden in a derived class, processes a Replace event over a range of items.
         /// </summary>
-        /// <returns>
-        /// An <see cref="T:System.Collections.IEnumerator"/> object that can be used to iterate through the collection.
-        /// </returns>
-        IEnumerator IEnumerable.GetEnumerator()
+        /// <param name="oldItems">The old items.</param>
+        /// <param name="newItems">The new items.</param>
+        protected abstract void ReactToReplaceRange(IEnumerable<TSource> oldItems, IEnumerable<TSource> newItems);
+
+        /// <summary>
+        /// When overridden in a derived class, processes a PropertyChanged event on a source item.
+        /// </summary>
+        /// <param name="item">The item.</param>
+        /// <param name="propertyName">Name of the property.</param>
+        protected abstract void ReactToItemPropertyChanged(TSource item, string propertyName);
+
+        /// <summary>
+        /// Processes all source collections.
+        /// </summary>
+        /// <param name="loadState">
+        /// If LoadOption.UnloadedOnly, only collections which haven't already been loaded will 
+        /// be loaded. Otherwise, all collections will be forcibly loaded.
+        /// </param>
+        protected void EnsureLoaded(LoadState? loadState)
         {
-            return GetEnumerator();
+            using (CollectionChangedSuspendedState.Enter())
+            {
+                bool performLoad = false;
+                lock (IteratorLock)
+                {
+                    if (loadState == null || loadState == SourceCollectionState)
+                    {
+                        _sourceCollectionState = LoadState.EvenIfLoaded;
+                        performLoad = true;
+                    }
+                }
+                if (!performLoad)
+                {
+                    return;
+                }
+
+                // Note that we should not hold any locks at this point
+                using (IsLoadingState.Enter())
+                {
+                    LoadSourceCollection();
+                }
+            }
         }
 
-        #endregion
+        /// <summary>
+        /// Resets the result collection of the Iterator and re-reads all of the source collections.
+        /// </summary>
+        protected void Reset()
+        {
+            // Within this block we don't want to allow CollectionChanged events to be raised, 
+            // because they may be raised multiple times. Instead, we'll suppress them and raise 
+            // a reset event when finished.
+            using (CollectionChangedSuspendedState.Enter())
+            {
+                lock (IteratorLock)
+                {
+                    ResultCollection.Clear();
+                    ResetOverride();
+                }
+                EnsureLoaded(LoadState.EvenIfLoaded);
+            }
+            // Now we've reset ourselves, it's time to reload.
+            OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+        }
+
+        /// <summary>
+        /// When implemented in a derived class, processes all items in a given source collection.
+        /// </summary>
+        /// <remarks>Warning: No locks should be held when invoking this method.</remarks>
+        protected abstract void LoadSourceCollection();
+
+        /// <summary>
+        /// When overridden in a derived class, processes an Add event over a range of items.
+        /// </summary>
+        /// <param name="sourceStartingIndex">Index of the source starting.</param>
+        /// <param name="addedItems">The added items.</param>
+        protected abstract void ReactToAddRange(int sourceStartingIndex, IEnumerable<TSource> addedItems);
+
+        /// <summary>
+        /// When overridden in a derived class, processes a Move event over a range of items.
+        /// </summary>
+        /// <param name="sourceStartingIndex">Index of the source starting.</param>
+        /// <param name="movedItems">The moved items.</param>
+        protected abstract void ReactToMoveRange(int sourceStartingIndex, IEnumerable<TSource> movedItems);
+
+        /// <summary>
+        /// When overridden in a derived class, processes a Remove event over a range of items.
+        /// </summary>
+        /// <param name="removedItems">The removed items.</param>
+        protected abstract void ReactToRemoveRange(IEnumerable<TSource> removedItems);
+
+        /// <summary>
+        /// When overridden in a derived class, provides the derived class with the ability to perform custom actions when 
+        /// the collection is reset, before the sources are re-loaded.
+        /// </summary>
+        /// <remarks>Warning: No locks should be held when invoking this method.</remarks>
+        protected virtual void ResetOverride() {}
+
+        private void SourceCollection_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            // We do not handle CollectionChanged events from sources that are not loaded yet. 
+            // Check whether this is a valid source collection.
+            LoadState currentState = SourceCollectionState;
+            if (sender != SourceCollection || currentState == LoadState.IfNotAlreadyLoaded)
+            {
+                return;
+            }
+
+            // Reset or process the collection changed event. Note that no locks should be held at this 
+            // time.
+            switch (e.Action)
+            {
+                case NotifyCollectionChangedAction.Add:
+                    ReactToAddRange(e.NewStartingIndex, e.NewItems.Cast<TSource>());
+                    break;
+#if !SILVERLIGHT
+                case NotifyCollectionChangedAction.Move:
+                    ReactToMoveRange(e.NewStartingIndex, e.OldItems.Cast<TSource>());
+                    break;
+#endif
+                case NotifyCollectionChangedAction.Remove:
+                    ReactToRemoveRange(e.OldItems.Cast<TSource>());
+                    break;
+                case NotifyCollectionChangedAction.Replace:
+                    ReactToReplaceRange(e.OldItems.Cast<TSource>(), e.NewItems.Cast<TSource>());
+                    break;
+                case NotifyCollectionChangedAction.Reset:
+                    Reset();
+                    break;
+            }
+        }
+
+        private void SourceCollection_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            // We should bubble up "IsLoading" property changes, because a change in the IsLoading
+            // state of a source collection means a change in our own IsLoading state.
+            if (e.PropertyName == PropertyChangedCache.IsLoading.PropertyName)
+            {
+                OnPropertyChanged(PropertyChangedCache.IsLoading);
+            }
+        }
 
         /// <summary>
         /// Returns a <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
@@ -646,7 +631,12 @@ namespace Bindable.Linq.Iterators
         /// <remarks>Warning: No locks should be held when invoking this method.</remarks>
         public override string ToString()
         {
-            return string.Format(CultureInfo.InvariantCulture, "{0}<{1},{2}> - CurrentCount: {3}", this.GetType().Name, typeof(TSource).Name, typeof(TResult).Name, this.CurrentCount);
+            return string.Format(CultureInfo.InvariantCulture, "{0}<{1},{2}> - CurrentCount: {3}", GetType().Name, typeof (TSource).Name, typeof (TResult).Name, CurrentCount);
+        }
+
+        private void ResultCollection_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            OnCollectionChanged(e);
         }
 
         /// <summary>
@@ -660,14 +650,14 @@ namespace Bindable.Linq.Iterators
             // avoids us raising CollectionChanged events during the wrong times - such as 
             // when the collection is first enumerating (a bug in some UI code - namely WPF) or 
             // when resetting the collection.
-            if (!this.CollectionChangedSuspendedState.IsWithin)
+            if (!CollectionChangedSuspendedState.IsWithin)
             {
-                NotifyCollectionChangedEventHandler handler = this.CollectionChanged;
+                NotifyCollectionChangedEventHandler handler = CollectionChanged;
                 if (handler != null)
                 {
                     handler(this, e);
                 }
-                this.OnPropertyChanged(PropertyChangedCache.Count);
+                OnPropertyChanged(PropertyChangedCache.Count);
             }
         }
 
@@ -678,7 +668,7 @@ namespace Bindable.Linq.Iterators
         /// <remarks>Warning: No locks should be held when invoking this method.</remarks>
         protected virtual void OnPropertyChanged(PropertyChangedEventArgs e)
         {
-            PropertyChangedEventHandler handler = this.PropertyChanged;
+            PropertyChangedEventHandler handler = PropertyChanged;
             if (handler != null)
             {
                 handler(this, e);
@@ -688,26 +678,6 @@ namespace Bindable.Linq.Iterators
         /// <summary>
         /// When overridden in a derived class, gives the class an opportunity to dispose any expensive components.
         /// </summary>
-        protected virtual void DisposeOverride()
-        {
-        }
-
-        /// <summary>
-        /// Releases unmanaged and - optionally - managed resources
-        /// </summary>
-        public void Dispose()
-        {
-            this.DisposeOverride();
-            _sourceCollectionPropertyChangedObserver.Dispose();
-            _sourceCollectionChangedObserver.Dispose();
-            using (this.IteratorLock.Enter(this))
-            {
-                foreach (IDependency dependency in _dependencies)
-                {
-                    dependency.Dispose();
-                }
-            }
-            _sourceCollection.Dispose();
-        }
+        protected virtual void DisposeOverride() {}
     }
 }

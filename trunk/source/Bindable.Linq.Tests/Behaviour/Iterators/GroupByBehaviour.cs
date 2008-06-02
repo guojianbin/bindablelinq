@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using Bindable.Linq.Dependencies;
 using Bindable.Linq.Tests.TestHelpers;
-using Bindable.Linq.Tests.TestObjectModel;
 using NUnit.Framework;
 
 namespace Bindable.Linq.Tests.Behaviour.Iterators
@@ -16,38 +11,28 @@ namespace Bindable.Linq.Tests.Behaviour.Iterators
     public class GroupByBehaviour : TestFixture
     {
         [Test]
-        public void GroupByIteratorBeforeInitialize()
-        {
-            Given.Collection(Tom, Tim, Sally)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().GroupBy(c => c.Name[0]))
-                .AndLinqEquivalent(inputs => inputs.GroupBy(c => c.Name[0]))
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WithoutInitializing().ExpectNoEvents()
-                .AndExpectFinalCountOf(2);
-        }
+        public void GroupByIteratorAddMultipleItemsToExistingGroupAfterInitialize() {}
 
         [Test]
-        public void GroupByIteratorAfterInitialize()
-        {
-            Given.Collection(Tom, Tim, Sally)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().GroupBy(c => c.Name[0]))
-                .AndLinqEquivalent(inputs => inputs.GroupBy(c => c.Name[0]))
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WhenLoaded().ExpectNoEvents()
-                .AndExpectFinalCountOf(2);
-        }
+        public void GroupByIteratorAddMultipleItemsToExistingGroupBeforeInitialize() {}
 
         [Test]
-        public void GroupByIteratorAddSingleItemToExistingGroupBeforeInitialize()
-        {
-            Given.Collection(Tom, Tim, Sally)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().GroupBy(c => c.Name[0]))
-                .AndLinqEquivalent(inputs => inputs.GroupBy(c => c.Name[0]))
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WithoutInitializing().ExpectNoEvents()
-                .ThenAdd(Sam).ExpectNoEvents().ExpectNoEventsOnGroup(1)
-                .AndExpectFinalCountOf(2);
-        }
+        public void GroupByIteratorAddMultipleItemsToMixedGroupsAfterInitialize() {}
+
+        [Test]
+        public void GroupByIteratorAddMultipleItemsToMixedGroupsBeforeInitialize() {}
+
+        [Test]
+        public void GroupByIteratorAddMultipleItemsToMultipleNonExistingGroupsAfterInitialize() {}
+
+        [Test]
+        public void GroupByIteratorAddMultipleItemsToMultipleNonExistingGroupsBeforeInitialize() {}
+
+        [Test]
+        public void GroupByIteratorAddMultipleItemsToNonExistingGroupAfterInitialize() {}
+
+        [Test]
+        public void GroupByIteratorAddMultipleItemsToNonExistingGroupBeforeInitialize() {}
 
         [Test]
         public void GroupByIteratorAddSingleItemToExistingGroupAfterInitialize()
@@ -57,306 +42,163 @@ namespace Bindable.Linq.Tests.Behaviour.Iterators
                 .AndLinqEquivalent(inputs => inputs.GroupBy(c => c.Name[0]))
                 .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
                 .WhenLoaded().ExpectNoEvents()
-                .ThenAdd(Sam).ExpectNoEvents().ExpectEvent(Add.OnGroup(1).WithNewItems(Sam).WithNewIndex(1))
-                .AndExpectFinalCountOf(2);
+                .ThenAdd(Sam).ExpectNoEvents().ExpectEvent(Add.OnGroup(1).WithNewItems(Sam).WithNewIndex(1)).AndExpectFinalCountOf(2);
         }
 
         [Test]
-        public void GroupByIteratorAddSingleItemToNonExistingGroupBeforeInitialize()
+        public void GroupByIteratorAddSingleItemToExistingGroupBeforeInitialize()
         {
-
+            Given.Collection(Tom, Tim, Sally).WithSyncLinqQuery(inputs => inputs.AsBindable().GroupBy(c => c.Name[0])).AndLinqEquivalent(inputs => inputs.GroupBy(c => c.Name[0])).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WithoutInitializing().ExpectNoEvents().ThenAdd(Sam).ExpectNoEvents().ExpectNoEventsOnGroup(1).AndExpectFinalCountOf(2);
         }
 
         [Test]
-        public void GroupByIteratorAddSingleItemToNonExistingGroupAfterInitialize()
-        {
-
-        }
-        [Test]
-        public void GroupByIteratorAddMultipleItemsToExistingGroupBeforeInitialize()
-        {
-
-        }
+        public void GroupByIteratorAddSingleItemToNonExistingGroupAfterInitialize() {}
 
         [Test]
-        public void GroupByIteratorAddMultipleItemsToExistingGroupAfterInitialize()
-        {
+        public void GroupByIteratorAddSingleItemToNonExistingGroupBeforeInitialize() {}
 
-        }
         [Test]
-        public void GroupByIteratorAddMultipleItemsToNonExistingGroupBeforeInitialize()
+        public void GroupByIteratorAfterInitialize()
         {
-
+            Given.Collection(Tom, Tim, Sally).WithSyncLinqQuery(inputs => inputs.AsBindable().GroupBy(c => c.Name[0])).AndLinqEquivalent(inputs => inputs.GroupBy(c => c.Name[0])).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WhenLoaded().ExpectNoEvents().AndExpectFinalCountOf(2);
         }
 
         [Test]
-        public void GroupByIteratorAddMultipleItemsToNonExistingGroupAfterInitialize()
+        public void GroupByIteratorBeforeInitialize()
         {
-
-        }
-        [Test]
-        public void GroupByIteratorAddMultipleItemsToMixedGroupsBeforeInitialize()
-        {
-
+            Given.Collection(Tom, Tim, Sally).WithSyncLinqQuery(inputs => inputs.AsBindable().GroupBy(c => c.Name[0])).AndLinqEquivalent(inputs => inputs.GroupBy(c => c.Name[0])).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WithoutInitializing().ExpectNoEvents().AndExpectFinalCountOf(2);
         }
 
         [Test]
-        public void GroupByIteratorAddMultipleItemsToMixedGroupsAfterInitialize()
-        {
-
-        }
-        [Test]
-        public void GroupByIteratorAddMultipleItemsToMultipleNonExistingGroupsBeforeInitialize()
-        {
-
-        }
+        public void GroupByIteratorChangeSingleItemKeyForExistingGroupAfterInitialize() {}
 
         [Test]
-        public void GroupByIteratorAddMultipleItemsToMultipleNonExistingGroupsAfterInitialize()
-        {
-
-        }
-        [Test]
-        public void GroupByIteratorRemoveSingleItemFromExistingGroupBeforeInitialize()
-        {
-
-        }
+        public void GroupByIteratorChangeSingleItemKeyForExistingGroupBeforeInitialize() {}
 
         [Test]
-        public void GroupByIteratorRemoveSingleItemFromExistingGroupAfterInitialize()
-        {
-
-        }
-        [Test]
-        public void GroupByIteratorRemoveSingleNonExisingItemFromNonExisingGroupBeforeInitialize()
-        {
-
-        }
+        public void GroupByIteratorChangeSingleItemKeyForNonExistingGroupAfterInitialize() {}
 
         [Test]
-        public void GroupByIteratorRemoveSingleNonExisingItemFromNonExisingGroupAfterInitialize()
-        {
-
-        }
-        [Test]
-        public void GroupByIteratorRemoveMultipleItemsFromExistingGroupsBeforeInitialize()
-        {
-
-        }
+        public void GroupByIteratorChangeSingleItemKeyForNonExistingGroupBeforeInitialize() {}
 
         [Test]
-        public void GroupByIteratorRemoveMultipleItemsFromExistingGroupsAfterInitialize()
-        {
-
-        }
-        [Test]
-        public void GroupByIteratorRemoveMultipleItemsFromMixedGroupsBeforeInitialize()
-        {
-
-        }
+        public void GroupByIteratorMoveMultipleItemsToExistingGroupsAfterInitialize() {}
 
         [Test]
-        public void GroupByIteratorRemoveMultipleItemsFromMixedGroupsAfterInitialize()
-        {
-
-        }
-        [Test]
-        public void GroupByIteratorMoveSingleItemInExistingGroupBeforeInitialize()
-        {
-
-        }
+        public void GroupByIteratorMoveMultipleItemsToExistingGroupsBeforeInitialize() {}
 
         [Test]
-        public void GroupByIteratorMoveSingleItemInExistingGroupAfterInitialize()
-        {
-
-        }
-        [Test]
-        public void GroupByIteratorMoveSingleNonExistingItemBeforeInitialize()
-        {
-
-        }
+        public void GroupByIteratorMoveMultipleItemsToMixedGroupsAfterInitialize() {}
 
         [Test]
-        public void GroupByIteratorMoveSingleNonExistingItemAfterInitialize()
-        {
-
-        }
-        [Test]
-        public void GroupByIteratorMoveMultipleItemsToExistingGroupsBeforeInitialize()
-        {
-
-        }
+        public void GroupByIteratorMoveMultipleItemsToMixedGroupsBeforeInitialize() {}
 
         [Test]
-        public void GroupByIteratorMoveMultipleItemsToExistingGroupsAfterInitialize()
-        {
-
-        }
-        [Test]
-        public void GroupByIteratorMoveMultipleItemsToMixedGroupsBeforeInitialize()
-        {
-
-        }
+        public void GroupByIteratorMoveSingleItemInExistingGroupAfterInitialize() {}
 
         [Test]
-        public void GroupByIteratorMoveMultipleItemsToMixedGroupsAfterInitialize()
-        {
-
-        }
-        [Test]
-        public void GroupByIteratorReplaceSingleItemInExistingGroupWithItemForExistingGroupBeforeInitialize()
-        {
-
-        }
+        public void GroupByIteratorMoveSingleItemInExistingGroupBeforeInitialize() {}
 
         [Test]
-        public void GroupByIteratorReplaceSingleItemInExistingGroupWithItemForExistingGroupAfterInitialize()
-        {
-
-        }
-        [Test]
-        public void GroupByIteratorReplaceSingleItemInExistingGroupWithItemForNonExistingGroupBeforeInitialize()
-        {
-
-        }
+        public void GroupByIteratorMoveSingleNonExistingItemAfterInitialize() {}
 
         [Test]
-        public void GroupByIteratorReplaceSingleItemInExistingGroupWithItemForNonExistingGroupAfterInitialize()
-        {
-
-        }
-        [Test]
-        public void GroupByIteratorReplaceSingleNonExistingItemInExistingGroupWithItemForNonExistingGroupBeforeInitialize()
-        {
-
-        }
+        public void GroupByIteratorMoveSingleNonExistingItemBeforeInitialize() {}
 
         [Test]
-        public void GroupByIteratorReplaceSingleNonExistingItemInExistingGroupWithItemForNonExistingGroupAfterInitialize()
-        {
-
-        }
-        [Test]
-        public void GroupByIteratorReplaceSingleNonExistingItemInExistingGroupWithItemForExistingGroupBeforeInitialize()
-        {
-
-        }
+        public void GroupByIteratorRemoveMultipleItemsFromExistingGroupsAfterInitialize() {}
 
         [Test]
-        public void GroupByIteratorReplaceSingleNonExistingItemInExistingGroupWithItemForExistingGroupAfterInitialize()
-        {
-
-        }
-        [Test]
-        public void GroupByIteratorReplaceSingleNonExistingItemInNonExistingGroupWithItemForExistingGroupBeforeInitialize()
-        {
-
-        }
+        public void GroupByIteratorRemoveMultipleItemsFromExistingGroupsBeforeInitialize() {}
 
         [Test]
-        public void GroupByIteratorReplaceSingleNonExistingItemInNonExistingGroupWithItemForExistingGroupAfterInitialize()
-        {
-
-        }
-        [Test]
-        public void GroupByIteratorReplaceSingleNonExistingItemInNonExistingGroupWithItemForNonExistingGroupBeforeInitialize()
-        {
-
-        }
+        public void GroupByIteratorRemoveMultipleItemsFromMixedGroupsAfterInitialize() {}
 
         [Test]
-        public void GroupByIteratorReplaceSingleNonExistingItemInNonExistingGroupWithItemForNonExistingGroupAfterInitialize()
-        {
-
-        }
-        [Test]
-        public void GroupByIteratorReplaceMultipleExistingItemsForExistingGroupsBeforeInitialize()
-        {
-
-        }
+        public void GroupByIteratorRemoveMultipleItemsFromMixedGroupsBeforeInitialize() {}
 
         [Test]
-        public void GroupByIteratorReplaceMultipleExistingItemsForExistingGroupsAfterInitialize()
-        {
-
-        }
-        [Test]
-        public void GroupByIteratorReplaceMultipleExistingItemsForNonExistingGroupsBeforeInitialize()
-        {
-
-        }
+        public void GroupByIteratorRemoveSingleItemFromExistingGroupAfterInitialize() {}
 
         [Test]
-        public void GroupByIteratorReplaceMultipleExistingItemsForNonExistingGroupsAfterInitialize()
-        {
-
-        }
-        [Test]
-        public void GroupByIteratorReplaceMultipleNonExistingItemsForExistingGroupsBeforeInitialize()
-        {
-
-        }
+        public void GroupByIteratorRemoveSingleItemFromExistingGroupBeforeInitialize() {}
 
         [Test]
-        public void GroupByIteratorReplaceMultipleNonExistingItemsForExistingGroupsAfterInitialize()
-        {
-
-        }
-        [Test]
-        public void GroupByIteratorReplaceMultipleNonExistingItemsForNonExistingGroupsBeforeInitialize()
-        {
-
-        }
+        public void GroupByIteratorRemoveSingleNonExisingItemFromNonExisingGroupAfterInitialize() {}
 
         [Test]
-        public void GroupByIteratorReplaceMultipleNonExistingItemsForNonExistingGroupsAfterInitialize()
-        {
-
-        }
-        [Test]
-        public void GroupByIteratorReplaceMultipleMixedItemsForExistingGroupsBeforeInitialize()
-        {
-
-        }
+        public void GroupByIteratorRemoveSingleNonExisingItemFromNonExisingGroupBeforeInitialize() {}
 
         [Test]
-        public void GroupByIteratorReplaceMultipleMixedItemsForExistingGroupsAfterInitialize()
-        {
-
-        }
-        [Test]
-        public void GroupByIteratorReplaceMultipleMixedItemsForMixedGroupsBeforeInitialize()
-        {
-
-        }
+        public void GroupByIteratorReplaceMultipleExistingItemsForExistingGroupsAfterInitialize() {}
 
         [Test]
-        public void GroupByIteratorReplaceMultipleMixedItemsForMixedGroupsAfterInitialize()
-        {
-
-        }
-        [Test]
-        public void GroupByIteratorChangeSingleItemKeyForExistingGroupBeforeInitialize()
-        {
-
-        }
+        public void GroupByIteratorReplaceMultipleExistingItemsForExistingGroupsBeforeInitialize() {}
 
         [Test]
-        public void GroupByIteratorChangeSingleItemKeyForExistingGroupAfterInitialize()
-        {
-
-        }
-        [Test]
-        public void GroupByIteratorChangeSingleItemKeyForNonExistingGroupBeforeInitialize()
-        {
-
-        }
+        public void GroupByIteratorReplaceMultipleExistingItemsForNonExistingGroupsAfterInitialize() {}
 
         [Test]
-        public void GroupByIteratorChangeSingleItemKeyForNonExistingGroupAfterInitialize()
-        {
+        public void GroupByIteratorReplaceMultipleExistingItemsForNonExistingGroupsBeforeInitialize() {}
 
-        }
+        [Test]
+        public void GroupByIteratorReplaceMultipleMixedItemsForExistingGroupsAfterInitialize() {}
+
+        [Test]
+        public void GroupByIteratorReplaceMultipleMixedItemsForExistingGroupsBeforeInitialize() {}
+
+        [Test]
+        public void GroupByIteratorReplaceMultipleMixedItemsForMixedGroupsAfterInitialize() {}
+
+        [Test]
+        public void GroupByIteratorReplaceMultipleMixedItemsForMixedGroupsBeforeInitialize() {}
+
+        [Test]
+        public void GroupByIteratorReplaceMultipleNonExistingItemsForExistingGroupsAfterInitialize() {}
+
+        [Test]
+        public void GroupByIteratorReplaceMultipleNonExistingItemsForExistingGroupsBeforeInitialize() {}
+
+        [Test]
+        public void GroupByIteratorReplaceMultipleNonExistingItemsForNonExistingGroupsAfterInitialize() {}
+
+        [Test]
+        public void GroupByIteratorReplaceMultipleNonExistingItemsForNonExistingGroupsBeforeInitialize() {}
+
+        [Test]
+        public void GroupByIteratorReplaceSingleItemInExistingGroupWithItemForExistingGroupAfterInitialize() {}
+
+        [Test]
+        public void GroupByIteratorReplaceSingleItemInExistingGroupWithItemForExistingGroupBeforeInitialize() {}
+
+        [Test]
+        public void GroupByIteratorReplaceSingleItemInExistingGroupWithItemForNonExistingGroupAfterInitialize() {}
+
+        [Test]
+        public void GroupByIteratorReplaceSingleItemInExistingGroupWithItemForNonExistingGroupBeforeInitialize() {}
+
+        [Test]
+        public void GroupByIteratorReplaceSingleNonExistingItemInExistingGroupWithItemForExistingGroupAfterInitialize() {}
+
+        [Test]
+        public void GroupByIteratorReplaceSingleNonExistingItemInExistingGroupWithItemForExistingGroupBeforeInitialize() {}
+
+        [Test]
+        public void GroupByIteratorReplaceSingleNonExistingItemInExistingGroupWithItemForNonExistingGroupAfterInitialize() {}
+
+        [Test]
+        public void GroupByIteratorReplaceSingleNonExistingItemInExistingGroupWithItemForNonExistingGroupBeforeInitialize() {}
+
+        [Test]
+        public void GroupByIteratorReplaceSingleNonExistingItemInNonExistingGroupWithItemForExistingGroupAfterInitialize() {}
+
+        [Test]
+        public void GroupByIteratorReplaceSingleNonExistingItemInNonExistingGroupWithItemForExistingGroupBeforeInitialize() {}
+
+        [Test]
+        public void GroupByIteratorReplaceSingleNonExistingItemInNonExistingGroupWithItemForNonExistingGroupAfterInitialize() {}
+
+        [Test]
+        public void GroupByIteratorReplaceSingleNonExistingItemInNonExistingGroupWithItemForNonExistingGroupBeforeInitialize() {}
     }
 }

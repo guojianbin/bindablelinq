@@ -1,19 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.ComponentModel;
-using Bindable.Linq.Helpers;
-using System.Reflection;
+using System;
 
 namespace Bindable.Linq.Dependencies.PathNavigation.Tokens
 {
+    using System.Reflection;
+    using Helpers;
+
     /// <summary>
     /// A property monitor for CLR based properties.
     /// </summary>
     internal sealed class WindowsFormsMemberToken : MemberToken
     {
-        private EventHandler _actualHandler;
+        private readonly EventHandler _actualHandler;
         private IPropertyReader<object> _propertyReader;
 
         /// <summary>
@@ -28,8 +25,8 @@ namespace Bindable.Linq.Dependencies.PathNavigation.Tokens
             : base(objectToObserve, propertyName, remainingPath, callback, pathNavigator)
         {
             _actualHandler = CurrentTarget_PropertyChanged;
-            
-            this.AcquireTarget(objectToObserve);
+
+            AcquireTarget(objectToObserve);
         }
 
         /// <summary>
@@ -37,15 +34,15 @@ namespace Bindable.Linq.Dependencies.PathNavigation.Tokens
         /// </summary>
         protected override void DiscardCurrentTargetOverride()
         {
-            if (this.CurrentTarget != null)
+            if (CurrentTarget != null)
             {
-                EventInfo eventInfo = this.CurrentTarget.GetType().GetEvent(this.PropertyName + "Changed");
+                EventInfo eventInfo = CurrentTarget.GetType().GetEvent(PropertyName + "Changed");
                 if (eventInfo != null)
                 {
                     MethodInfo removeMethod = eventInfo.GetRemoveMethod();
                     if (removeMethod != null)
                     {
-                        removeMethod.Invoke(this.CurrentTarget, new object[] { _actualHandler });
+                        removeMethod.Invoke(CurrentTarget, new object[] {_actualHandler});
                     }
                 }
             }
@@ -56,19 +53,19 @@ namespace Bindable.Linq.Dependencies.PathNavigation.Tokens
         /// </summary>
         protected override void MonitorCurrentTargetOverride()
         {
-            if (this.CurrentTarget != null)
+            if (CurrentTarget != null)
             {
-                EventInfo eventInfo = this.CurrentTarget.GetType().GetEvent(this.PropertyName + "Changed");
+                EventInfo eventInfo = CurrentTarget.GetType().GetEvent(PropertyName + "Changed");
                 if (eventInfo != null)
                 {
                     MethodInfo addMethod = eventInfo.GetAddMethod();
                     if (addMethod != null)
                     {
-                        addMethod.Invoke(this.CurrentTarget, new object[] { _actualHandler });
+                        addMethod.Invoke(CurrentTarget, new object[] {_actualHandler});
                     }
                 }
             }
-            _propertyReader = PropertyReaderFactory.Create<object>(this.CurrentTarget.GetType(), this.PropertyName);
+            _propertyReader = PropertyReaderFactory.Create<object>(CurrentTarget.GetType(), PropertyName);
         }
 
         /// <summary>
@@ -79,16 +76,16 @@ namespace Bindable.Linq.Dependencies.PathNavigation.Tokens
         {
             if (_propertyReader != null)
             {
-                return _propertyReader.GetValue(this.CurrentTarget);
+                return _propertyReader.GetValue(CurrentTarget);
             }
             return null;
         }
 
         private void CurrentTarget_PropertyChanged(object sender, EventArgs e)
         {
-            this.HandleCurrentTargetPropertyValueChanged();
+            HandleCurrentTargetPropertyValueChanged();
         }
-        
+
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>

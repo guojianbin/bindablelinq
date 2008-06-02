@@ -1,28 +1,20 @@
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Collections.Specialized;
-using System.Linq;
-using System.Text;
-using Bindable.Linq.Dependencies;
-using Bindable.Linq.Helpers;
-using Bindable.Linq.Tests.TestObjectModel;
-using NUnit.Framework;
 
 namespace Bindable.Linq.Tests.Unit.Helpers
 {
+    using Bindable.Linq.Helpers;
+    using NUnit.Framework;
+
     /// <summary>
     /// This class contains tests for the Bindable LINQ Weak Event implementation.
     /// </summary>
     [TestFixture]
     public sealed class WeakEventReferenceTests
     {
-        #region Testing Objects
-
-        sealed class EventPublisher
+        private sealed class EventPublisher
         {
+            public int Subscribers;
             private event EventHandler _eventRaised;
-            public int Subscribers = 0;
 
             public event EventHandler EventRaised
             {
@@ -39,9 +31,9 @@ namespace Bindable.Linq.Tests.Unit.Helpers
             }
         }
 
-        sealed class EventSubscriber
+        private sealed class EventSubscriber
         {
-            private EventPublisher _publisher;
+            private readonly EventPublisher _publisher;
 
             public EventSubscriber(EventPublisher publisher)
             {
@@ -49,22 +41,19 @@ namespace Bindable.Linq.Tests.Unit.Helpers
                 _publisher.EventRaised += Publisher_EventRaised;
             }
 
-            private void Publisher_EventRaised(object sender, EventArgs e)
-            {
-                
-            }
-
             ~EventSubscriber()
             {
                 _publisher.EventRaised -= Publisher_EventRaised;
             }
+
+            private void Publisher_EventRaised(object sender, EventArgs e) {}
         }
 
-        sealed class WeakEventSubscriber
+        private sealed class WeakEventSubscriber
         {
-            private EventHandler<EventArgs> _eventHandler;
-            private WeakEventReference<EventArgs> _weakEventReference;
-            private EventPublisher _publisher;
+            private readonly EventHandler<EventArgs> _eventHandler;
+            private readonly EventPublisher _publisher;
+            private readonly WeakEventReference<EventArgs> _weakEventReference;
 
             public WeakEventSubscriber(EventPublisher publisher)
             {
@@ -73,15 +62,12 @@ namespace Bindable.Linq.Tests.Unit.Helpers
                 // so that they are coupled to the class lifetime rather than the current scope - or else
                 // no one would reference the event handler (since the WeakEventReference just keeps 
                 // a weak reference to it)!
-                _eventHandler = new EventHandler<EventArgs>(EventPublisher_EventRaised);
+                _eventHandler = EventPublisher_EventRaised;
                 _weakEventReference = new WeakEventReference<EventArgs>(_eventHandler);
                 _publisher.EventRaised += _weakEventReference.WeakEventHandler;
             }
 
-            private void EventPublisher_EventRaised(object sender, EventArgs e)
-            {
-
-            }
+            private void EventPublisher_EventRaised(object sender, EventArgs e) {}
 
             ~WeakEventSubscriber()
             {
@@ -93,7 +79,19 @@ namespace Bindable.Linq.Tests.Unit.Helpers
             }
         }
 
-        #endregion
+        private WeakReference CreateEventSubscriber(EventPublisher publisher)
+        {
+            var subscriber = new EventSubscriber(publisher);
+            Assert.AreEqual(1, publisher.Subscribers);
+            return new WeakReference(subscriber);
+        }
+
+        private WeakReference CreateWeakEventSubscriber(EventPublisher publisher)
+        {
+            var subscriber = new WeakEventSubscriber(publisher);
+            Assert.AreEqual(1, publisher.Subscribers);
+            return new WeakReference(subscriber);
+        }
 
         /// <summary>
         /// Tests that standard .NET events do indeed cause referencing issues between 
@@ -106,7 +104,7 @@ namespace Bindable.Linq.Tests.Unit.Helpers
             // using standard .NET events. We only have a weak reference to the subscriber, 
             // so the only other GC reference will be the publisher - this is what introduces
             // memory issues in binding and WPF applications.
-            EventPublisher publisher = new EventPublisher();
+            var publisher = new EventPublisher();
             WeakReference subscriberReference = CreateEventSubscriber(publisher);
             GC.Collect();
             GC.WaitForPendingFinalizers();
@@ -130,7 +128,7 @@ namespace Bindable.Linq.Tests.Unit.Helpers
             // to the created subscriber, and since the weak event handler should remove the 
             // reference from the publisher to the subscriber, the subscriber should be 
             // marked for collection and finalized.
-            EventPublisher publisher = new EventPublisher();
+            var publisher = new EventPublisher();
             WeakReference subscriberReference = CreateWeakEventSubscriber(publisher);
             GC.Collect();
             GC.WaitForPendingFinalizers();
@@ -141,20 +139,6 @@ namespace Bindable.Linq.Tests.Unit.Helpers
             // unhooked the event handler.
             Assert.IsNull(subscriberReference.Target);
             Assert.AreEqual(0, publisher.Subscribers);
-        }
-
-        private WeakReference CreateEventSubscriber(EventPublisher publisher)
-        {
-            EventSubscriber subscriber = new EventSubscriber(publisher);
-            Assert.AreEqual(1, publisher.Subscribers);
-            return new WeakReference(subscriber);
-        }
-
-        private WeakReference CreateWeakEventSubscriber(EventPublisher publisher)
-        {
-            WeakEventSubscriber subscriber = new WeakEventSubscriber(publisher);
-            Assert.AreEqual(1, publisher.Subscribers);
-            return new WeakReference(subscriber);
         }
     }
 }

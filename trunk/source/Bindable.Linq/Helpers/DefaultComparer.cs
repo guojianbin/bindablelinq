@@ -1,10 +1,9 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Bindable.Linq.Helpers
 {
+    using System.Collections.Generic;
+
     /// <summary>
     /// A class that provides a default <see cref="IComparer{T}"/> and <see cref="IEqualityComparer{T}"/> implementation for any type.
     /// </summary>
@@ -16,21 +15,13 @@ namespace Bindable.Linq.Helpers
     /// </remarks>
     internal sealed class DefaultComparer<TCompared> : IComparer<TCompared>, IEqualityComparer<TCompared>
     {
-        /// <summary>
-        /// Constructor.
-        /// </summary>
-        public DefaultComparer()
-        {
-        }
-
         #region IComparer<TCompared> Members
         /// <summary>
         /// Compares the specified items.
         /// </summary>
         /// <param name="left">The first item.</param>
         /// <param name="right">The second items.</param>
-        public int Compare(TCompared left,
-            TCompared right)
+        public int Compare(TCompared left, TCompared right)
         {
             if (left == null && right == null)
             {
@@ -46,12 +37,12 @@ namespace Bindable.Linq.Helpers
             }
             else
             {
-                IComparable<TCompared> genericComparableLeft = left as IComparable<TCompared>;
+                var genericComparableLeft = left as IComparable<TCompared>;
                 if (genericComparableLeft != null)
                 {
                     return genericComparableLeft.CompareTo(right);
                 }
-                IComparable comparableLeft = left as IComparable;
+                var comparableLeft = left as IComparable;
                 if (comparableLeft != null)
                 {
                     return comparableLeft.CompareTo(right);
@@ -70,15 +61,14 @@ namespace Bindable.Linq.Helpers
         /// <returns>
         /// true if the specified objects are equal; otherwise, false.
         /// </returns>
-        public bool Equals(TCompared x,
-            TCompared y)
+        public bool Equals(TCompared x, TCompared y)
         {
             bool areEqual = (x == null && y == null);
             if (!areEqual)
             {
                 if (x != null && y != null)
                 {
-                    IEquatable<TCompared> equatableX = x as IEquatable<TCompared>;
+                    var equatableX = x as IEquatable<TCompared>;
                     if (equatableX != null)
                     {
                         areEqual = equatableX.Equals(y);

@@ -1,15 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Windows.Threading;
-using Bindable.Linq;
-using Bindable.Linq.Dependencies;
 using Bindable.Linq.Helpers;
+using Bindable.Linq.Threading;
+using Bindable.Linq.Transactions;
 
 namespace Bindable.Linq.Iterators
 {
@@ -18,20 +12,22 @@ namespace Bindable.Linq.Iterators
     /// using the advantages of data binding and <see cref="T:INotifyCollectionChanged"/>.
     /// </summary>
     /// <typeparam name="TElement">The type of source item.</typeparam>
-    internal sealed class AsynchronousIterator<TElement> : 
-        Iterator<TElement, TElement> 
+    internal sealed class AsynchronousIterator<TElement> : Iterator<TElement, TElement>
         where TElement : class
     {
-        private StateScope _loadingState;
+        private readonly IDispatcher _dispatcher;
         private IteratorThread _iteratorThread;
+        private StateScope _loadingState;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="T:AsynchronousIterator`1"/> class.
         /// </summary>
         /// <param name="source">The source.</param>
-        public AsynchronousIterator(IBindableCollection<TElement> source) : base(source)
+        /// <param name="dispatcher">The dispatcher.</param>
+        public AsynchronousIterator(IBindableCollection<TElement> source, IDispatcher dispatcher)
+            : base(source)
         {
-
+            _dispatcher = dispatcher;
         }
 
         /// <summary>
@@ -39,7 +35,13 @@ namespace Bindable.Linq.Iterators
         /// </summary>
         protected override void LoadSourceCollection()
         {
-            using (this.IteratorLock.Enter(this))
+            if (_loadingState != null)
+            {
+                _loadingState.Leave();
+            }
+
+            _loadingState = this.IsLoadingState.Enter();
+            lock (IteratorLock)
             {
                 if (_iteratorThread != null)
                 {
@@ -47,14 +49,20 @@ namespace Bindable.Linq.Iterators
                 }
                 _iteratorThread = new IteratorThread();
             }
-            _iteratorThread.SourceCollection = this.SourceCollection;
-            _iteratorThread.YieldCallback =
-                delegate(TElement element)
-                {
-                    this.ReactToAddRange(0, new TElement[] { element });
-                };
+            _iteratorThread.SourceCollection = SourceCollection;
+            _iteratorThread.YieldCallback = delegate(TElement element) { 
+                _dispatcher.Invoke(() => ReactToAddRange(0, new TElement[] {element})); 
+            };
+            _iteratorThread.CompletedCallback = delegate { 
+                _dispatcher.Invoke(() => {
+                    if (_loadingState != null)
+                    {
+                        _loadingState.Leave();
+                    }
+                });
+            };
 
-            Thread t = new Thread(_iteratorThread.Iterate);
+            var t = new Thread(_iteratorThread.Iterate);
             t.Start();
         }
 
@@ -66,15 +74,15 @@ namespace Bindable.Linq.Iterators
         protected override void ReactToAddRange(int sourceStartingIndex, IEnumerable<TElement> addedItems)
         {
             List<TElement> elementsToAdd = addedItems.EnumerateSafely();
-            using (var recorder = this.ResultCollection.Record())
+            using (ITransaction transaction = ResultCollection.BeginTransaction())
             {
-                using (this.IteratorLock.Enter(this))
+                lock (IteratorLock)
                 {
                     foreach (TElement element in elementsToAdd)
                     {
-                        if (!this.ResultCollection.Contains(element))
+                        if (!ResultCollection.Contains(element))
                         {
-                            this.ResultCollection.Add(element, recorder);
+                            ResultCollection.Add(element, transaction);
                         }
                     }
                 }
@@ -86,9 +94,7 @@ namespace Bindable.Linq.Iterators
         /// </summary>
         /// <param name="sourceStartingIndex">Index of the source starting.</param>
         /// <param name="movedItems">The moved items.</param>
-        protected override void ReactToMoveRange(int sourceStartingIndex, IEnumerable<TElement> movedItems)
-        {
-        }
+        protected override void ReactToMoveRange(int sourceStartingIndex, IEnumerable<TElement> movedItems) {}
 
         /// <summary>
         /// When overridden in a derived class, processes a Remove event over a range of items.
@@ -97,11 +103,11 @@ namespace Bindable.Linq.Iterators
         protected override void ReactToRemoveRange(IEnumerable<TElement> removedItems)
         {
             List<TElement> elementsToRemove = removedItems.EnumerateSafely();
-            using (var recorder = this.ResultCollection.Record())
+            using (ITransaction transaction = ResultCollection.BeginTransaction())
             {
-                using (this.IteratorLock.Enter(this))
+                lock (IteratorLock)
                 {
-                    this.ResultCollection.RemoveRange(elementsToRemove, recorder);
+                    ResultCollection.RemoveRange(elementsToRemove, transaction);
                 }
             }
         }
@@ -115,11 +121,11 @@ namespace Bindable.Linq.Iterators
         {
             List<TElement> oldElements = oldItems.EnumerateSafely();
             List<TElement> newElements = newItems.EnumerateSafely();
-            using (var recorder = this.ResultCollection.Record())
+            using (ITransaction transaction = ResultCollection.BeginTransaction())
             {
-                using (this.IteratorLock.Enter(this))
+                lock (IteratorLock)
                 {
-                    this.ResultCollection.ReplaceRange(oldElements, newElements, new List<int>(), recorder);
+                    ResultCollection.ReplaceRange(oldElements, newElements, new List<int>(), transaction);
                 }
             }
         }
@@ -134,54 +140,37 @@ namespace Bindable.Linq.Iterators
             // Nothing to do here
         }
 
+        #region Nested type: IteratorThread
         private class IteratorThread
         {
-            private bool _cancel;
-            private IBindableCollection<TElement> _sourceCollection;
-            private Action<TElement> _yieldCallback;
+            public bool Cancel { get; set; }
 
-            public IteratorThread()
-            {
+            public IBindableCollection<TElement> SourceCollection { get; set; }
 
-            }
-
-            public bool Cancel
-            {
-                get { return _cancel; }
-                set { _cancel = value; }
-            }
-
-            public IBindableCollection<TElement> SourceCollection
-            {
-                get { return _sourceCollection; }
-                set { _sourceCollection = value; }
-            }
-
-            public Action<TElement> YieldCallback
-            {
-                get { return _yieldCallback; }
-                set { _yieldCallback = value; }
-            }
+            public Action<TElement> YieldCallback { get; set; }
+            public Action CompletedCallback { get; set; }
 
             public void Iterate(object state)
             {
-                IEnumerator<TElement> enumerator = this.SourceCollection.GetEnumerator();
+                IEnumerator<TElement> enumerator = SourceCollection.GetEnumerator();
                 while (enumerator.MoveNext())
                 {
                     TElement current = enumerator.Current;
-                    if (this.Cancel)
+                    if (Cancel)
                     {
                         break;
                     }
                     if (current != null)
                     {
-                        if (this.YieldCallback != null) 
+                        if (YieldCallback != null)
                         {
-                            this.YieldCallback(current);
+                            YieldCallback(current);
                         }
                     }
                 }
+                CompletedCallback();
             }
         }
+        #endregion
     }
 }

@@ -1,16 +1,11 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using Bindable.Linq.Dependencies;
-using System.Diagnostics;
-using Bindable.Linq.Configuration;
 
 namespace Bindable.Linq
 {
+    using System.Collections.Generic;
+    using Configuration;
+    using Dependencies;
+
     /// <summary>
     /// This interface is supported by all Bindable LINQ result sets. As well as being an <see cref="T:IEnumerable"/>, 
     /// it provides a number of other properties and methods which take advantage of Bindable LINQ's data 
@@ -30,10 +25,7 @@ namespace Bindable.Linq
     /// binding and delayed execution features.
     /// </summary>
     /// <typeparam name="TResult">The type of item being enumerated.</typeparam>
-    public interface IBindableQuery<TResult> : 
-        IEnumerable<TResult>,
-        IBindableCollection<TResult>,
-        IBindableQuery
+    public interface IBindableQuery<TResult> : IEnumerable<TResult>, IBindableCollection<TResult>, IBindableQuery
     {
         /// <summary>
         /// Gets the <see cref="T:TResult"/> at the specified index.

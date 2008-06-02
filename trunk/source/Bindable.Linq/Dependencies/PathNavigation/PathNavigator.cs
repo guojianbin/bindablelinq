@@ -1,21 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Windows;
-using Bindable.Linq.Dependencies.PathNavigation.TokenFactories;
-using Bindable.Linq.Dependencies.PathNavigation.Tokens;
+using System;
 
 namespace Bindable.Linq.Dependencies.PathNavigation
 {
+    using TokenFactories;
+    using Tokens;
+
     /// <summary>
     /// A factory for the construction of property monitors by detecting information about the object.
     /// </summary>
     public class PathNavigator : IPathNavigator
     {
-        private ITokenFactory[] _traversers;
+        private readonly ITokenFactory[] _traversers;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PathNavigator"/> class.
@@ -26,6 +21,7 @@ namespace Bindable.Linq.Dependencies.PathNavigation
             _traversers = traversers;
         }
 
+        #region IPathNavigator Members
         /// <summary>
         /// Creates an appropriate property monitor for the remaining property path string on the target object.
         /// </summary>
@@ -35,7 +31,7 @@ namespace Bindable.Linq.Dependencies.PathNavigation
         /// <returns>
         /// An appropriate <see cref="IToken"/> for the property.
         /// </returns>
-        public IToken TraverseNext(object target, string propertyPath, Action<object,string> callback)
+        public IToken TraverseNext(object target, string propertyPath, Action<object, string> callback)
         {
             propertyPath = propertyPath ?? string.Empty;
             IToken result = null;
@@ -49,5 +45,6 @@ namespace Bindable.Linq.Dependencies.PathNavigation
             }
             return result;
         }
+        #endregion
     }
 }

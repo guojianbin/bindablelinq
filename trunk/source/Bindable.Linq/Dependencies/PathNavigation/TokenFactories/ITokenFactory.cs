@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Bindable.Linq.Dependencies.PathNavigation.Tokens;
+using System;
 
 namespace Bindable.Linq.Dependencies.PathNavigation.TokenFactories
 {
+    using Tokens;
+
     /// <summary>
     /// Implemented by factories that construct <see cref="IToken">ITokens</see> from a property path.
     /// </summary>

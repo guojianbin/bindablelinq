@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using Bindable.Linq.Dependencies.Definitions;
+using System;
 
 namespace Bindable.Linq.Dependencies.ExpressionAnalysis.Extractors
 {
+    using System.Linq.Expressions;
+    using Definitions;
+
     internal sealed class StaticDependencyExtractor : DependencyExtractor
     {
         /// <summary>
@@ -22,7 +20,7 @@ namespace Bindable.Linq.Dependencies.ExpressionAnalysis.Extractors
             {
                 // We are left with a member expression that does not have a source. It must 
                 // use a static item
-                MemberExpression nextMember = (MemberExpression) rootExpression;
+                var nextMember = (MemberExpression) rootExpression;
                 if (nextMember.Expression == null)
                 {
                     result = new StaticDependencyDefinition(propertyPath, nextMember.Member);

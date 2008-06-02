@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System;
 
 namespace Bindable.Linq
 {
+    using System.Collections.Generic;
+
     internal interface IEditableBindableGrouping<TKey, TElement> : IBindableGrouping<TKey, TElement>
     {
         /// <summary>
@@ -24,7 +23,6 @@ namespace Bindable.Linq
         /// </summary>
         /// <param name="oldItems">The old items.</param>
         /// <param name="newItems">The new items.</param>
-        void ReplaceRange(IEnumerable<TElement> oldItems,
-            IEnumerable<TElement> newItems);
+        void ReplaceRange(IEnumerable<TElement> oldItems, IEnumerable<TElement> newItems);
     }
 }

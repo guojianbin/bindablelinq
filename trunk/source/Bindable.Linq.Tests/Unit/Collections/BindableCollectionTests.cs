@@ -1,17 +1,11 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Bindable.Linq.Dependencies;
-using Bindable.Linq.Iterators;
-using Bindable.Linq.Tests.TestObjectModel;
-using Bindable.Linq.Tests.TestHelpers;
-using NUnit.Framework;
-using Bindable.Linq.Helpers;
-using Bindable.Linq.Collections;
 
 namespace Bindable.Linq.Tests.Unit.Helpers
 {
+    using Collections;
+    using NUnit.Framework;
+    using TestObjectModel;
+
     /// <summary>
     /// This class contains tests for the Bindable LINQ BindableCollection utility class.
     /// </summary>
@@ -25,10 +19,10 @@ namespace Bindable.Linq.Tests.Unit.Helpers
         public void BindableCollectionEnumeratorFrozen()
         {
             // Initialize the test data
-            BindableCollection<Contact> customers = new BindableCollection<Contact>();
-            customers.Add(new Contact() { Name = "Paul" });
-            customers.Add(new Contact() { Name = "Greg" });
-            customers.Add(new Contact() { Name = "Sam" });
+            var customers = new BindableCollection<Contact>();
+            customers.Add(new Contact {Name = "Paul"});
+            customers.Add(new Contact {Name = "Greg"});
+            customers.Add(new Contact {Name = "Sam"});
 
             // Enumerate over the items, and whilst enumerating, add some new items. The new items 
             // should be added and should not effect the items being enumerated.
@@ -37,7 +31,7 @@ namespace Bindable.Linq.Tests.Unit.Helpers
             {
                 enumerated++;
                 // This would normally raise an InvalidOperationException
-                customers.Add(new Contact() { Name = "Jack " + enumerated });
+                customers.Add(new Contact {Name = "Jack " + enumerated});
             }
 
             // Check that the items were actually added and enumerated correctly

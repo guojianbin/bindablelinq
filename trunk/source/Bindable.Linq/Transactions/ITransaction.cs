@@ -1,28 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System;
 
-namespace Bindable.Linq.Eventing
+namespace Bindable.Linq.Transactions
 {
     /// <summary>
     /// An interface implemented by classes that record collection changed events and package them up, before they are 
-    /// raised.
+    /// raised. When one class is recording a transaction, others will wait before beginning 
+    /// a transaction.
     /// </summary>
-    /// <typeparam name="TElement">The type of the element.</typeparam>
-    public interface ICollectionChangedRecorder<TElement> : IDisposable
+    public interface ITransaction : IDisposable
     {
         /// <summary>
-        /// Records the fact that an element was added.
+        /// Records the fact that an element was added. When the transaction is completed, an 
+        /// Add event will be raised. 
         /// </summary>
         /// <param name="elementAdded">The element added.</param>
         /// <param name="index">The index.</param>
         /// <exception cref="ArgumentNullException"><paramref name="elementAdded"/> is null.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is less than zero.</exception>
-        void RecordAdd(TElement elementAdded, int index);
+        void LogAddEvent(object elementAdded, int index);
 
         /// <summary>
-        /// Records the fact that an element was moved.
+        /// Records the fact that an element was moved. When the transaction is completed, a 
+        /// Move event will be raised. 
         /// </summary>
         /// <param name="elementMoved">The element moved.</param>
         /// <param name="oldIndex">The old index.</param>
@@ -30,19 +29,21 @@ namespace Bindable.Linq.Eventing
         /// <exception cref="ArgumentNullException"><paramref name="elementMoved"/> is null.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="oldIndex"/> is less than zero.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="newIndex"/> is less than zero.</exception>
-        void RecordMove(TElement elementMoved, int oldIndex, int newIndex);
+        void LogMoveEvent(object elementMoved, int oldIndex, int newIndex);
 
         /// <summary>
-        /// Records the fact that an element was removed.
+        /// Records the fact that an element was removed. When the transaction is completed, a 
+        /// Remove event will be raised. 
         /// </summary>
         /// <param name="removedElement">The removed element.</param>
         /// <param name="index">The index.</param>
         /// <exception cref="ArgumentNullException"><paramref name="removedElement"/> is null.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is less than zero.</exception>
-        void RecordRemove(TElement removedElement, int index);
+        void LogRemoveEvent(object removedElement, int index);
 
         /// <summary>
-        /// Records the fact that an element was replaced.
+        /// Records the fact that an element was replaced. When the transaction is completed, a 
+        /// Replace event will be raised. 
         /// </summary>
         /// <param name="originalElement">The original element.</param>
         /// <param name="replacementElement">The replacement element.</param>
@@ -50,16 +51,17 @@ namespace Bindable.Linq.Eventing
         /// <exception cref="ArgumentNullException"><paramref name="originalElement"/> is null.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="replacementElement"/> is null.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is less than zero.</exception>
-        void RecordReplace(TElement originalElement, TElement replacementElement, int index);
+        void LogReplaceEvent(object originalElement, object replacementElement, int index);
 
         /// <summary>
-        /// Records the fact that the collection has changed dramatically and should be refreshed.
+        /// Records the fact that the collection has changed dramatically and should be refreshed.  When the transaction is completed, a 
+        /// Reset event will be raised. 
         /// </summary>
-        void RecordReset();
+        void LogResetEvent();
 
         /// <summary>
-        /// Raises the events. It is imperative that the caller does not hold any locks at this point.
+        /// Leaves the transaction, relenquishes any locks, and raises any events logged during the transaction. 
         /// </summary>
-        void RaiseAll();
+        void Commit();
     }
 }

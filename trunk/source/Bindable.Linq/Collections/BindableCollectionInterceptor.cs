@@ -1,31 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Collections;
-using System.ComponentModel;
-using System.Collections.Specialized;
-using Bindable.Linq.Dependencies;
-using Bindable.Linq.Helpers;
-using Bindable.Linq.Configuration;
+using System;
 
 namespace Bindable.Linq.Collections
 {
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.Collections.Specialized;
+    using System.ComponentModel;
+    using Configuration;
+    using Dependencies;
+    using Helpers;
+
     /// <summary>
     /// 
     /// </summary>
     /// <typeparam name="TElement">The type of the element.</typeparam>
-    internal sealed class BindableCollectionInterceptor<TElement> :
-        IBindableCollectionInterceptor<TElement>,
-        IBindableQuery<TElement>
+    internal sealed class BindableCollectionInterceptor<TElement> : IBindableCollectionInterceptor<TElement>, IBindableQuery<TElement>
     {
-        private IBindableCollection<TElement> _inner;
-        private List<Action<TElement>> _preYieldSteps;
-        private List<Action<TElement>> _postYieldSteps;
+        private readonly IBindableCollection<TElement> _inner;
         private readonly EventHandler<NotifyCollectionChangedEventArgs> _inner_CollectionChanged;
-        private readonly EventHandler<PropertyChangedEventArgs> _inner_PropertyChanged;
         private readonly WeakEventReference<NotifyCollectionChangedEventArgs> _inner_CollectionChangedWeak;
+        private readonly EventHandler<PropertyChangedEventArgs> _inner_PropertyChanged;
         private readonly WeakEventReference<PropertyChangedEventArgs> _inner_PropertyChangedWeak;
+        private readonly List<Action<TElement>> _postYieldSteps;
+        private readonly List<Action<TElement>> _preYieldSteps;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BindableCollectionInterceptor&lt;TElement&gt;"/> class.
@@ -36,14 +33,15 @@ namespace Bindable.Linq.Collections
             _inner = inner;
             _preYieldSteps = new List<Action<TElement>>();
             _postYieldSteps = new List<Action<TElement>>();
-            _inner_CollectionChanged = new EventHandler<NotifyCollectionChangedEventArgs>(Inner_CollectionChanged);
-            _inner_PropertyChanged = new EventHandler<PropertyChangedEventArgs>(Inner_PropertyChanged);
+            _inner_CollectionChanged = Inner_CollectionChanged;
+            _inner_PropertyChanged = Inner_PropertyChanged;
             _inner_CollectionChangedWeak = new WeakEventReference<NotifyCollectionChangedEventArgs>(_inner_CollectionChanged);
             _inner_PropertyChangedWeak = new WeakEventReference<PropertyChangedEventArgs>(_inner_PropertyChanged);
             _inner.CollectionChanged += _inner_CollectionChangedWeak.WeakEventHandler;
             _inner.PropertyChanged += _inner_PropertyChangedWeak.WeakEventHandler;
         }
 
+        #region IBindableCollectionInterceptor<TElement> Members
         /// <summary>
         /// Gets the count of items in the collection.
         /// </summary>
@@ -62,13 +60,65 @@ namespace Bindable.Linq.Collections
         /// </summary>
         public event PropertyChangedEventHandler PropertyChanged;
 
+        /// <summary>
+        /// Adds the pre yield step.
+        /// </summary>
+        /// <param name="step">The step.</param>
+        public void AddPreYieldStep(Action<TElement> step)
+        {
+            _preYieldSteps.Add(step);
+        }
 
+        /// <summary>
+        /// Returns an enumerator that iterates through the collection.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="T:System.Collections.Generic.IEnumerator`1"/> that can be used to iterate through the collection.
+        /// </returns>
+        public IEnumerator<TElement> GetEnumerator()
+        {
+            foreach (TElement element in _inner)
+            {
+                foreach (var action in _preYieldSteps)
+                {
+                    action(element);
+                }
+                yield return element;
+                foreach (var action in _postYieldSteps)
+                {
+                    action(element);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Returns an enumerator that iterates through a collection.
+        /// </summary>
+        /// <returns>
+        /// An <see cref="T:System.Collections.IEnumerator"/> object that can be used to iterate through the collection.
+        /// </returns>
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            _inner.CollectionChanged -= _inner_CollectionChangedWeak.WeakEventHandler;
+            _inner.PropertyChanged -= _inner_PropertyChangedWeak.WeakEventHandler;
+        }
+        #endregion
+
+        #region IBindableQuery<TElement> Members
         public TElement this[int index]
         {
             get
             {
                 TElement result = default(TElement);
-                IBindableQuery<TElement> bindable = _inner as IBindableQuery<TElement>;
+                var bindable = _inner as IBindableQuery<TElement>;
                 if (bindable != null)
                 {
                     result = bindable[index];
@@ -82,14 +132,14 @@ namespace Bindable.Linq.Collections
             get
             {
                 int result = 0;
-                IBindableQuery<TElement> bindable = _inner as IBindableQuery<TElement>;
+                var bindable = _inner as IBindableQuery<TElement>;
                 if (bindable != null)
                 {
                     result = bindable.CurrentCount;
                 }
                 else
                 {
-                    result = this.Count;
+                    result = Count;
                 }
                 return result;
             }
@@ -111,20 +161,18 @@ namespace Bindable.Linq.Collections
             }
         }
 
-        public void AcceptDependency(IDependencyDefinition definition)
-        {
-        }
+        public void AcceptDependency(IDependencyDefinition definition) {}
 
         public void Refresh()
         {
-            IRefreshable refreshable = _inner as IRefreshable;
+            var refreshable = _inner as IRefreshable;
             if (refreshable != null)
             {
                 refreshable.Refresh();
             }
             else
             {
-                this.OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+                OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
             }
         }
 
@@ -133,7 +181,7 @@ namespace Bindable.Linq.Collections
             get
             {
                 bool result = false;
-                ILoadable loadable = _inner as ILoadable;
+                var loadable = _inner as ILoadable;
                 if (loadable != null)
                 {
                     result = loadable.IsLoading;
@@ -141,15 +189,7 @@ namespace Bindable.Linq.Collections
                 return result;
             }
         }
-
-        /// <summary>
-        /// Adds the pre yield step.
-        /// </summary>
-        /// <param name="step">The step.</param>
-        public void AddPreYieldStep(Action<TElement> step)
-        {
-            _preYieldSteps.Add(step);
-        }
+        #endregion
 
         /// <summary>
         /// Adds the post yield step.
@@ -158,39 +198,6 @@ namespace Bindable.Linq.Collections
         public void AddPostYieldStep(Action<TElement> step)
         {
             _postYieldSteps.Add(step);
-        }
-
-        /// <summary>
-        /// Returns an enumerator that iterates through the collection.
-        /// </summary>
-        /// <returns>
-        /// A <see cref="T:System.Collections.Generic.IEnumerator`1"/> that can be used to iterate through the collection.
-        /// </returns>
-        public IEnumerator<TElement> GetEnumerator()
-        {
-            foreach (TElement element in _inner)
-            {
-                foreach (Action<TElement> action in _preYieldSteps)
-                {
-                    action(element);
-                }
-                yield return element;
-                foreach (Action<TElement> action in _postYieldSteps)
-                {
-                    action(element);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Returns an enumerator that iterates through a collection.
-        /// </summary>
-        /// <returns>
-        /// An <see cref="T:System.Collections.IEnumerator"/> object that can be used to iterate through the collection.
-        /// </returns>
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
         }
 
         private void Inner_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -209,7 +216,7 @@ namespace Bindable.Linq.Collections
         /// <param name="e">The <see cref="System.Collections.Specialized.NotifyCollectionChangedEventArgs"/> instance containing the event data.</param>
         private void OnCollectionChanged(NotifyCollectionChangedEventArgs e)
         {
-            NotifyCollectionChangedEventHandler handler = this.CollectionChanged;
+            NotifyCollectionChangedEventHandler handler = CollectionChanged;
             if (handler != null)
             {
                 handler(this, e);
@@ -222,20 +229,11 @@ namespace Bindable.Linq.Collections
         /// <param name="e">The <see cref="System.ComponentModel.PropertyChangedEventArgs"/> instance containing the event data.</param>
         private void OnPropertyChanged(PropertyChangedEventArgs e)
         {
-            PropertyChangedEventHandler handler = this.PropertyChanged;
+            PropertyChangedEventHandler handler = PropertyChanged;
             if (handler != null)
             {
                 handler(this, e);
             }
-        }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            _inner.CollectionChanged -= _inner_CollectionChangedWeak.WeakEventHandler;
-            _inner.PropertyChanged -= _inner_PropertyChangedWeak.WeakEventHandler;
         }
     }
 }

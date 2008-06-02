@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.ComponentModel;
-using Bindable.Linq.Helpers;
+using System;
 
 namespace Bindable.Linq.Dependencies
 {
+    using System.ComponentModel;
+    using Helpers;
+
     /// <summary>
     /// Manages the subscription of PropertyChanged events on items.
     /// </summary>
@@ -19,7 +17,7 @@ namespace Bindable.Linq.Dependencies
         /// Initializes a new instance of the <see cref="PropertyChangeObserver"/> class.
         /// </summary>
         /// <param name="callback">The callback.</param>
-        public PropertyChangeObserver(EventHandler<PropertyChangedEventArgs> callback) : base()
+        public PropertyChangeObserver(EventHandler<PropertyChangedEventArgs> callback)
         {
             _callback = callback;
             _weakHandler = new WeakEventReference<PropertyChangedEventArgs>(callback);

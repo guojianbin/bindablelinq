@@ -1,40 +1,37 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Linq;
-using System.Text;
-using Bindable.Linq.Dependencies;
-using Bindable.Linq;
-using Bindable.Linq.Collections;
-using Bindable.Linq.Helpers;
-using System.ComponentModel;
-using System.Globalization;
-using Bindable.Linq.Eventing;
-using Bindable.Linq.Configuration;
 
 namespace Bindable.Linq.Iterators
 {
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.Collections.Specialized;
+    using System.ComponentModel;
+    using System.Globalization;
+    using System.Linq;
+    using Collections;
+    using Configuration;
+    using Dependencies;
+    using Helpers;
+
     /// <summary>
     /// The Iterator created when a Union is performed.
     /// </summary>
     /// <typeparam name="TElement">The type of source item.</typeparam>
-    internal sealed class UnionIterator<TElement> :
-        IBindableQuery<TElement>
+    internal sealed class UnionIterator<TElement> : IBindableQuery<TElement>
         where TElement : class
     {
         private readonly StateScope _collectionChangedSuspendedState;
-        private readonly LockScope _iteratorLock = new LockScope();
+        private readonly List<IDependency> _dependencies;
         private readonly StateScope _isLoadingState;
+        private readonly object _iteratorLock = new object();
         private readonly BindableCollection<TElement> _resultCollection;
         private readonly EventHandler<NotifyCollectionChangedEventArgs> _sourceCollection_CollectionChanged;
         private readonly EventHandler<PropertyChangedEventArgs> _sourceCollection_PropertyChanged;
+        private readonly ElementActioner<IBindableCollection<TElement>> _sourceCollectionAddActioner;
         private readonly CollectionChangeObserver _sourceCollectionChangedObserver;
         private readonly PropertyChangeObserver _sourceCollectionPropertyChangedObserver;
         private readonly BindableCollection<IBindableCollection<TElement>> _sourceCollections;
         private readonly StateManager<IBindableCollection<TElement>, LoadState> _sourceCollectionStates;
-        private readonly ElementActioner<IBindableCollection<TElement>> _sourceCollectionAddActioner;
-        private readonly List<IDependency> _dependencies;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Iterator&lt;TElement, TElement&gt;"/> class.
@@ -42,7 +39,7 @@ namespace Bindable.Linq.Iterators
         private UnionIterator()
         {
             _dependencies = new List<IDependency>();
-            
+
             _sourceCollection_CollectionChanged = SourceCollection_CollectionChanged;
             _sourceCollection_PropertyChanged = SourceCollection_PropertyChanged;
             _sourceCollectionChangedObserver = new CollectionChangeObserver(_sourceCollection_CollectionChanged);
@@ -55,20 +52,17 @@ namespace Bindable.Linq.Iterators
             _resultCollection = new BindableCollection<TElement>();
             _resultCollection.CollectionChanged += ResultCollection_CollectionChanged;
 
-            _sourceCollectionAddActioner = new ElementActioner<IBindableCollection<TElement>>(
-                _sourceCollections,
-                enumerable => SourceCollectionAdded(enumerable),
-                enumerable => SourceCollectionRemoved(enumerable)
-                );
+            _sourceCollectionAddActioner = new ElementActioner<IBindableCollection<TElement>>(_sourceCollections, enumerable => SourceCollectionAdded(enumerable), enumerable => SourceCollectionRemoved(enumerable));
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Iterator&lt;TElement, TElement&gt;"/> class.
         /// </summary>
         /// <param name="sourceCollections">The source collections.</param>
-        public UnionIterator(IEnumerable<IBindableCollection<TElement>> sourceCollections) : this()
+        public UnionIterator(IEnumerable<IBindableCollection<TElement>> sourceCollections)
+            : this()
         {
-            this.SourceCollections.AddRange(sourceCollections);
+            SourceCollections.AddRange(sourceCollections);
         }
 
         /// <summary>
@@ -119,11 +113,12 @@ namespace Bindable.Linq.Iterators
         /// Note that this lock will use a timeout when locked, and so any code may throw 
         /// <see cref="T:LockAttemptTimeoutException">LockAttemptTimeoutExceptions</see>.
         /// </summary>
-        private LockScope IteratorLock
+        private object IteratorLock
         {
             get { return _iteratorLock; }
         }
 
+        #region IBindableQuery<TElement> Members
         /// <summary>
         /// Occurs when the items in this Iterator change.
         /// </summary>
@@ -144,14 +139,14 @@ namespace Bindable.Linq.Iterators
         {
             get
             {
-                bool loading = this.IsLoadingState.IsWithin;
+                bool loading = IsLoadingState.IsWithin;
                 if (!loading)
                 {
                     // Check to see whether any of the source collections are loading.
-                    var sourceCollections = this.SourceCollections.GetEnumerator();
+                    IEnumerator<IBindableCollection<TElement>> sourceCollections = SourceCollections.GetEnumerator();
                     while (sourceCollections.MoveNext())
                     {
-                        ILoadable loadable = sourceCollections.Current as ILoadable;
+                        var loadable = sourceCollections.Current as ILoadable;
                         if (loadable != null)
                         {
                             if (loadable.IsLoading)
@@ -172,7 +167,7 @@ namespace Bindable.Linq.Iterators
         /// <value></value>
         public int CurrentCount
         {
-            get { return this.ResultCollection.Count; }
+            get { return ResultCollection.Count; }
         }
 
         /// <summary>
@@ -182,8 +177,8 @@ namespace Bindable.Linq.Iterators
         {
             get
             {
-                this.EnsureLoaded(LoadState.IfNotAlreadyLoaded);
-                return this.ResultCollection.Count;
+                EnsureLoaded(LoadState.IfNotAlreadyLoaded);
+                return ResultCollection.Count;
             }
         }
 
@@ -193,7 +188,7 @@ namespace Bindable.Linq.Iterators
         /// <value></value>
         public TElement this[int index]
         {
-            get { return this.ResultCollection[index]; }
+            get { return ResultCollection[index]; }
             set { throw new NotSupportedException("This collection is read-only."); }
         }
 
@@ -202,14 +197,14 @@ namespace Bindable.Linq.Iterators
         /// </summary>
         public IBindingConfiguration Configuration
         {
-            get 
+            get
             {
                 IBindingConfiguration result = BindingConfigurations.Default;
-                foreach (var source in this.SourceCollections)
+                foreach (var source in SourceCollections)
                 {
                     if (source is IConfigurable)
                     {
-                        result = ((IConfigurable)source).Configuration;
+                        result = ((IConfigurable) source).Configuration;
                         break;
                     }
                 }
@@ -225,8 +220,8 @@ namespace Bindable.Linq.Iterators
         /// </returns>
         public IEnumerator<TElement> GetEnumerator()
         {
-            this.EnsureLoaded(LoadState.IfNotAlreadyLoaded);
-            return this.ResultCollection.GetEnumerator();
+            EnsureLoaded(LoadState.IfNotAlreadyLoaded);
+            return ResultCollection.GetEnumerator();
         }
 
         /// <summary>
@@ -237,7 +232,7 @@ namespace Bindable.Linq.Iterators
         /// </returns>
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return this.GetEnumerator();
+            return GetEnumerator();
         }
 
         /// <summary>
@@ -245,20 +240,20 @@ namespace Bindable.Linq.Iterators
         /// </summary>
         public void Refresh()
         {
-            var sourceCollections = this.SourceCollections.GetEnumerator();
+            IEnumerator<IBindableCollection<TElement>> sourceCollections = SourceCollections.GetEnumerator();
 
             // First, find out whether or not ALL of the source collections we have can be refreshed.
             bool allRefreshable = true;
             bool nothingLoadedYet = true;
-            using (this.IteratorLock.Enter(this))
+            lock (IteratorLock)
             {
                 while (sourceCollections.MoveNext())
                 {
-                    LoadState? loadState = this.SourceCollectionStates.GetState(sourceCollections.Current);
+                    LoadState? loadState = SourceCollectionStates.GetState(sourceCollections.Current);
                     if (loadState == LoadState.EvenIfLoaded)
                     {
                         nothingLoadedYet = false;
-                        IRefreshable refreshable = sourceCollections.Current as IRefreshable;
+                        var refreshable = sourceCollections.Current as IRefreshable;
                         if (refreshable == null)
                         {
                             allRefreshable = false;
@@ -276,7 +271,7 @@ namespace Bindable.Linq.Iterators
                     sourceCollections.Reset();
                     while (sourceCollections.MoveNext())
                     {
-                        IRefreshable refreshable = (IRefreshable)sourceCollections.Current;
+                        var refreshable = (IRefreshable) sourceCollections.Current;
                         refreshable.Refresh();
                     }
                 }
@@ -284,10 +279,29 @@ namespace Bindable.Linq.Iterators
                 {
                     // Not all sources could be refreshed. The best bet is to reset the iterator - this will 
                     // trigger a reload of all sources instead.
-                    this.Reset();
+                    Reset();
                 }
             }
         }
+
+        /// <summary>
+        /// Sets a new dependency on a Bindable LINQ operation.
+        /// </summary>
+        /// <param name="definition">A definition of the dependency.</param>
+        public void AcceptDependency(IDependencyDefinition definition)
+        {
+            throw new NotSupportedException("Dependencies are not supported by the Union operator at this stage.");
+        }
+
+        /// <summary>
+        /// Releases unmanaged and - optionally - managed resources
+        /// </summary>
+        public void Dispose()
+        {
+            _sourceCollectionPropertyChangedObserver.Dispose();
+            _sourceCollectionChangedObserver.Dispose();
+        }
+        #endregion
 
         /// <summary>
         /// Processes all source collections.
@@ -299,18 +313,18 @@ namespace Bindable.Linq.Iterators
             IEnumerator<IBindableCollection<TElement>> sourceCollections = _sourceCollectionStates.GetAllInState(loadState);
             while (sourceCollections.MoveNext())
             {
-                this.SourceCollectionStates.SetState(sourceCollections.Current, LoadState.EvenIfLoaded);
+                SourceCollectionStates.SetState(sourceCollections.Current, LoadState.EvenIfLoaded);
             }
             sourceCollections.Reset();
 
             // Note that we should not hold any locks at this point
-            using (this.CollectionChangedSuspendedState.Enter())
+            using (CollectionChangedSuspendedState.Enter())
             {
-                using (this.IsLoadingState.Enter())
+                using (IsLoadingState.Enter())
                 {
                     while (sourceCollections.MoveNext())
                     {
-                        this.LoadSourceCollection(sourceCollections.Current);
+                        LoadSourceCollection(sourceCollections.Current);
                     }
                 }
             }
@@ -324,17 +338,17 @@ namespace Bindable.Linq.Iterators
             // Within this block we don't want to allow CollectionChanged events to be raised, 
             // because they may be raised multiple times. Instead, we'll suppress them and raise 
             // a reset event when finished.
-            using (this.CollectionChangedSuspendedState.Enter())
+            using (CollectionChangedSuspendedState.Enter())
             {
-                using (this.IteratorLock.Enter(this))
+                lock (IteratorLock)
                 {
-                    this.ResultCollection.Clear();
-                    this.ResetOverride();
+                    ResultCollection.Clear();
+                    ResetOverride();
                 }
-                this.EnsureLoaded(LoadState.EvenIfLoaded);
+                EnsureLoaded(LoadState.EvenIfLoaded);
             }
             // Now we've reset ourselves, it's time to reload.
-            this.OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+            OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
         }
 
         /// <summary>
@@ -344,7 +358,7 @@ namespace Bindable.Linq.Iterators
         /// <remarks>Warning: No locks should be held when invoking this method.</remarks>
         private void LoadSourceCollection(IEnumerable<TElement> sourceCollection)
         {
-            this.HandleAddRangeOverride(-1, sourceCollection);
+            HandleAddRangeOverride(-1, sourceCollection);
         }
 
         /// <summary>
@@ -354,7 +368,7 @@ namespace Bindable.Linq.Iterators
         /// <param name="addedItems">The added items.</param>
         private void HandleAddRangeOverride(int sourceStartingIndex, IEnumerable<TElement> addedItems)
         {
-            this.ResultCollection.AddRange(addedItems);
+            ResultCollection.AddRange(addedItems);
         }
 
         /// <summary>
@@ -362,10 +376,7 @@ namespace Bindable.Linq.Iterators
         /// </summary>
         /// <param name="sourceStartingIndex">Index of the source starting.</param>
         /// <param name="movedItems">The moved items.</param>
-        private void HandleMoveRangeOverride(int sourceStartingIndex, IEnumerable<TElement> movedItems)
-        {
-
-        }
+        private void HandleMoveRangeOverride(int sourceStartingIndex, IEnumerable<TElement> movedItems) {}
 
         /// <summary>
         /// When overridden in a derived class, processes a Remove event over a range of items.
@@ -373,7 +384,7 @@ namespace Bindable.Linq.Iterators
         /// <param name="removedItems">The removed items.</param>
         private void HandleRemoveRangeOverride(IEnumerable<TElement> removedItems)
         {
-            this.ResultCollection.RemoveRange(removedItems);
+            ResultCollection.RemoveRange(removedItems);
         }
 
         /// <summary>
@@ -383,7 +394,7 @@ namespace Bindable.Linq.Iterators
         /// <param name="newItems">The new items.</param>
         private void HandleReplaceRangeOverride(IEnumerable<TElement> oldItems, IEnumerable<TElement> newItems)
         {
-            this.ResultCollection.ReplaceRange(oldItems, newItems);
+            ResultCollection.ReplaceRange(oldItems, newItems);
         }
 
         /// <summary>
@@ -391,31 +402,21 @@ namespace Bindable.Linq.Iterators
         /// </summary>
         /// <param name="item">The item.</param>
         /// <param name="propertyName">Name of the property.</param>
-        private void HandleItemPropertyChanged(TElement item, string propertyName)
-        {
-            
-        }
+        private void HandleItemPropertyChanged(TElement item, string propertyName) {}
 
         /// <summary>
         /// When overridden in a derived class, provides the derived class with the ability to perform custom actions when 
         /// the collection is reset, before the sources are re-loaded.
         /// </summary>
         /// <remarks>Warning: No locks should be held when invoking this method.</remarks>
-        private void ResetOverride()
-        {
-        }
-
-        private void ResultCollection_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            this.OnCollectionChanged(e);
-        }
+        private void ResetOverride() {}
 
         private void SourceCollection_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             // We do not handle CollectionChanged events from sources that are not loaded yet. 
             // Check whether this is a valid source collection.
-            IBindableCollection<TElement> sourceCollection = (IBindableCollection<TElement>)sender;
-            LoadState? currentState = this.SourceCollectionStates.GetState(sourceCollection);
+            var sourceCollection = (IBindableCollection<TElement>) sender;
+            LoadState? currentState = SourceCollectionStates.GetState(sourceCollection);
             if (currentState == null || currentState.Value == LoadState.IfNotAlreadyLoaded)
             {
                 return;
@@ -426,21 +427,21 @@ namespace Bindable.Linq.Iterators
             switch (e.Action)
             {
                 case NotifyCollectionChangedAction.Add:
-                    this.HandleAddRangeOverride(e.NewStartingIndex, e.NewItems.Cast<TElement>());
+                    HandleAddRangeOverride(e.NewStartingIndex, e.NewItems.Cast<TElement>());
                     break;
 #if !SILVERLIGHT
                 case NotifyCollectionChangedAction.Move:
-                    this.HandleMoveRangeOverride(e.NewStartingIndex, e.OldItems.Cast<TElement>());
+                    HandleMoveRangeOverride(e.NewStartingIndex, e.OldItems.Cast<TElement>());
                     break;
 #endif
                 case NotifyCollectionChangedAction.Remove:
-                    this.HandleRemoveRangeOverride(e.OldItems.Cast<TElement>());
+                    HandleRemoveRangeOverride(e.OldItems.Cast<TElement>());
                     break;
                 case NotifyCollectionChangedAction.Replace:
-                    this.HandleReplaceRangeOverride(e.OldItems.Cast<TElement>(), e.NewItems.Cast<TElement>());
+                    HandleReplaceRangeOverride(e.OldItems.Cast<TElement>(), e.NewItems.Cast<TElement>());
                     break;
                 case NotifyCollectionChangedAction.Reset:
-                    this.Reset();
+                    Reset();
                     break;
             }
         }
@@ -451,7 +452,7 @@ namespace Bindable.Linq.Iterators
             // state of a source collection means a change in our own IsLoading state.
             if (e.PropertyName == PropertyChangedCache.IsLoading.PropertyName)
             {
-                this.OnPropertyChanged(PropertyChangedCache.IsLoading);
+                OnPropertyChanged(PropertyChangedCache.IsLoading);
             }
         }
 
@@ -460,7 +461,7 @@ namespace Bindable.Linq.Iterators
             _sourceCollectionStates.SetState(sourceCollection, LoadState.IfNotAlreadyLoaded);
             _sourceCollectionChangedObserver.Attach(sourceCollection);
             _sourceCollectionPropertyChangedObserver.Attach(sourceCollection);
-            this.OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+            OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
         }
 
         private void SourceCollectionRemoved(IBindableCollection<TElement> sourceCollection)
@@ -468,16 +469,7 @@ namespace Bindable.Linq.Iterators
             _sourceCollectionStates.Remove(sourceCollection);
             _sourceCollectionChangedObserver.Detach(sourceCollection);
             _sourceCollectionPropertyChangedObserver.Detach(sourceCollection);
-            this.OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
-        }
-
-        /// <summary>
-        /// Sets a new dependency on a Bindable LINQ operation.
-        /// </summary>
-        /// <param name="definition">A definition of the dependency.</param>
-        public void AcceptDependency(IDependencyDefinition definition)
-        {
-            throw new NotSupportedException("Dependencies are not supported by the Union operator at this stage.");
+            OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
         }
 
         /// <summary>
@@ -489,7 +481,12 @@ namespace Bindable.Linq.Iterators
         /// <remarks>Warning: No locks should be held when invoking this method.</remarks>
         public override string ToString()
         {
-            return string.Format(CultureInfo.InvariantCulture, "{0}<{1}> - CurrentCount: {2}", this.GetType().Name, typeof(TElement).Name, this.CurrentCount);
+            return string.Format(CultureInfo.InvariantCulture, "{0}<{1}> - CurrentCount: {2}", GetType().Name, typeof (TElement).Name, CurrentCount);
+        }
+
+        private void ResultCollection_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            OnCollectionChanged(e);
         }
 
         /// <summary>
@@ -503,14 +500,14 @@ namespace Bindable.Linq.Iterators
             // avoids us raising CollectionChanged events during the wrong times - such as 
             // when the collection is first enumerating (a bug in some UI code - namely WPF) or 
             // when resetting the collection.
-            if (!this.CollectionChangedSuspendedState.IsWithin)
+            if (!CollectionChangedSuspendedState.IsWithin)
             {
-                NotifyCollectionChangedEventHandler handler = this.CollectionChanged;
+                NotifyCollectionChangedEventHandler handler = CollectionChanged;
                 if (handler != null)
                 {
                     handler(this, e);
                 }
-                this.OnPropertyChanged(PropertyChangedCache.Count);
+                OnPropertyChanged(PropertyChangedCache.Count);
             }
         }
 
@@ -521,20 +518,11 @@ namespace Bindable.Linq.Iterators
         /// <remarks>Warning: No locks should be held when invoking this method.</remarks>
         private void OnPropertyChanged(PropertyChangedEventArgs e)
         {
-            PropertyChangedEventHandler handler = this.PropertyChanged;
+            PropertyChangedEventHandler handler = PropertyChanged;
             if (handler != null)
             {
                 handler(this, e);
             }
-        }
-
-        /// <summary>
-        /// Releases unmanaged and - optionally - managed resources
-        /// </summary>
-        public void Dispose()
-        {
-            _sourceCollectionPropertyChangedObserver.Dispose();
-            _sourceCollectionChangedObserver.Dispose();
         }
     }
 }

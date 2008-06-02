@@ -1,17 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System;
 
 namespace Bindable.Linq.Collections
 {
     /// <summary>
     /// Implemented by bindable collections that allow clients to be notified before an item is yielded.
     /// </summary>
-    public interface IBindableCollectionInterceptor : IBindableCollection
-    {
-
-    }
+    public interface IBindableCollectionInterceptor : IBindableCollection {}
 
     /// <summary>
     /// Implemented by bindable collections that allow clients to be notified before an item is yielded.

@@ -1,23 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Bindable.Linq;
-using Bindable.Linq.Collections;
-using Bindable.Linq.Dependencies.Instances;
-using Bindable.Linq.Configuration;
-using Bindable.Linq.Dependencies.PathNavigation;
+using System;
 
 namespace Bindable.Linq.Dependencies.Definitions
 {
+    using Collections;
+    using Instances;
+    using PathNavigation;
+
     /// <summary>
     /// Defines a dependency on an external object that implements the INotifyPropertyChanged interface.
     /// </summary>
     public sealed class ExternalDependencyDefinition : IDependencyDefinition
     {
-        private string _propertyPath;
-        private object _targetObject;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="ExternalDependencyDefinition"/> class.
         /// </summary>
@@ -25,30 +18,23 @@ namespace Bindable.Linq.Dependencies.Definitions
         /// <param name="targetObject">The target object.</param>
         public ExternalDependencyDefinition(string propertyPath, object targetObject)
         {
-            _propertyPath = propertyPath;
-            _targetObject = targetObject;
+            PropertyPath = propertyPath;
+            TargetObject = targetObject;
         }
 
         /// <summary>
         /// Gets or sets the property path.
         /// </summary>
         /// <value>The property path.</value>
-        public string PropertyPath
-        {
-            get { return _propertyPath; }
-            set { _propertyPath = value; }
-        }
+        public string PropertyPath { get; set; }
 
         /// <summary>
         /// Gets or sets the target object.
         /// </summary>
         /// <value>The target object.</value>
-        public object TargetObject
-        {
-            get { return _targetObject; }
-            set { _targetObject = value; }
-        }
+        public object TargetObject { get; set; }
 
+        #region IDependencyDefinition Members
         /// <summary>
         /// Determines whether this instance can construct dependencies for a collection.
         /// </summary>
@@ -76,7 +62,7 @@ namespace Bindable.Linq.Dependencies.Definitions
         /// <returns></returns>
         public IDependency ConstructForCollection<TElement>(IBindableCollectionInterceptor<TElement> sourceElements, IPathNavigator pathNavigator)
         {
-            return new ExternalDependency(this.TargetObject, this.PropertyPath, pathNavigator);
+            return new ExternalDependency(TargetObject, PropertyPath, pathNavigator);
         }
 
         /// <summary>
@@ -88,8 +74,9 @@ namespace Bindable.Linq.Dependencies.Definitions
         /// <returns></returns>
         public IDependency ConstructForElement<TElement>(TElement sourceElement, IPathNavigator pathNavigator)
         {
-            return new ExternalDependency(this.TargetObject, this.PropertyPath, pathNavigator);
+            return new ExternalDependency(TargetObject, PropertyPath, pathNavigator);
         }
+        #endregion
 
         /// <summary>
         /// Returns a <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
@@ -99,7 +86,7 @@ namespace Bindable.Linq.Dependencies.Definitions
         /// </returns>
         public override string ToString()
         {
-            return string.Format("{0}: '{1}' on '{2}'", this.GetType().Name, this.PropertyPath, this.TargetObject.GetType().Name);
+            return string.Format("{0}: '{1}' on '{2}'", GetType().Name, PropertyPath, TargetObject.GetType().Name);
         }
     }
 }

@@ -1,84 +1,31 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Linq;
-using System.Text;
-using Bindable.Linq.Eventing;
-using Bindable.Linq.Tests.TestHelpers;
-using Bindable.Linq.Tests.TestObjectModel;
-using NUnit.Framework;
+using System;
 
 namespace Bindable.Linq.Tests.Unit.Eventing
 {
+    using System.Collections.Generic;
+    using System.Collections.Specialized;
+    using NUnit.Framework;
+    using TestHelpers;
+    using Transactions;
+
     [TestFixture]
-    public class CollectionChangeRecorderTests : TestFixture
+    public class CollectionChangetransactionTests : TestFixture
     {
-        [Test]
-        public void NonAdjacentAddsAreNotCombined()
+        private class MockPublisher
         {
-            MockPublisher publisher = new MockPublisher();
-            using (var recorder = new CollectionChangeRecorder<Contact>(publisher))
-            {
-                recorder.RecordAdd(Mike, 1);
-                recorder.RecordAdd(Sam, 32);
-                recorder.RecordAdd(Tim, 3);
-                publisher.ExpectNoEvents();
-            }
-            publisher.Expect(Add.WithNewIndex(1).WithNewItems(Mike));
-            publisher.Expect(Add.WithNewIndex(32).WithNewItems(Sam));
-            publisher.Expect(Add.WithNewIndex(3).WithNewItems(Tim));
-        }
-
-        [Test]
-        public void AdjacentAddsAreCombined()
-        {
-            MockPublisher publisher = new MockPublisher();
-            using (var recorder = new CollectionChangeRecorder<Contact>(publisher))
-            {
-                recorder.RecordAdd(Mike, 1);
-                recorder.RecordAdd(Sam, 32);
-                recorder.RecordAdd(Tim, 2);
-                publisher.ExpectNoEvents();
-            }
-            publisher.Expect(Add.WithNewIndex(1).WithNewItems(Mike, Tim));
-            publisher.Expect(Add.WithNewIndex(32).WithNewItems(Sam));
-        }
-
-        [Test]
-        public void MatchingAddsAreNotCombined()
-        {
-            MockPublisher publisher = new MockPublisher();
-            using (var recorder = new CollectionChangeRecorder<Contact>(publisher))
-            {
-                recorder.RecordAdd(Mike, 1);
-                recorder.RecordAdd(Sam, 32);
-                recorder.RecordAdd(Tim, 1);
-                publisher.ExpectNoEvents();
-            }
-            publisher.Expect(Add.WithNewIndex(1).WithNewItems(Mike));
-            publisher.Expect(Add.WithNewIndex(32).WithNewItems(Sam));
-            publisher.Expect(Add.WithNewIndex(1).WithNewItems(Tim));
-        }
-
-        private class MockPublisher : ICollectionChangedPublisher<Contact>
-        {
-            private Queue<NotifyCollectionChangedEventArgs> _arguments;
+            private readonly Queue<NotifyCollectionChangedEventArgs> _arguments;
 
             public MockPublisher()
             {
                 _arguments = new Queue<NotifyCollectionChangedEventArgs>();
             }
 
-            public event NotifyCollectionChangedEventHandler CollectionChanged;
-
-            public void Raise(NotifyCollectionChangedEventArgs e)
+            public void CommitCallback(TransactionLog transactionLog)
             {
-                _arguments.Enqueue(e);
-            }
-
-            public ICollectionChangedRecorder<Contact> Record()
-            {
-                throw new NotImplementedException();
+                foreach (NotifyCollectionChangedEventArgs eventToRaise in transactionLog.Events)
+                {
+                    _arguments.Enqueue(eventToRaise);
+                }
             }
 
             public void Expect(CollectionChangeSpecification specification)
@@ -101,6 +48,53 @@ namespace Bindable.Linq.Tests.Unit.Eventing
             {
                 Assert.AreEqual(_arguments.Count, 0);
             }
+        }
+
+        [Test]
+        public void AdjacentAddsAreCombined()
+        {
+            var publisher = new MockPublisher();
+            using (var transaction = new Transaction(publisher.CommitCallback))
+            {
+                transaction.LogAddEvent(Mike, 1);
+                transaction.LogAddEvent(Sam, 32);
+                transaction.LogAddEvent(Tim, 2);
+                publisher.ExpectNoEvents();
+            }
+            publisher.Expect(Add.WithNewIndex(1).WithNewItems(Mike, Tim));
+            publisher.Expect(Add.WithNewIndex(32).WithNewItems(Sam));
+        }
+
+        [Test]
+        public void MatchingAddsAreNotCombined()
+        {
+            var publisher = new MockPublisher();
+            using (var transaction = new Transaction(publisher.CommitCallback))
+            {
+                transaction.LogAddEvent(Mike, 1);
+                transaction.LogAddEvent(Sam, 32);
+                transaction.LogAddEvent(Tim, 1);
+                publisher.ExpectNoEvents();
+            }
+            publisher.Expect(Add.WithNewIndex(1).WithNewItems(Mike));
+            publisher.Expect(Add.WithNewIndex(32).WithNewItems(Sam));
+            publisher.Expect(Add.WithNewIndex(1).WithNewItems(Tim));
+        }
+
+        [Test]
+        public void NonAdjacentAddsAreNotCombined()
+        {
+            var publisher = new MockPublisher();
+            using (var transaction = new Transaction(publisher.CommitCallback))
+            {
+                transaction.LogAddEvent(Mike, 1);
+                transaction.LogAddEvent(Sam, 32);
+                transaction.LogAddEvent(Tim, 3);
+                publisher.ExpectNoEvents();
+            }
+            publisher.Expect(Add.WithNewIndex(1).WithNewItems(Mike));
+            publisher.Expect(Add.WithNewIndex(32).WithNewItems(Sam));
+            publisher.Expect(Add.WithNewIndex(3).WithNewItems(Tim));
         }
     }
 }

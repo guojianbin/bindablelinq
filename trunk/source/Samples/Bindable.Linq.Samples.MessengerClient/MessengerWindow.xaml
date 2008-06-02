@@ -4,8 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:domain="clr-namespace:Bindable.Linq.Samples.MessengerClient.Domain"
     Title="Bindable LINQ Messenger Client" Height="600" Width="400"
-    Background="{StaticResource Brush_WindowBackground}"
-    Icon="{StaticResource Image_ApplicationIcon}"
+    Icon="{StaticResource Image_ApplicationIcon}" Background="#FF2CC1E5"
 	>
 	<Window.Resources>
 
@@ -33,7 +32,16 @@
     <DockPanel Margin="14" LastChildFill="True">
         <DockPanel DockPanel.Dock="Top">
             <StackPanel Orientation="Vertical">
-                <Border Style="{StaticResource Style_MessengerUserInfoArea}">
+                <Border Style="{StaticResource Style_MessengerUserInfoArea}" BorderThickness="1,1,1,1">
+                	<Border.Background>
+                		<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                			<GradientStop Color="#FFE2CD3D" Offset="0"/>
+                			<GradientStop Color="#FFFFCF8A" Offset="1"/>
+                		</LinearGradientBrush>
+                	</Border.Background>
+                	<Border.BorderBrush>
+                		<SolidColorBrush Color="#FFEAD25F"/>
+                	</Border.BorderBrush>
                     <StackPanel Orientation="Vertical">
                     </StackPanel>
                 </Border>
@@ -41,6 +49,15 @@
         </DockPanel>
 
         <Border DockPanel.Dock="Bottom" Style="{StaticResource Style_MessengerFilterArea}">
+        	<Border.Background>
+        		<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+        			<GradientStop Color="#FFFFDC7A" Offset="0"/>
+        			<GradientStop Color="#FFF3FF2C" Offset="1"/>
+        		</LinearGradientBrush>
+        	</Border.Background>
+        	<Border.BorderBrush>
+        		<SolidColorBrush Color="#FFFFBB00"/>
+        	</Border.BorderBrush>
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
@@ -51,12 +68,12 @@
                     x:Name="_filterTextBox" 
                     Grid.Column="1"
                     KeyboardNavigation.DirectionalNavigation="None" 
-                    KeyboardNavigation.AcceptsReturn="False" 
+                    KeyboardNavigation.AcceptsReturn="False" Style="{DynamicResource Style_TextBox}" 
                     />
             </Grid>
         </Border>
 
-        <ItemsControl x:Name="_contactsListBox" Style="{StaticResource Style_ContactsList}" KeyboardNavigation.DirectionalNavigation="Continue">
+        <ItemsControl x:Name="_contactsListBox" Style="{StaticResource Style_ContactsList}" KeyboardNavigation.DirectionalNavigation="Continue" Background="#FFFFFFFF">
             
         </ItemsControl>
     </DockPanel>

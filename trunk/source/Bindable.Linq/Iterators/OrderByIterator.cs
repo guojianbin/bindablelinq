@@ -1,23 +1,15 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Linq;
-using System.Text;
-using Bindable.Linq.Dependencies;
-using Bindable.Linq.Helpers;
-using Bindable.Linq;
 
 namespace Bindable.Linq.Iterators
 {
+    using System.Collections.Generic;
+
     /// <summary>
     /// The Iterator created when ordering a collection.
     /// </summary>
     /// <typeparam name="TElement">The source collection type.</typeparam>
     /// <typeparam name="TKey">The type of key used to determine which properties to sort by.</typeparam>
-    internal sealed class OrderByIterator<TElement, TKey> : 
-        Iterator<TElement, TElement>, 
-        IOrderedBindableQuery<TElement>
+    internal sealed class OrderByIterator<TElement, TKey> : Iterator<TElement, TElement>, IOrderedBindableQuery<TElement>
         where TElement : class
     {
         private readonly ItemSorter<TElement, TKey> _itemSorter;
@@ -45,7 +37,7 @@ namespace Bindable.Linq.Iterators
         /// <returns></returns>
         public IOrderedBindableQuery<TElement> CreateOrderedIterator<TNewKey>(Func<TElement, TNewKey> keySelector, IComparer<TNewKey> comparer, bool descending)
         {
-            return new OrderByIterator<TElement, TNewKey>(this.SourceCollection, new ItemSorter<TElement, TNewKey>(_itemSorter, keySelector, comparer, !descending));
+            return new OrderByIterator<TElement, TNewKey>(SourceCollection, new ItemSorter<TElement, TNewKey>(_itemSorter, keySelector, comparer, !descending));
         }
         #endregion
 
@@ -54,7 +46,7 @@ namespace Bindable.Linq.Iterators
         /// </summary>
         protected override void LoadSourceCollection()
         {
-            this.ReactToAddRange(0, this.SourceCollection);
+            ReactToAddRange(0, SourceCollection);
         }
 
         /// <summary>
@@ -63,8 +55,7 @@ namespace Bindable.Linq.Iterators
         /// <param name="lhs">The LHS.</param>
         /// <param name="rhs">The RHS.</param>
         /// <returns></returns>
-        public int Compare(TElement lhs,
-            TElement rhs)
+        public int Compare(TElement lhs, TElement rhs)
         {
             return _itemSorter.Compare(lhs, rhs);
         }
@@ -74,10 +65,9 @@ namespace Bindable.Linq.Iterators
         /// </summary>
         /// <param name="sourceStartingIndex">Index of the source starting.</param>
         /// <param name="addedItems">The added items.</param>
-        protected override void ReactToAddRange(int sourceStartingIndex,
-            IEnumerable<TElement> addedItems)
+        protected override void ReactToAddRange(int sourceStartingIndex, IEnumerable<TElement> addedItems)
         {
-            this.ResultCollection.InsertRangeOrder(addedItems, this.Compare);
+            ResultCollection.InsertRangeOrder(addedItems, Compare);
         }
 
         /// <summary>
@@ -85,10 +75,7 @@ namespace Bindable.Linq.Iterators
         /// </summary>
         /// <param name="sourceStartingIndex">Index of the source starting.</param>
         /// <param name="movedItems">The moved items.</param>
-        protected override void ReactToMoveRange(int sourceStartingIndex,
-            IEnumerable<TElement> movedItems)
-        {
-        }
+        protected override void ReactToMoveRange(int sourceStartingIndex, IEnumerable<TElement> movedItems) {}
 
         /// <summary>
         /// When overridden in a derived class, processes a Remove event over a range of items.
@@ -96,7 +83,7 @@ namespace Bindable.Linq.Iterators
         /// <param name="removedItems">The removed items.</param>
         protected override void ReactToRemoveRange(IEnumerable<TElement> removedItems)
         {
-            this.ResultCollection.RemoveRange(removedItems);
+            ResultCollection.RemoveRange(removedItems);
         }
 
         /// <summary>
@@ -104,8 +91,7 @@ namespace Bindable.Linq.Iterators
         /// </summary>
         /// <param name="oldItems">The old items.</param>
         /// <param name="newItems">The new items.</param>
-        protected override void ReactToReplaceRange(IEnumerable<TElement> oldItems,
-            IEnumerable<TElement> newItems)
+        protected override void ReactToReplaceRange(IEnumerable<TElement> oldItems, IEnumerable<TElement> newItems)
         {
             ReactToRemoveRange(oldItems);
             ReactToAddRange(-1, newItems);
@@ -118,7 +104,7 @@ namespace Bindable.Linq.Iterators
         /// <param name="propertyName">Name of the property.</param>
         protected override void ReactToItemPropertyChanged(TElement item, string propertyName)
         {
-            this.ResultCollection.MoveItemOrdered(item, this.Compare);
+            ResultCollection.MoveItemOrdered(item, Compare);
         }
     }
 }

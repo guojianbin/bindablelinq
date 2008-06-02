@@ -1,22 +1,17 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Linq;
-using System.Text;
-using Bindable.Linq.Dependencies;
-using Bindable.Linq.Helpers;
-using System.Linq.Expressions;
-using Bindable.Linq.Collections;
-using Bindable.Linq;
+using System;
 
 namespace Bindable.Linq.Iterators
 {
+    using System.Collections.Generic;
+    using System.Collections.Specialized;
+    using System.Linq.Expressions;
+    using Collections;
+    using Transactions;
+
     /// <summary>
     /// An Iterator that reads items from the source collection and groups them by a common key. 
     /// </summary>
-    internal sealed class GroupByIterator<TKey, TSource, TElement> :
-        Iterator<TSource, IBindableGrouping<TKey, TElement>>
+    internal sealed class GroupByIterator<TKey, TSource, TElement> : Iterator<TSource, IBindableGrouping<TKey, TElement>>
         where TSource : class
     {
         private readonly Expression<Func<TSource, TElement>> _elementSelector;
@@ -31,7 +26,8 @@ namespace Bindable.Linq.Iterators
         /// <param name="keySelector">The key selector.</param>
         /// <param name="elementSelector">The element selector.</param>
         /// <param name="keyComparer">The key comparer.</param>
-        public GroupByIterator(IBindableCollection<TSource> sourceCollection, Expression<Func<TSource, TKey>> keySelector, Expression<Func<TSource, TElement>> elementSelector, IEqualityComparer<TKey> keyComparer) : base(sourceCollection)
+        public GroupByIterator(IBindableCollection<TSource> sourceCollection, Expression<Func<TSource, TKey>> keySelector, Expression<Func<TSource, TElement>> elementSelector, IEqualityComparer<TKey> keyComparer)
+            : base(sourceCollection)
         {
             _keySelector = keySelector;
             _keySelectorCompiled = keySelector.Compile();
@@ -45,7 +41,7 @@ namespace Bindable.Linq.Iterators
         /// <remarks>Warning: No locks should be held when invoking this method.</remarks>
         protected override void LoadSourceCollection()
         {
-            this.ReactToAddRange(0, this.SourceCollection);
+            ReactToAddRange(0, SourceCollection);
         }
 
         /// <summary>
@@ -63,14 +59,12 @@ namespace Bindable.Linq.Iterators
         /// </summary>
         /// <param name="lhs">The LHS.</param>
         /// <param name="rhs">The RHS.</param>
-        private bool CompareKeys(TKey lhs,
-            TKey rhs)
+        private bool CompareKeys(TKey lhs, TKey rhs)
         {
             return _keyComparer.Equals(lhs, rhs);
         }
 
-        private bool FindGroup(TKey key,
-            IEnumerable<IBindableGrouping<TKey, TElement>> groups)
+        private bool FindGroup(TKey key, IEnumerable<IBindableGrouping<TKey, TElement>> groups)
         {
             foreach (IBindableGrouping<TKey, TSource> existingGroup in groups)
             {
@@ -84,33 +78,26 @@ namespace Bindable.Linq.Iterators
 
         private void EnsureGroupsExists(IEnumerable<TSource> range)
         {
-            List<TSource> itemsToCreateGroupsFor = new List<TSource>();
+            var itemsToCreateGroupsFor = new List<TSource>();
             foreach (TSource element in range)
             {
                 itemsToCreateGroupsFor.Add(element);
             }
 
-            List<IBindableGrouping<TKey, TElement>> groupsToAdd = new List<IBindableGrouping<TKey, TElement>>();
-            foreach (TSource element in itemsToCreateGroupsFor)
+            using (ITransaction transaction = ResultCollection.BeginTransaction())
             {
-                TKey key = _keySelectorCompiled(element);
-                bool groupExists = false;
-                using (this.ResultCollection.BindableCollectionLock.Enter(this))
+                foreach (TSource element in itemsToCreateGroupsFor)
                 {
-                    groupExists = FindGroup(key, groupsToAdd) || FindGroup(key, this.ResultCollection);
-                }
-                if (!groupExists)
-                {
-                    IBindableGrouping<TKey, TElement> newGroup = new BindableGrouping<TKey, TElement>(key, 
-                        this.SourceCollection
-                        .Where(e => CompareKeys(_keySelectorCompiled(e), key))
-                        .WithDependencyExpression(_keySelector.Body, _keySelector.Parameters[0])
-                        .Select(_elementSelector));
-                    newGroup.CollectionChanged += new NotifyCollectionChangedEventHandler(Group_CollectionChanged);
-                    groupsToAdd.Add(newGroup);
+                    TKey key = _keySelectorCompiled(element);
+                    bool groupExists = FindGroup(key, ResultCollection);
+                    if (!groupExists)
+                    {
+                        IBindableGrouping<TKey, TElement> newGroup = new BindableGrouping<TKey, TElement>(key, SourceCollection.Where(e => CompareKeys(_keySelectorCompiled(e), key)).WithDependencyExpression(_keySelector.Body, _keySelector.Parameters[0]).Select(_elementSelector));
+                        newGroup.CollectionChanged += Group_CollectionChanged;
+                        ResultCollection.Add(newGroup, transaction);
+                    }
                 }
             }
-            this.ResultCollection.AddRange(groupsToAdd);
         }
 
         /// <summary>
@@ -118,10 +105,9 @@ namespace Bindable.Linq.Iterators
         /// </summary>
         /// <param name="sourceStartingIndex">Index of the source starting.</param>
         /// <param name="addedItems">The added items.</param>
-        protected override void ReactToAddRange(int sourceStartingIndex,
-            IEnumerable<TSource> addedItems)
+        protected override void ReactToAddRange(int sourceStartingIndex, IEnumerable<TSource> addedItems)
         {
-            this.EnsureGroupsExists(addedItems);
+            EnsureGroupsExists(addedItems);
         }
 
         /// <summary>
@@ -148,10 +134,9 @@ namespace Bindable.Linq.Iterators
         /// </summary>
         /// <param name="oldItems">The old items.</param>
         /// <param name="newItems">The new items.</param>
-        protected override void ReactToReplaceRange(IEnumerable<TSource> oldItems,
-            IEnumerable<TSource> newItems)
+        protected override void ReactToReplaceRange(IEnumerable<TSource> oldItems, IEnumerable<TSource> newItems)
         {
-            this.EnsureGroupsExists(newItems);
+            EnsureGroupsExists(newItems);
         }
 
         /// <summary>
@@ -161,9 +146,9 @@ namespace Bindable.Linq.Iterators
         /// <param name="propertyName">Name of the property.</param>
         protected override void ReactToItemPropertyChanged(TSource item, string propertyName)
         {
-            if (this.SourceCollection.Contains(item).Current)
+            if (SourceCollection.Contains(item).Current)
             {
-                this.EnsureGroupsExists(new TSource[] { item });
+                EnsureGroupsExists(new[] {item});
             }
         }
 
@@ -171,10 +156,10 @@ namespace Bindable.Linq.Iterators
         {
             if (e.Action == NotifyCollectionChangedAction.Remove)
             {
-                IBindableGrouping<TKey, TElement> group = sender as IBindableGrouping<TKey, TElement>;
+                var group = sender as IBindableGrouping<TKey, TElement>;
                 if (group.Count == 0)
                 {
-                    this.ResultCollection.Remove(group);
+                    ResultCollection.Remove(group);
                 }
             }
         }

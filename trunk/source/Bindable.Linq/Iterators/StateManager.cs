@@ -1,42 +1,29 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Bindable.Linq;
-using Bindable.Linq.Helpers;
-using Bindable.Linq.Collections;
+using System;
 
 namespace Bindable.Linq.Iterators
 {
+    using System.Collections.Generic;
+    using Collections;
+
     /// <summary>
     /// This class provides the ability to track the state of an item in a collection, as well 
     /// as to iterate over the items in a thread-safe manner. 
     /// </summary>
     internal sealed class StateManager<TElement, TState>
-        where TState : struct
-        where TElement : class
+        where TState : struct where TElement : class
     {
         private readonly BindableCollection<TElement> _elements = new BindableCollection<TElement>();
         private readonly Dictionary<TElement, TState> _elementStateLookup = new Dictionary<TElement, TState>();
-        private readonly LockScope _stateManagerLock = new LockScope();
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="StateManager&lt;TElement, TState&gt;"/> class.
-        /// </summary>
-        public StateManager()
-        {
-        }
+        private readonly object _stateManagerLock = new object();
 
         /// <summary>
         /// Sets the state for a given element.
         /// </summary>
         /// <param name="element">The element.</param>
         /// <param name="state">The state.</param>
-        public void SetState(TElement element,
-            TState state)
+        public void SetState(TElement element, TState state)
         {
-            using (_stateManagerLock.Enter(this))
+            lock (_stateManagerLock)
             {
                 if (!_elementStateLookup.ContainsKey(element))
                 {
@@ -56,7 +43,7 @@ namespace Bindable.Linq.Iterators
         /// <param name="element"></param>
         public void Remove(TElement element)
         {
-            using (_stateManagerLock.Enter(this))
+            lock (_stateManagerLock)
             {
                 if (_elementStateLookup.ContainsKey(element))
                 {
@@ -76,7 +63,7 @@ namespace Bindable.Linq.Iterators
             TState? result = null;
             if (element != null)
             {
-                using (_stateManagerLock.Enter(this))
+                lock (_stateManagerLock)
                 {
                     if (_elementStateLookup.ContainsKey(element))
                     {
@@ -94,10 +81,10 @@ namespace Bindable.Linq.Iterators
         /// <returns></returns>
         public IEnumerator<TElement> GetAllInState(TState? state)
         {
-            List<TElement> results = new List<TElement>();
-            using (_stateManagerLock.Enter(this))
+            var results = new List<TElement>();
+            lock (_stateManagerLock)
             {
-                foreach (KeyValuePair<TElement, TState> pair in _elementStateLookup)
+                foreach (var pair in _elementStateLookup)
                 {
                     if (state == null || pair.Value.Equals(state.Value))
                     {

@@ -1,17 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Reflection;
+using System;
 
 namespace Bindable.Linq.Helpers
 {
+    using System.Collections.Generic;
+    using System.Reflection;
+
     /// <summary>
     /// Provides the ability to read the value of a property from a given object without using reflection.
     /// </summary>
     internal static class PropertyReaderFactory
     {
-        private static Dictionary<string, object> _readers = new Dictionary<string, object>();
+        private static readonly Dictionary<string, object> _readers = new Dictionary<string, object>();
 
         /// <summary>
         /// Creates a reader that reads a specific type of property from a given object type by creating a delegate to access it.
@@ -33,17 +32,17 @@ namespace Bindable.Linq.Helpers
                 PropertyInfo propertyInfo = objectType.GetProperty(propertyName);
                 if (propertyInfo != null)
                 {
-                    if (typeof(TCast).IsAssignableFrom(propertyInfo.PropertyType))
+                    if (typeof (TCast).IsAssignableFrom(propertyInfo.PropertyType))
                     {
-                        Type delegateReaderType = typeof(Func<,>).MakeGenericType(propertyInfo.DeclaringType, propertyInfo.PropertyType);
-                        Type readerType = typeof(DelegatePropertyReader<,,>).MakeGenericType(propertyInfo.DeclaringType, propertyInfo.PropertyType, typeof(TCast));
+                        Type delegateReaderType = typeof (Func<,>).MakeGenericType(propertyInfo.DeclaringType, propertyInfo.PropertyType);
+                        Type readerType = typeof (DelegatePropertyReader<,,>).MakeGenericType(propertyInfo.DeclaringType, propertyInfo.PropertyType, typeof (TCast));
                         MethodInfo propertyGetterMethodInfo = propertyInfo.GetGetMethod();
                         if (propertyGetterMethodInfo == null)
                         {
                             throw new ArgumentException("The property '{0}' on type '{1}' does not contain a getter which could be accessed by the SyncLINQ binding infrastructure.".FormatWith(propertyName, propertyInfo.DeclaringType));
                         }
                         Delegate propertyGetterDelegate = Delegate.CreateDelegate(delegateReaderType, propertyGetterMethodInfo);
-                        result = (IPropertyReader<TCast>)Activator.CreateInstance(readerType, propertyGetterDelegate);
+                        result = (IPropertyReader<TCast>) Activator.CreateInstance(readerType, propertyGetterDelegate);
                         _readers[key] = result;
                     }
                 }
@@ -52,7 +51,7 @@ namespace Bindable.Linq.Helpers
                     FieldInfo fieldInfo = objectType.GetField(propertyName, BindingFlags.Instance | BindingFlags.NonPublic);
                     if (fieldInfo != null)
                     {
-                        if (typeof(TCast).IsAssignableFrom(fieldInfo.FieldType))
+                        if (typeof (TCast).IsAssignableFrom(fieldInfo.FieldType))
                         {
                             result = new FieldReader<TCast>(fieldInfo);
                             _readers[key] = result;
@@ -64,14 +63,14 @@ namespace Bindable.Linq.Helpers
         }
 
         #region Nested type: DelegatePropertyReader
-
         /// <summary>
         /// Private implementation of IDelegatePropertyReader.
         /// </summary>
         /// <typeparam name="TInput">The type of the input.</typeparam>
         /// <typeparam name="TReturn">The type of the return.</typeparam>
         /// <typeparam name="TCast">The type to cast the result to.</typeparam>
-        private class DelegatePropertyReader<TInput, TReturn, TCast> : IPropertyReader<TCast> where TReturn : TCast
+        private class DelegatePropertyReader<TInput, TReturn, TCast> : IPropertyReader<TCast>
+            where TReturn : TCast
         {
             private readonly Func<TInput, TReturn> _caller;
 
@@ -92,22 +91,20 @@ namespace Bindable.Linq.Helpers
             /// <returns></returns>
             public TCast GetValue(object input)
             {
-                return (TCast) _caller((TInput) input);
+                return _caller((TInput) input);
             }
             #endregion
         }
-
         #endregion
 
         #region Nested type: FieldReader
-
         /// <summary>
         /// Private implementation of IDelegatePropertyReader.
         /// </summary>
         /// <typeparam name="TCast">The type to cast the result to.</typeparam>
         private class FieldReader<TCast> : IPropertyReader<TCast>
         {
-            private FieldInfo _field;
+            private readonly FieldInfo _field;
 
             /// <summary>
             /// Initializes a new instance of the <see cref="DelegatePropertyReader&lt;TInput, TReturn, TCast&gt;"/> class.

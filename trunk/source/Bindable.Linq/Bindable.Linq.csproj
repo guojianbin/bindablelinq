@@ -106,12 +106,7 @@
     <Compile Include="Dependencies\PathNavigation\Tokens\MemberToken.cs" />
     <Compile Include="Dependencies\PathNavigation\PathNavigator.cs" />
     <Compile Include="Dependencies\PathNavigation\Tokens\WpfMemberToken.cs" />
-    <Compile Include="Eventing\CollectionChangeMode.cs" />
-    <Compile Include="Eventing\ICollectionChangedPublisher.cs" />
-    <Compile Include="Eventing\ICollectionChangedRecorder.cs" />
     <Compile Include="Adapters\BindableCollectionAdapter.cs" />
-    <Compile Include="Eventing\CollectionChangePublisher.cs" />
-    <Compile Include="Eventing\CollectionChangeRecorder.cs" />
     <Compile Include="Helpers\ElementActioner.cs" />
     <Compile Include="Helpers\ElementComparerFactory.cs" />
     <Compile Include="Dependencies\IPropertyReader.cs" />
@@ -166,6 +161,13 @@
     <Compile Include="Operators\ProjectOperator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\SigningInfo.cs" />
+    <Compile Include="Threading\DispatcherFactory.cs" />
+    <Compile Include="Threading\SilverlightDispatcher.cs" />
+    <Compile Include="Threading\IDispatcher.cs" />
+    <Compile Include="Threading\WpfDispatcher.cs" />
+    <Compile Include="Transactions\Transaction.cs" />
+    <Compile Include="Transactions\ITransaction.cs" />
+    <Compile Include="Transactions\TransactionLog.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Diagrams\Everything.cd" />
@@ -185,11 +187,10 @@
       set PF=%PROGRAMFILES(x86)%
       if "%PF%"=="" set PF=%PROGRAMFILES%
 
-      set SILVERLIGHTPATH=%PF%\Microsoft Silverlight\2.0.30226.2
-      if exist "%SILVERLIGHTPATH%" (
-        mkdir bin\Silverlight
-        %WINDIR%\Microsoft.NET\Framework\v3.5\Csc.exe /noconfig /nostdlib+ /nowarn:1701,1702 /errorreport:prompt /warn:4 /doc:bin\Silverlight\Bindable.Linq.xml /define:DEBUG;TRACE;SILVERLIGHT /reference:"%SILVERLIGHTPATH%\System.Windows.dll" /reference:"%SILVERLIGHTPATH%\mscorlib.dll" /reference:"%SILVERLIGHTPATH%\System.Core.dll" /reference:"%SILVERLIGHTPATH%\System.dll" /debug+ /debug:full /filealign:512 /optimize- /out:bin\Silverlight\Bindable.Linq.dll /target:library /recurse:*.cs
-      )
+      mkdir bin\Silverlight
+
+      %WINDIR%\Microsoft.NET\Framework\v3.5\Csc.exe /noconfig /nostdlib+ /nowarn:1701,1702 /errorreport:prompt /warn:4 /doc:bin\Silverlight\Bindable.Linq.xml /define:DEBUG;TRACE;SILVERLIGHT /reference:"%PF%\Microsoft Silverlight\2.0.30226.2\System.Windows.dll" /reference:"%PF%\Microsoft Silverlight\2.0.30226.2\mscorlib.dll" /reference:"%PF%\Microsoft Silverlight\2.0.30226.2\System.Core.dll" /reference:"%PF%\Microsoft Silverlight\2.0.30226.2\System.dll" /debug+ /debug:full /filealign:512 /optimize- /out:bin\Silverlight\Bindable.Linq.dll /target:library /recurse:*.cs
+
     </PostBuildEvent>
   </PropertyGroup>
 </Project>

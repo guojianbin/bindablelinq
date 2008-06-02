@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -8,6 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.Diagnostics;
 using System.Threading;
+using Bindable.Linq.Threading;
 
 namespace Bindable.Linq.Samples.WindowsForms
 {
@@ -23,7 +24,7 @@ namespace Bindable.Linq.Samples.WindowsForms
             _processWrapperBindingSource.DataSource =
                 GetAllProcesses()
                 .AsBindable()
-                .Polling(TimeSpan.FromMilliseconds(300))
+                .Polling(new WpfDispatcher(), TimeSpan.FromMilliseconds(300))
                 .OrderBy(p => p.ProcessName)
                 .Where(p => p.ProcessName.ToLower()
                     .Contains(_filterTextBox.Text.ToLower()))

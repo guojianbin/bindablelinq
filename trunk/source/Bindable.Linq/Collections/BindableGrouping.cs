@@ -1,15 +1,13 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.ComponentModel;
-using System.Collections.Specialized;
-using Bindable.Linq;
-using Bindable.Linq.Configuration;
+using System;
 
 namespace Bindable.Linq.Collections
 {
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.Collections.Specialized;
+    using System.ComponentModel;
+    using Configuration;
+
     /// <summary>
     /// Used in the <see cref="T:GroupByIterator`2"/> as the result of a grouping.
     /// </summary>
@@ -29,21 +27,19 @@ namespace Bindable.Linq.Collections
         {
             _key = key;
             _groupWhereQuery = groupWhereQuery;
-            _groupWhereQuery.CollectionChanged += new NotifyCollectionChangedEventHandler(GroupWhereQuery_CollectionChanged);
-            _groupWhereQuery.PropertyChanged += new PropertyChangedEventHandler(GroupWhereQuery_PropertyChanged);
+            _groupWhereQuery.CollectionChanged += GroupWhereQuery_CollectionChanged;
+            _groupWhereQuery.PropertyChanged += GroupWhereQuery_PropertyChanged;
+        }
+
+        /// <summary>
+        /// Gets the configuration.
+        /// </summary>
+        public IBindingConfiguration Configuration
+        {
+            get { return _groupWhereQuery.Configuration; }
         }
 
         #region IBindableGrouping<TKey,TElement> Members
-        /// <summary>
-        /// Gets the key of the <see cref="T:System.Linq.IGrouping`2"/>.
-        /// </summary>
-        /// <value></value>
-        /// <returns>The key of the <see cref="T:System.Linq.IGrouping`2"/>.</returns>
-        public TKey Key
-        {
-            get { return _key; }
-        }
-
         /// <summary>
         /// Occurs when a property value changes.
         /// </summary>
@@ -53,6 +49,16 @@ namespace Bindable.Linq.Collections
         /// Occurs when the collection changes.
         /// </summary>
         public event NotifyCollectionChangedEventHandler CollectionChanged;
+
+        /// <summary>
+        /// Gets the key of the <see cref="T:System.Linq.IGrouping`2"/>.
+        /// </summary>
+        /// <value></value>
+        /// <returns>The key of the <see cref="T:System.Linq.IGrouping`2"/>.</returns>
+        public TKey Key
+        {
+            get { return _key; }
+        }
 
         /// <summary>
         /// Returns an enumerator that iterates through the collection.
@@ -86,23 +92,24 @@ namespace Bindable.Linq.Collections
         }
 
         /// <summary>
-        /// Gets the configuration.
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
-        public IBindingConfiguration Configuration
+        public void Dispose()
         {
-            get { return _groupWhereQuery.Configuration; }
+            _groupWhereQuery.CollectionChanged -= GroupWhereQuery_CollectionChanged;
+            _groupWhereQuery.PropertyChanged -= GroupWhereQuery_PropertyChanged;
+            _groupWhereQuery.Dispose();
         }
-
         #endregion
 
         private void GroupWhereQuery_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            this.OnPropertyChanged(e);
+            OnPropertyChanged(e);
         }
 
         private void GroupWhereQuery_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            this.OnCollectionChanged(e);
+            OnCollectionChanged(e);
         }
 
         /// <summary>
@@ -111,7 +118,7 @@ namespace Bindable.Linq.Collections
         /// <param name="e">The <see cref="System.ComponentModel.PropertyChangedEventArgs"/> instance containing the event data.</param>
         private void OnPropertyChanged(PropertyChangedEventArgs e)
         {
-            PropertyChangedEventHandler handler = this.PropertyChanged;
+            PropertyChangedEventHandler handler = PropertyChanged;
             if (handler != null)
             {
                 handler(this, e);
@@ -124,18 +131,11 @@ namespace Bindable.Linq.Collections
         /// <param name="e">The <see cref="System.Collections.Specialized.NotifyCollectionChangedEventArgs"/> instance containing the event data.</param>
         private void OnCollectionChanged(NotifyCollectionChangedEventArgs e)
         {
-            NotifyCollectionChangedEventHandler handler = this.CollectionChanged;
+            NotifyCollectionChangedEventHandler handler = CollectionChanged;
             if (handler != null)
             {
                 handler(this, e);
             }
-        }
-
-        public void Dispose()
-        {
-            _groupWhereQuery.CollectionChanged -= new NotifyCollectionChangedEventHandler(GroupWhereQuery_CollectionChanged);
-            _groupWhereQuery.PropertyChanged -= new PropertyChangedEventHandler(GroupWhereQuery_PropertyChanged);
-            _groupWhereQuery.Dispose();
         }
     }
 }

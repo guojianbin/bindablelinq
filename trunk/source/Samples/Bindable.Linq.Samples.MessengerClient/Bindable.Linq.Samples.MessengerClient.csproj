@@ -8,8 +8,8 @@
     <ProjectGuid>{081046F4-5579-4049-9361-EA9EF2D6AD53}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>BindingOriented.SyncLinq.Samples.MessengerClient</RootNamespace>
-    <AssemblyName>BindingOriented.SyncLinq.Samples.MessengerClient</AssemblyName>
+    <RootNamespace>Bindable.Linq.Samples.MessengerClient</RootNamespace>
+    <AssemblyName>Bindable.Linq.Samples.MessengerClient</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -34,6 +34,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="PresentationFramework.Classic" />
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>

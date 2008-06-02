@@ -1,18 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows;
-using System.Reflection;
-using Bindable.Linq.Dependencies.PathNavigation.Tokens;
+using System;
 
 namespace Bindable.Linq.Dependencies.PathNavigation.TokenFactories
 {
+    using Tokens;
+    using System.Windows;
+    using System.Reflection;
+
     /// <summary>
     /// A parser for Silverlight dependency properties.
     /// </summary>
     public sealed class SilverlightMemberTokenFactory : ITokenFactory
     {
+        #region ITokenFactory Members
         /// <summary>
         /// Creates an appropriate property monitor for the remaining property path string on the target object.
         /// </summary>
@@ -55,5 +54,6 @@ namespace Bindable.Linq.Dependencies.PathNavigation.TokenFactories
 #endif
             return result;
         }
+        #endregion
     }
 }

@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using NUnit.Framework;
+using System;
 
 namespace Bindable.Linq.Tests.TestHelpers
 {
+    using System.Collections;
+    using System.Reflection;
+    using NUnit.Framework;
+
     /// <summary>
     /// A helper class to compare Bindable LINQ queries with their LINQ to Objects counterpart.
     /// </summary>
@@ -63,8 +61,8 @@ namespace Bindable.Linq.Tests.TestHelpers
             {
                 if (leftEnumerator.Current is IEnumerable)
                 {
-                    IEnumerable leftChildIterator = leftEnumerator.Current as IEnumerable;
-                    IEnumerable rightChildIterator = rightEnumerator.Current as IEnumerable;
+                    var leftChildIterator = leftEnumerator.Current as IEnumerable;
+                    var rightChildIterator = rightEnumerator.Current as IEnumerable;
                     if (leftChildIterator != null && rightChildIterator != null)
                     {
                         CompareOrdered(leftChildIterator, rightChildIterator);
@@ -72,9 +70,7 @@ namespace Bindable.Linq.Tests.TestHelpers
                 }
                 else if (!CompareObject(leftEnumerator.Current, rightEnumerator.Current))
                 {
-                    Assert.Fail(string.Format("Error when comparing Iterator '{0}' with Iterator '{1}': Items at index {2} ('{3}' : '{4}') do not match.",
-                        left.ToString(), right.ToString(), index, leftEnumerator.Current, rightEnumerator.Current
-                        ));
+                    Assert.Fail(string.Format("Error when comparing Iterator '{0}' with Iterator '{1}': Items at index {2} ('{3}' : '{4}') do not match.", left, right, index, leftEnumerator.Current, rightEnumerator.Current));
                 }
                 index++;
             }
@@ -83,8 +79,8 @@ namespace Bindable.Linq.Tests.TestHelpers
         private static bool CompareUnordered(IEnumerable left, IEnumerable right)
         {
             bool equal = false;
-            ArrayList leftList = new ArrayList();
-            ArrayList rightList = new ArrayList();
+            var leftList = new ArrayList();
+            var rightList = new ArrayList();
             foreach (object o in left)
             {
                 leftList.Add(o);

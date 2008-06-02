@@ -1,22 +1,16 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Linq;
-using System.Text;
-using System.ComponentModel;
-using Bindable.Linq.Configuration;
+using System;
 
 namespace Bindable.Linq
 {
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.Collections.Specialized;
+    using System.ComponentModel;
+
     /// <summary>
     /// An interface implemented by all Bindable LINQ bindable collections.
     /// </summary>
-    public interface IBindableCollection :
-        IEnumerable,
-        INotifyCollectionChanged, 
-        INotifyPropertyChanged,
-        IDisposable
+    public interface IBindableCollection : IEnumerable, INotifyCollectionChanged, INotifyPropertyChanged, IDisposable
     {
         /// <summary>
         /// Gets the count of items in the collection.
@@ -28,9 +22,5 @@ namespace Bindable.Linq
     /// An interface implemented by all Bindable LINQ bindable collections.
     /// </summary>
     /// <typeparam name="TElement">The type of the element.</typeparam>
-    public interface IBindableCollection<TElement> : 
-        IEnumerable<TElement>, 
-        IBindableCollection
-    {
-    }
+    public interface IBindableCollection<TElement> : IEnumerable<TElement>, IBindableCollection {}
 }

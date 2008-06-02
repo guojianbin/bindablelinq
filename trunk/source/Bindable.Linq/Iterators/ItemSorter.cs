@@ -1,12 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Bindable.Linq.Iterators;
-using Bindable.Linq.Helpers;
-
 namespace Bindable.Linq.Iterators
 {
+    using System;
+    using System.Collections.Generic;
+    using Helpers;
+
     /// <summary>
     /// Base class used for creating a list of comparers.
     /// </summary>
@@ -24,8 +21,7 @@ namespace Bindable.Linq.Iterators
         /// </summary>
         /// <param name="left">The first item to compare.</param>
         /// <param name="right">The second item to compare.</param>
-        public abstract int Compare(S left,
-            S right);
+        public abstract int Compare(S left, S right);
     }
 
     /// <summary>
@@ -74,10 +70,7 @@ namespace Bindable.Linq.Iterators
         /// <param name="keySelector"></param>
         /// <param name="comparer"></param>
         /// <param name="ascending"></param>
-        public ItemSorter(ItemSorter<S> superior,
-            Func<S, K> keySelector,
-            IComparer<K> comparer,
-            bool ascending)
+        public ItemSorter(ItemSorter<S> superior, Func<S, K> keySelector, IComparer<K> comparer, bool ascending)
         {
             _keySelector = keySelector;
             _superior = superior;
@@ -95,8 +88,7 @@ namespace Bindable.Linq.Iterators
         /// As described in the class remarks, we first try to use the "superior's" Compare method. 
         /// Only when the superior returns "0" (same value) do we use our own IComparer. 
         /// </returns>
-        public override int Compare(S left,
-            S right)
+        public override int Compare(S left, S right)
         {
             int result = 0;
             if (_superior != null)

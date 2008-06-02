@@ -1,21 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using Bindable.Linq.Helpers;
-using System.Windows;
-using System.Reflection;
+using System;
 
 namespace Bindable.Linq.Dependencies.PathNavigation.Tokens
 {
+    using System.Reflection;
+    using System.Windows;
+
     /// <summary>
     /// A property monitor for WPF DependencyProperties.
     /// </summary>
     internal sealed class SilverlightMemberToken : MemberToken
     {
-        private EventHandler _actualHandler;
-        private DependencyProperty _dependencyProperty;
+        private readonly EventHandler _actualHandler;
+        private readonly DependencyProperty _dependencyProperty;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SilverlightMemberToken"/> class.
@@ -32,7 +28,7 @@ namespace Bindable.Linq.Dependencies.PathNavigation.Tokens
             _dependencyProperty = dependencyProperty;
             _actualHandler = CurrentTarget_PropertyChanged;
 
-            this.AcquireTarget(objectToObserve);
+            AcquireTarget(objectToObserve);
         }
 
         /// <summary>
@@ -40,7 +36,7 @@ namespace Bindable.Linq.Dependencies.PathNavigation.Tokens
         /// </summary>
         protected override void DiscardCurrentTargetOverride()
         {
-            DependencyObject currentTarget = this.CurrentTarget as DependencyObject;
+            var currentTarget = CurrentTarget as DependencyObject;
             if (currentTarget != null)
             {
                 //var dpd = DependencyPropertyDescriptor.FromProperty(_dependencyProperty, currentTarget.GetType());
@@ -49,13 +45,13 @@ namespace Bindable.Linq.Dependencies.PathNavigation.Tokens
                 //    dpd.RemoveValueChanged(currentTarget, CurrentTarget_PropertyChanged);
                 //}
 
-                EventInfo eventInfo = this.CurrentTarget.GetType().GetEvent(this.PropertyName + "Changed");
+                EventInfo eventInfo = CurrentTarget.GetType().GetEvent(PropertyName + "Changed");
                 if (eventInfo != null)
                 {
                     MethodInfo removeMethod = eventInfo.GetRemoveMethod();
                     if (removeMethod != null)
                     {
-                        removeMethod.Invoke(this.CurrentTarget, new object[] { _actualHandler });
+                        removeMethod.Invoke(CurrentTarget, new object[] {_actualHandler});
                     }
                 }
             }
@@ -66,7 +62,7 @@ namespace Bindable.Linq.Dependencies.PathNavigation.Tokens
         /// </summary>
         protected override void MonitorCurrentTargetOverride()
         {
-            DependencyObject currentTarget = this.CurrentTarget as DependencyObject;
+            var currentTarget = CurrentTarget as DependencyObject;
             if (currentTarget != null)
             {
                 //var dpd = DependencyPropertyDescriptor.FromProperty(_dependencyProperty, currentTarget.GetType());
@@ -75,7 +71,7 @@ namespace Bindable.Linq.Dependencies.PathNavigation.Tokens
                 //    dpd.AddValueChanged(currentTarget, CurrentTarget_PropertyChanged);
                 //}
 
-                EventInfo eventInfo = this.CurrentTarget.GetType().GetEvent(this.PropertyName + "Changed");
+                EventInfo eventInfo = CurrentTarget.GetType().GetEvent(PropertyName + "Changed");
                 if (eventInfo != null)
                 {
                     MethodInfo addMethod = eventInfo.GetAddMethod();
@@ -83,8 +79,8 @@ namespace Bindable.Linq.Dependencies.PathNavigation.Tokens
                     {
                         ParameterInfo pi = addMethod.GetParameters()[0];
 
-                        Delegate d = Delegate.CreateDelegate(pi.ParameterType, this, this.GetType().GetMethod("CurrentTarget_PropertyChanged", BindingFlags.Public | BindingFlags.Instance));
-                        addMethod.Invoke(this.CurrentTarget, new object[] { d });
+                        Delegate d = Delegate.CreateDelegate(pi.ParameterType, this, GetType().GetMethod("CurrentTarget_PropertyChanged", BindingFlags.Public | BindingFlags.Instance));
+                        addMethod.Invoke(CurrentTarget, new object[] {d});
                     }
                 }
             }
@@ -96,16 +92,16 @@ namespace Bindable.Linq.Dependencies.PathNavigation.Tokens
         /// <returns></returns>
         protected override object ReadCurrentPropertyValueOverride()
         {
-            if (_dependencyProperty != null && this.CurrentTarget != null)
+            if (_dependencyProperty != null && CurrentTarget != null)
             {
-                return ((DependencyObject)this.CurrentTarget).GetValue(_dependencyProperty);
+                return ((DependencyObject) CurrentTarget).GetValue(_dependencyProperty);
             }
             return null;
         }
 
         public void CurrentTarget_PropertyChanged(object sender, EventArgs e)
         {
-            this.HandleCurrentTargetPropertyValueChanged();
+            HandleCurrentTargetPropertyValueChanged();
         }
 
         /// <summary>

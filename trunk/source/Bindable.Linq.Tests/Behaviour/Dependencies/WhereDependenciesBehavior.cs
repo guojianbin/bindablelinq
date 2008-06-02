@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+using System;
 using System.Linq;
-using System.Text;
-using Bindable.Linq.Tests.TestHelpers;
 using NUnit.Framework;
-using Bindable.Linq.Tests.TestObjectModel;
+using Bindable.Linq.Tests.TestHelpers;
 
 namespace Bindable.Linq.Tests.Behaviour.Dependencies
 {
+
     [TestFixture]
     public sealed class WhereDependenciesBehavior : TestFixture
     {
@@ -21,7 +19,5 @@ namespace Bindable.Linq.Tests.Behaviour.Dependencies
                 .WhenLoaded().ExpectNoEvents()
                 .AndExpectFinalCountOf(2);
         }
-
-
     }
 }

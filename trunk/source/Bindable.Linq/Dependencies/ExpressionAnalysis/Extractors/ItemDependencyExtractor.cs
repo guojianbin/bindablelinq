@@ -1,25 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Linq.Expressions;
-using Bindable.Linq.Dependencies.Definitions;
+using System;
 
 namespace Bindable.Linq.Dependencies.ExpressionAnalysis.Extractors
 {
+    using System.Linq.Expressions;
+    using Definitions;
+
     /// <summary>
     /// Extracts dependencies placed on child items within a query by looking for uses of <see cref="ParameterExpression"/>.
     /// </summary>
     internal sealed class ItemDependencyExtractor : DependencyExtractor
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ItemDependencyExtractor"/> class.
-        /// </summary>
-        public ItemDependencyExtractor()
-        {
-            
-        }
-
         /// <summary>
         /// When overridden in a derived class, extracts the appropriate dependency from the root of the expression.
         /// </summary>
@@ -31,7 +21,7 @@ namespace Bindable.Linq.Dependencies.ExpressionAnalysis.Extractors
             IDependencyDefinition result = null;
             if (rootExpression is ParameterExpression)
             {
-                ParameterExpression parameterExpression = (ParameterExpression) rootExpression;
+                var parameterExpression = (ParameterExpression) rootExpression;
                 result = new ItemDependencyDefinition(propertyPath, parameterExpression.Name);
             }
             return result;

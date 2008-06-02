@@ -1,27 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using Bindable.Linq.Dependencies;
-using Bindable.Linq.Helpers;
+using System;
 
 namespace Bindable.Linq.Dependencies
 {
+    using System.Collections.Specialized;
+    using Helpers;
+
     /// <summary>
     /// Manages the subscription of CollectionChanged events on items.
     /// </summary>
     internal sealed class CollectionChangeObserver : EventDependency<INotifyCollectionChanged, NotifyCollectionChangedEventArgs>
     {
-        private WeakEventReference<NotifyCollectionChangedEventArgs> _weakEvent;
+        private readonly WeakEventReference<NotifyCollectionChangedEventArgs> _weakEvent;
         private NotifyCollectionChangedEventHandler _callback;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CollectionChangeObserver"/> class.
         /// </summary>
         /// <param name="callback">The callback.</param>
-        public CollectionChangeObserver(EventHandler<NotifyCollectionChangedEventArgs> callback) : base()
+        public CollectionChangeObserver(EventHandler<NotifyCollectionChangedEventArgs> callback)
         {
             _weakEvent = new WeakEventReference<NotifyCollectionChangedEventArgs>(callback);
             _callback = new NotifyCollectionChangedEventHandler(callback);
@@ -50,9 +46,6 @@ namespace Bindable.Linq.Dependencies
         /// <summary>
         /// When overridden in a derived class, allows the class to add custom code when the object is disposed.
         /// </summary>
-        protected override void DisposeOverride()
-        {
-            
-        }
+        protected override void DisposeOverride() {}
     }
 }

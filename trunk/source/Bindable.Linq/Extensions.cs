@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq.Expressions;
+using System.Windows;
 using System.Windows.Threading;
 using Bindable.Linq.Adapters;
 using Bindable.Linq.Aggregators;
@@ -12,10 +13,10 @@ using Bindable.Linq.Collections;
 using Bindable.Linq.Configuration;
 using Bindable.Linq.Dependencies;
 using Bindable.Linq.Dependencies.Definitions;
-using Bindable.Linq.Dependencies.ExpressionAnalysis;
 using Bindable.Linq.Helpers;
 using Bindable.Linq.Iterators;
 using Bindable.Linq.Operators;
+using Bindable.Linq.Threading;
 
 namespace Bindable.Linq
 {
@@ -27,7 +28,6 @@ namespace Bindable.Linq
         #region Iterators
 
         #region AsBindable (DONE)
-
         /// <summary>
         /// Converts any <see cref="T:IEnumerable`1"/> into a Bindable LINQ <see cref="T:ISyncLinqCollection`1"/>.
         /// </summary>
@@ -37,8 +37,7 @@ namespace Bindable.Linq
         /// An <see cref="T:ISyncLinqCollection`1"/> containing the items.
         /// </returns>
         /// <exception cref="T:ArgumentNullException"><paramref name="source"/> or <paramref name="selector"/> is null.</exception>
-        public static IBindableCollection<TSource> AsBindable<TSource>(this IEnumerable source)
-            where TSource : class
+        public static IBindableCollection<TSource> AsBindable<TSource>(this IEnumerable source) where TSource : class
         {
             return source.AsBindable<TSource>(BindingConfigurations.Default);
         }
@@ -53,8 +52,7 @@ namespace Bindable.Linq
         /// An <see cref="T:ISyncLinqCollection`1"/> containing the items.
         /// </returns>
         /// <exception cref="T:ArgumentNullException"><paramref name="source"/> or <paramref name="selector"/> is null.</exception>
-        public static IBindableCollection<TSource> AsBindable<TSource>(this IEnumerable source, IBindingConfiguration bindingConfiguration)
-            where TSource : class
+        public static IBindableCollection<TSource> AsBindable<TSource>(this IEnumerable source, IBindingConfiguration bindingConfiguration) where TSource : class
         {
             source.ShouldNotBeNull("source");
             bindingConfiguration.ShouldNotBeNull("bindingConfiguration");
@@ -77,10 +75,9 @@ namespace Bindable.Linq
         /// An <see cref="T:ISyncLinqCollection`1"/> containing the items.
         /// </returns>
         /// <exception cref="T:ArgumentNullException"><paramref name="source"/> or <paramref name="selector"/> is null.</exception>
-        public static IBindableCollection<TSource> AsBindable<TSource>(this IEnumerable<TSource> source, IBindingConfiguration bindingConfiguration)
-            where TSource : class
+        public static IBindableCollection<TSource> AsBindable<TSource>(this IEnumerable<TSource> source, IBindingConfiguration bindingConfiguration) where TSource : class
         {
-            return ((IEnumerable)source).AsBindable<TSource>(bindingConfiguration);
+            return ((IEnumerable) source).AsBindable<TSource>(bindingConfiguration);
         }
 
         /// <summary>
@@ -92,10 +89,9 @@ namespace Bindable.Linq
         /// An <see cref="T:ISyncLinqCollection`1"/> containing the items.
         /// </returns>
         /// <exception cref="T:ArgumentNullException"><paramref name="source"/> or <paramref name="selector"/> is null.</exception>
-        public static IBindableCollection<TSource> AsBindable<TSource>(this IEnumerable<TSource> source)
-            where TSource : class
+        public static IBindableCollection<TSource> AsBindable<TSource>(this IEnumerable<TSource> source) where TSource : class
         {
-            return ((IEnumerable)source).AsBindable<TSource>();
+            return ((IEnumerable) source).AsBindable<TSource>();
         }
 
         /// <summary>
@@ -108,18 +104,15 @@ namespace Bindable.Linq
         /// An <see cref="T:ISyncLinqCollection`1"/> containing the items.
         /// </returns>
         /// <exception cref="T:ArgumentNullException"><paramref name="source"/> or <paramref name="selector"/> is null.</exception>
-        public static IBindableQuery<TResult> AsBindable<TSource, TResult>(this IEnumerable<TSource> source)
-            where TResult : TSource
-            where TSource : class
+        public static IBindableQuery<TResult> AsBindable<TSource, TResult>(this IEnumerable<TSource> source) where TResult : TSource where TSource : class
         {
             source.ShouldNotBeNull("source");
-            return new SelectIterator<TSource, TResult>(source.AsBindable(), i => (TResult)i);
+            return new SelectIterator<TSource, TResult>(source.AsBindable(), i => (TResult) i);
         }
-
         #endregion
 
         #region Asynchronous (DONE)
-
+#if !SILVERLIGHT
         /// <summary>
         /// Converts any <see cref="T:IEnumerable`1"/> into a Bindable LINQ <see cref="T:ISyncLinqCollection`1"/>, 
         /// and executes the enumerator for the source collection on a background thread. 
@@ -131,34 +124,67 @@ namespace Bindable.Linq
         /// asynchronously.
         /// </returns>
         /// <exception cref="T:ArgumentNullException"><paramref name="source"/> or <paramref name="selector"/> is null.</exception>
-        public static IBindableQuery<TSource> Asynchronous<TSource>(this IBindableCollection<TSource> source)
-            where TSource : class
+        public static IBindableQuery<TSource> Asynchronous<TSource>(this IBindableCollection<TSource> source) where TSource : class
         {
-            source.ShouldNotBeNull("source");
-            return new AsynchronousIterator<TSource>(source);
+            return source.Asynchronous(DispatcherFactory.Create(Dispatcher.CurrentDispatcher));
+        }
+#endif
+
+        /// <summary>
+        /// Converts any <see cref="T:IEnumerable`1"/> into a Bindable LINQ <see cref="T:ISyncLinqCollection`1"/>,
+        /// and executes the enumerator for the source collection on a background thread.
+        /// </summary>
+        /// <typeparam name="TSource">The type of source item.</typeparam>
+        /// <param name="source">The source Iterator.</param>
+        /// <param name="dispatcher">The dispatcher.</param>
+        /// <returns>
+        /// A <see cref="T:ISyncLinqCollection`1"/> containing the items, which will be added
+        /// asynchronously.
+        /// </returns>
+        /// <exception cref="T:ArgumentNullException"><paramref name="source"/> or <paramref name="selector"/> is null.</exception>
+        public static IBindableQuery<TSource> Asynchronous<TSource>(this IBindableCollection<TSource> source, Dispatcher dispatcher) where TSource : class
+        {
+            return source.Asynchronous(DispatcherFactory.Create(dispatcher));
         }
 
+        /// <summary>
+        /// Converts any <see cref="T:IEnumerable`1"/> into a Bindable LINQ <see cref="T:ISyncLinqCollection`1"/>,
+        /// and executes the enumerator for the source collection on a background thread.
+        /// </summary>
+        /// <typeparam name="TSource">The type of source item.</typeparam>
+        /// <param name="source">The source Iterator.</param>
+        /// <param name="dispatcher">The dispatcher.</param>
+        /// <returns>
+        /// A <see cref="T:ISyncLinqCollection`1"/> containing the items, which will be added
+        /// asynchronously.
+        /// </returns>
+        /// <exception cref="T:ArgumentNullException"><paramref name="source"/> or <paramref name="selector"/> is null.</exception>
+        public static IBindableQuery<TSource> Asynchronous<TSource>(this IBindableCollection<TSource> source, IDispatcher dispatcher) where TSource : class
+        {
+            source.ShouldNotBeNull("source");
+            return new AsynchronousIterator<TSource>(source, dispatcher);
+        }
         #endregion
 
         #region Cast (DONE)
-
-        /// <summary>Converts the elements of an <see cref="T:IBindableCollection" /> to the specified type.</summary>
-        /// <returns>An <see cref="T:IBindableCollection`1" /> that contains each element of the source sequence converted to the specified type.</returns>
-        /// <param name="source">The <see cref="T:IBindableCollection" /> that contains the elements to be converted.</param>
-        /// <typeparam name="TResult">The type to convert the elements of <paramref name="source" /> to.</typeparam>
+        /// <summary>
+        /// Converts the elements of an <see cref="T:IBindableCollection"/> to the specified type.
+        /// </summary>
+        /// <typeparam name="TResult">The type to convert the elements of <paramref name="source"/> to.</typeparam>
+        /// <param name="source">The <see cref="T:IBindableCollection"/> that contains the elements to be converted.</param>
+        /// <returns>
+        /// An <see cref="T:IBindableCollection`1"/> that contains each element of the source sequence converted to the specified type.
+        /// </returns>
         /// <exception cref="T:System.ArgumentNullException">
-        /// <paramref name="source" /> is null.</exception>
-        /// <exception cref="T:System.InvalidCastException">An element in the sequence cannot be cast to type <paramref name="TResult" />.</exception>
-        public static IBindableCollection<TResult> Cast<TResult>(this IBindableCollection source)
-            where TResult : class
+        /// 	<paramref name="source"/> is null.</exception>
+        /// <exception cref="T:System.InvalidCastException">An element in the sequence cannot be cast to type <paramref name="TResult"/>.</exception>
+        public static IBindableCollection<TResult> Cast<TResult>(this IBindableCollection source) where TResult : class
         {
             return AsBindable<TResult>(source);
         }
-
         #endregion
 
         #region Concat (DONE)
-
         /// <summary>Concatenates two sequences.</summary>
         /// <returns>An <see cref="T:IBindableCollection`1" /> that contains the concatenated elements of the two input sequences.</returns>
         /// <param name="first">The first sequence to concatenate.</param>
@@ -166,24 +192,20 @@ namespace Bindable.Linq
         /// <typeparam name="TElement">The type of the elements of the input sequences.</typeparam>
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="first" /> or <paramref name="second" /> is null.</exception>
-        public static IBindableQuery<TElement> Concat<TElement>(this IBindableCollection<TElement> first, IBindableCollection<TElement> second)
-            where TElement : class
+        public static IBindableQuery<TElement> Concat<TElement>(this IBindableCollection<TElement> first, IBindableCollection<TElement> second) where TElement : class
         {
-            return Union<TElement>(first, second);
+            return Union(first, second);
         }
-
         #endregion
 
         #region Distinct (DONE)
-
         /// <summary>Returns distinct elements from a sequence by using the default equality comparer to compare values.</summary>
         /// <returns>An <see cref="T:IBindableCollection`1" /> that contains distinct elements from the source sequence.</returns>
         /// <param name="source">The sequence to remove duplicate elements from.</param>
         /// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="source" /> is null.</exception>
-        public static IBindableQuery<TSource> Distinct<TSource>(this IBindableCollection<TSource> source)
-            where TSource : class
+        public static IBindableQuery<TSource> Distinct<TSource>(this IBindableCollection<TSource> source) where TSource : class
         {
             return source.Distinct(null);
         }
@@ -195,21 +217,17 @@ namespace Bindable.Linq
         /// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="source" /> is null.</exception>
-        public static IBindableQuery<TSource> Distinct<TSource>(this IBindableCollection<TSource> source, IEqualityComparer<TSource> comparer)
-            where TSource : class
+        public static IBindableQuery<TSource> Distinct<TSource>(this IBindableCollection<TSource> source, IEqualityComparer<TSource> comparer) where TSource : class
         {
             if (comparer == null)
             {
                 comparer = new DefaultComparer<TSource>();
             }
-            return source.GroupBy(c => comparer.GetHashCode(c))
-                         .Select(group => group.First().Current);
+            return source.GroupBy(c => comparer.GetHashCode(c)).Select(group => group.First().Current);
         }
-
         #endregion
 
         #region Except (NOT)
-
         /// <summary>Produces the set difference of two sequences by using the default equality comparer to compare values.</summary>
         /// <returns>A sequence that contains the set difference of the elements of two sequences.</returns>
         /// <param name="first">An <see cref="T:IBindableCollection`1" /> whose elements that are not also in <paramref name="second" /> will be returned.</param>
@@ -240,11 +258,9 @@ namespace Bindable.Linq
             second.ShouldNotBeNull("second");
             throw new NotImplementedException();
         }
-
         #endregion
 
         #region GroupBy (DONE)
-
         /// <summary>Groups the elements of a sequence according to a specified key selector function.</summary>
         /// <returns>An IEnumerable&lt;IGrouping&lt;TKey, TSource&gt;&gt; in C# or IEnumerable(Of IGrouping(Of TKey, TSource)) in Visual Basic where each <see cref="T:System.Linq.IGrouping`2" /> object contains a sequence of objects and a key.</returns>
         /// <param name="source">An <see cref="T:IBindableCollection`1" /> whose elements to group.</param>
@@ -253,8 +269,7 @@ namespace Bindable.Linq
         /// <typeparam name="TKey">The type of the key returned by <paramref name="keySelector" />.</typeparam>
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="source" /> or <paramref name="keySelector" /> is null.</exception>
-        public static IBindableQuery<IBindableGrouping<TKey, TSource>> GroupBy<TSource, TKey>(this IBindableCollection<TSource> source, Expression<Func<TSource, TKey>> keySelector)
-            where TSource : class
+        public static IBindableQuery<IBindableGrouping<TKey, TSource>> GroupBy<TSource, TKey>(this IBindableCollection<TSource> source, Expression<Func<TSource, TKey>> keySelector) where TSource : class
         {
             return source.GroupBy(keySelector, s => s, new DefaultComparer<TKey>());
         }
@@ -268,8 +283,7 @@ namespace Bindable.Linq
         /// <typeparam name="TKey">The type of the key returned by <paramref name="keySelector" />.</typeparam>
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="source" /> or <paramref name="keySelector" /> is null.</exception>
-        public static IBindableQuery<IBindableGrouping<TKey, TSource>> GroupBy<TSource, TKey>(this IBindableCollection<TSource> source, Expression<Func<TSource, TKey>> keySelector, IEqualityComparer<TKey> comparer)
-            where TSource : class
+        public static IBindableQuery<IBindableGrouping<TKey, TSource>> GroupBy<TSource, TKey>(this IBindableCollection<TSource> source, Expression<Func<TSource, TKey>> keySelector, IEqualityComparer<TKey> comparer) where TSource : class
         {
             return source.GroupBy(keySelector, s => s, comparer);
         }
@@ -284,9 +298,7 @@ namespace Bindable.Linq
         /// <typeparam name="TElement">The type of the elements in the <see cref="T:System.Linq.IGrouping`2" />.</typeparam>
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="source" /> or <paramref name="keySelector" /> or <paramref name="elementSelector" /> is null.</exception>
-        public static IBindableQuery<IBindableGrouping<TKey, TElement>> GroupBy<TSource, TKey, TElement>(this IBindableCollection<TSource> source, Expression<Func<TSource, TKey>> keySelector, Expression<Func<TSource, TElement>> elementSelector)
-            where TSource : class
-            where TElement : class
+        public static IBindableQuery<IBindableGrouping<TKey, TElement>> GroupBy<TSource, TKey, TElement>(this IBindableCollection<TSource> source, Expression<Func<TSource, TKey>> keySelector, Expression<Func<TSource, TElement>> elementSelector) where TSource : class where TElement : class
         {
             return source.GroupBy(keySelector, elementSelector, null);
         }
@@ -299,9 +311,7 @@ namespace Bindable.Linq
         /// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
         /// <typeparam name="TKey">The type of the key returned by <paramref name="keySelector" />.</typeparam>
         /// <typeparam name="TResult">The type of the result value returned by <paramref name="resultSelector" />.</typeparam>
-        public static IBindableQuery<TResult> GroupBy<TSource, TKey, TResult>(this IBindableCollection<TSource> source, Expression<Func<TSource, TKey>> keySelector, Expression<Func<TKey, IBindableCollection<TSource>, TResult>> resultSelector)
-            where TSource : class
-            where TResult : class
+        public static IBindableQuery<TResult> GroupBy<TSource, TKey, TResult>(this IBindableCollection<TSource> source, Expression<Func<TSource, TKey>> keySelector, Expression<Func<TKey, IBindableCollection<TSource>, TResult>> resultSelector) where TSource : class where TResult : class
         {
             return source.GroupBy(keySelector, s => s, new DefaultComparer<TKey>()).Into(resultSelector);
         }
@@ -317,15 +327,12 @@ namespace Bindable.Linq
         /// <typeparam name="TElement">The type of the elements in the <see cref="T:System.Linq.IGrouping`2" />.</typeparam>
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="source" /> or <paramref name="keySelector" /> or <paramref name="elementSelector" /> is null.</exception>
-        public static IBindableQuery<IBindableGrouping<TKey, TElement>> GroupBy<TSource, TKey, TElement>(this IBindableCollection<TSource> source, Expression<Func<TSource, TKey>> keySelector, Expression<Func<TSource, TElement>> elementSelector, IEqualityComparer<TKey> comparer)
-            where TSource : class
-            where TElement : class
+        public static IBindableQuery<IBindableGrouping<TKey, TElement>> GroupBy<TSource, TKey, TElement>(this IBindableCollection<TSource> source, Expression<Func<TSource, TKey>> keySelector, Expression<Func<TSource, TElement>> elementSelector, IEqualityComparer<TKey> comparer) where TSource : class where TElement : class
         {
             source.ShouldNotBeNull("source");
             keySelector.ShouldNotBeNull("keySelector");
             elementSelector.ShouldNotBeNull("elementSelector");
-            return new GroupByIterator<TKey, TSource, TElement>(source, keySelector, elementSelector, comparer)
-                .WithDependencyExpression(keySelector.Body, keySelector.Parameters[0]);
+            return new GroupByIterator<TKey, TSource, TElement>(source, keySelector, elementSelector, comparer).WithDependencyExpression(keySelector.Body, keySelector.Parameters[0]);
         }
 
         /// <summary>Groups the elements of a sequence according to a specified key selector function and creates a result value from each group and its key. The elements of each group are projected by using a specified function.</summary>
@@ -338,10 +345,7 @@ namespace Bindable.Linq
         /// <typeparam name="TKey">The type of the key returned by <paramref name="keySelector" />.</typeparam>
         /// <typeparam name="TElement">The type of the elements in each <see cref="T:System.Linq.IGrouping`2" />.</typeparam>
         /// <typeparam name="TResult">The type of the result value returned by <paramref name="resultSelector" />.</typeparam>
-        public static IBindableQuery<TResult> GroupBy<TSource, TKey, TElement, TResult>(this IBindableCollection<TSource> source, Expression<Func<TSource, TKey>> keySelector, Expression<Func<TSource, TElement>> elementSelector, Expression<Func<TKey, IBindableCollection<TElement>, TResult>> resultSelector)
-            where TSource : class
-            where TElement : class
-            where TResult : class
+        public static IBindableQuery<TResult> GroupBy<TSource, TKey, TElement, TResult>(this IBindableCollection<TSource> source, Expression<Func<TSource, TKey>> keySelector, Expression<Func<TSource, TElement>> elementSelector, Expression<Func<TKey, IBindableCollection<TElement>, TResult>> resultSelector) where TSource : class where TElement : class where TResult : class
         {
             return source.GroupBy(keySelector, elementSelector, null).Into(resultSelector);
         }
@@ -355,9 +359,7 @@ namespace Bindable.Linq
         /// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
         /// <typeparam name="TKey">The type of the key returned by <paramref name="keySelector" />.</typeparam>
         /// <typeparam name="TResult">The type of the result value returned by <paramref name="resultSelector" />.</typeparam>
-        public static IBindableQuery<TResult> GroupBy<TSource, TKey, TResult>(this IBindableCollection<TSource> source, Expression<Func<TSource, TKey>> keySelector, Expression<Func<TKey, IBindableCollection<TSource>, TResult>> resultSelector, IEqualityComparer<TKey> comparer)
-            where TSource : class
-            where TResult : class
+        public static IBindableQuery<TResult> GroupBy<TSource, TKey, TResult>(this IBindableCollection<TSource> source, Expression<Func<TSource, TKey>> keySelector, Expression<Func<TKey, IBindableCollection<TSource>, TResult>> resultSelector, IEqualityComparer<TKey> comparer) where TSource : class where TResult : class
         {
             return source.GroupBy(keySelector, s => s, comparer).Into(resultSelector);
         }
@@ -377,18 +379,13 @@ namespace Bindable.Linq
         /// <returns>
         /// A collection of elements of type <paramref name="TResult"/> where each element represents a projection over a group and its key.
         /// </returns>
-        public static IBindableQuery<TResult> GroupBy<TSource, TKey, TElement, TResult>(this IBindableCollection<TSource> source, Expression<Func<TSource, TKey>> keySelector, Expression<Func<TSource, TElement>> elementSelector, Expression<Func<TKey, IBindableCollection<TElement>, TResult>> resultSelector, IEqualityComparer<TKey> comparer)
-            where TSource : class
-            where TElement : class
-            where TResult : class
+        public static IBindableQuery<TResult> GroupBy<TSource, TKey, TElement, TResult>(this IBindableCollection<TSource> source, Expression<Func<TSource, TKey>> keySelector, Expression<Func<TSource, TElement>> elementSelector, Expression<Func<TKey, IBindableCollection<TElement>, TResult>> resultSelector, IEqualityComparer<TKey> comparer) where TSource : class where TElement : class where TResult : class
         {
             return source.GroupBy(keySelector, elementSelector, comparer).Into(resultSelector);
         }
-
         #endregion
 
         #region Into (DONE)
-
         /// <summary>
         /// Projects the groups from a GroupBy into a new element type.
         /// </summary>
@@ -400,18 +397,14 @@ namespace Bindable.Linq
         /// <returns>
         /// A collection of elements of type <paramref name="TResult"/> where each element represents a projection over a group and its key.
         /// </returns>
-        public static IBindableQuery<TResult> Into<TKey, TElement, TResult>(this IBindableQuery<IBindableGrouping<TKey, TElement>> source, Expression<Func<TKey, IBindableCollection<TElement>, TResult>> resultSelector)
-            where TElement : class
-            where TResult : class
+        public static IBindableQuery<TResult> Into<TKey, TElement, TResult>(this IBindableQuery<IBindableGrouping<TKey, TElement>> source, Expression<Func<TKey, IBindableCollection<TElement>, TResult>> resultSelector) where TElement : class where TResult : class
         {
-            Func<TKey, IBindableCollection<TElement>, TResult> func = resultSelector.Compile();
+            var func = resultSelector.Compile();
             return source.Select(g => func(g.Key, g));
         }
-
         #endregion
 
         #region GroupJoin (NOT)
-
         /// <summary>Correlates the elements of two sequences based on equality of keys and groups the results. The default equality comparer is used to compare keys.</summary>
         /// <returns>An <see cref="T:IBindableCollection`1" /> that contains elements of type <paramref name="TResult" /> that are obtained by performing a grouped join on two sequences.</returns>
         /// <param name="outer">The first sequence to join.</param>
@@ -425,14 +418,7 @@ namespace Bindable.Linq
         /// <typeparam name="TResult">The type of the result elements.</typeparam>
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="outer" /> or <paramref name="inner" /> or <paramref name="outerKeySelector" /> or <paramref name="innerKeySelector" /> or <paramref name="resultSelector" /> is null.</exception>
-        public static IBindableQuery<TResult> GroupJoin<TOuter, TInner, TKey, TResult>(this IBindableCollection<TOuter> outer,
-            IEnumerable<TInner> inner,
-            Expression<Func<TOuter, TKey>> outerKeySelector,
-            Expression<Func<TInner, TKey>> innerKeySelector,
-            Expression<Func<TOuter, IEnumerable<TInner>, TResult>> resultSelector)
-            where TOuter : class
-            where TInner : class
-            where TResult : class
+        public static IBindableQuery<TResult> GroupJoin<TOuter, TInner, TKey, TResult>(this IBindableCollection<TOuter> outer, IEnumerable<TInner> inner, Expression<Func<TOuter, TKey>> outerKeySelector, Expression<Func<TInner, TKey>> innerKeySelector, Expression<Func<TOuter, IEnumerable<TInner>, TResult>> resultSelector) where TOuter : class where TInner : class where TResult : class
         {
             throw new NotImplementedException();
         }
@@ -451,23 +437,13 @@ namespace Bindable.Linq
         /// <typeparam name="TResult">The type of the result elements.</typeparam>
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="outer" /> or <paramref name="inner" /> or <paramref name="outerKeySelector" /> or <paramref name="innerKeySelector" /> or <paramref name="resultSelector" /> is null.</exception>
-        public static IBindableQuery<TResult> GroupJoin<TOuter, TInner, TKey, TResult>(this IBindableCollection<TOuter> outer,
-            IEnumerable<TInner> inner,
-            Expression<Func<TOuter, TKey>> outerKeySelector,
-            Expression<Func<TInner, TKey>> innerKeySelector,
-            Expression<Func<TOuter, IEnumerable<TInner>, TResult>> resultSelector,
-            IEqualityComparer<TKey> comparer)
-            where TOuter : class
-            where TInner : class
-            where TResult : class
+        public static IBindableQuery<TResult> GroupJoin<TOuter, TInner, TKey, TResult>(this IBindableCollection<TOuter> outer, IEnumerable<TInner> inner, Expression<Func<TOuter, TKey>> outerKeySelector, Expression<Func<TInner, TKey>> innerKeySelector, Expression<Func<TOuter, IEnumerable<TInner>, TResult>> resultSelector, IEqualityComparer<TKey> comparer) where TOuter : class where TInner : class where TResult : class
         {
             throw new NotImplementedException();
         }
-
         #endregion
 
         #region Intersect (NOT)
-
         /// <summary>Produces the set intersection of two sequences by using the default equality comparer to compare values.</summary>
         /// <returns>A sequence that contains the elements that form the set intersection of two sequences.</returns>
         /// <param name="first">An <see cref="T:IBindableCollection`1" /> whose distinct elements that also appear in <paramref name="second" /> will be returned.</param>
@@ -475,9 +451,7 @@ namespace Bindable.Linq
         /// <typeparam name="TSource">The type of the elements of the input sequences.</typeparam>
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="first" /> or <paramref name="second" /> is null.</exception>
-        public static IBindableQuery<TSource> Intersect<TSource>(this IBindableCollection<TSource> first,
-            IEnumerable<TSource> second)
-            where TSource : class
+        public static IBindableQuery<TSource> Intersect<TSource>(this IBindableCollection<TSource> first, IEnumerable<TSource> second) where TSource : class
         {
             throw new NotImplementedException();
         }
@@ -490,18 +464,13 @@ namespace Bindable.Linq
         /// <typeparam name="TSource">The type of the elements of the input sequences.</typeparam>
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="first" /> or <paramref name="second" /> is null.</exception>
-        public static IBindableQuery<TSource> Intersect<TSource>(this IBindableCollection<TSource> first,
-            IEnumerable<TSource> second,
-            IEqualityComparer<TSource> comparer)
-            where TSource : class
+        public static IBindableQuery<TSource> Intersect<TSource>(this IBindableCollection<TSource> first, IEnumerable<TSource> second, IEqualityComparer<TSource> comparer) where TSource : class
         {
             throw new NotImplementedException();
         }
-
         #endregion
 
         #region Join (NOT)
-
         /// <summary>Correlates the elements of two sequences based on matching keys. The default equality comparer is used to compare keys.</summary>
         /// <returns>An <see cref="T:IBindableCollection`1" /> that has elements of type <paramref name="TResult" /> that are obtained by performing an inner join on two sequences.</returns>
         /// <param name="outer">The first sequence to join.</param>
@@ -515,14 +484,7 @@ namespace Bindable.Linq
         /// <typeparam name="TResult">The type of the result elements.</typeparam>
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="outer" /> or <paramref name="inner" /> or <paramref name="outerKeySelector" /> or <paramref name="innerKeySelector" /> or <paramref name="resultSelector" /> is null.</exception>
-        public static IBindableCollection<TResult> Join<TOuter, TInner, TKey, TResult>(this IBindableCollection<TOuter> outer,
-            IEnumerable<TInner> inner,
-            Expression<Func<TOuter, TKey>> outerKeySelector,
-            Expression<Func<TInner, TKey>> innerKeySelector,
-            Expression<Func<TOuter, TInner, TResult>> resultSelector)
-            where TOuter : class
-            where TInner : class
-            where TResult : class
+        public static IBindableCollection<TResult> Join<TOuter, TInner, TKey, TResult>(this IBindableCollection<TOuter> outer, IEnumerable<TInner> inner, Expression<Func<TOuter, TKey>> outerKeySelector, Expression<Func<TInner, TKey>> innerKeySelector, Expression<Func<TOuter, TInner, TResult>> resultSelector) where TOuter : class where TInner : class where TResult : class
         {
             throw new NotImplementedException();
         }
@@ -541,46 +503,33 @@ namespace Bindable.Linq
         /// <typeparam name="TResult">The type of the result elements.</typeparam>
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="outer" /> or <paramref name="inner" /> or <paramref name="outerKeySelector" /> or <paramref name="innerKeySelector" /> or <paramref name="resultSelector" /> is null.</exception>
-        public static IBindableCollection<TResult> Join<TOuter, TInner, TKey, TResult>(this IBindableCollection<TOuter> outer,
-            IEnumerable<TInner> inner,
-            Expression<Func<TOuter, TKey>> outerKeySelector,
-            Expression<Func<TInner, TKey>> innerKeySelector,
-            Expression<Func<TOuter, TInner, TResult>> resultSelector,
-            IEqualityComparer<TKey> comparer)
-            where TOuter : class
-            where TInner : class
-            where TResult : class
+        public static IBindableCollection<TResult> Join<TOuter, TInner, TKey, TResult>(this IBindableCollection<TOuter> outer, IEnumerable<TInner> inner, Expression<Func<TOuter, TKey>> outerKeySelector, Expression<Func<TInner, TKey>> innerKeySelector, Expression<Func<TOuter, TInner, TResult>> resultSelector, IEqualityComparer<TKey> comparer) where TOuter : class where TInner : class where TResult : class
         {
             throw new NotImplementedException();
         }
-
         #endregion
 
         #region OfType (DONE)
-
         /// <summary>Filters the elements of an <see cref="T:IBindableCollection" /> based on a specified type.</summary>
         /// <returns>An <see cref="T:IBindableCollection`1" /> that contains elements from the input sequence of type <paramref name="TResult" />.</returns>
         /// <param name="source">The <see cref="T:IBindableCollection" /> whose elements to filter.</param>
         /// <typeparam name="TResult">The type to filter the elements of the sequence on.</typeparam>
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="source" /> is null.</exception>
-        public static IBindableCollection<TResult> OfType<TResult>(this IBindableCollection source)
-            where TResult : class
+        public static IBindableCollection<TResult> OfType<TResult>(this IBindableCollection source) where TResult : class
         {
             source.ShouldNotBeNull("source");
-            IBindingConfiguration configuration = BindingConfigurations.Default;
+            var configuration = BindingConfigurations.Default;
             if (source is IConfigurable)
             {
-                configuration = ((IConfigurable)source).Configuration;
+                configuration = ((IConfigurable) source).Configuration;
             }
 
             return new BindableCollectionAdapter<TResult>(source, false, configuration);
         }
-
         #endregion
 
         #region OrderBy (DONE)
-
         /// <summary>Sorts the elements of a sequence in ascending order according to a key.</summary>
         /// <returns>An <see cref="T:System.Linq.IOrderedEnumerable`1" /> whose elements are sorted according to a key.</returns>
         /// <param name="source">A sequence of values to order.</param>
@@ -589,8 +538,7 @@ namespace Bindable.Linq
         /// <typeparam name="TKey">The type of the key returned by <paramref name="keySelector" />.</typeparam>
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="source" /> or <paramref name="keySelector" /> is null.</exception>
-        public static IOrderedBindableQuery<TSource> OrderBy<TSource, TKey>(this IBindableCollection<TSource> source, Expression<Func<TSource, TKey>> keySelector)
-            where TSource : class
+        public static IOrderedBindableQuery<TSource> OrderBy<TSource, TKey>(this IBindableCollection<TSource> source, Expression<Func<TSource, TKey>> keySelector) where TSource : class
         {
             return source.OrderBy(keySelector, null);
         }
@@ -604,19 +552,15 @@ namespace Bindable.Linq
         /// <typeparam name="TKey">The type of the key returned by <paramref name="keySelector" />.</typeparam>
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="source" /> or <paramref name="keySelector" /> is null.</exception>
-        public static IOrderedBindableQuery<TSource> OrderBy<TSource, TKey>(this IBindableCollection<TSource> source, Expression<Func<TSource, TKey>> keySelector, IComparer<TKey> comparer)
-            where TSource : class
+        public static IOrderedBindableQuery<TSource> OrderBy<TSource, TKey>(this IBindableCollection<TSource> source, Expression<Func<TSource, TKey>> keySelector, IComparer<TKey> comparer) where TSource : class
         {
             source.ShouldNotBeNull("source");
             keySelector.ShouldNotBeNull("keySelector");
-            return new OrderByIterator<TSource, TKey>(source, new ItemSorter<TSource, TKey>(null, keySelector.Compile(), comparer, true))
-                .WithDependencyExpression(keySelector.Body, keySelector.Parameters[0]);
+            return new OrderByIterator<TSource, TKey>(source, new ItemSorter<TSource, TKey>(null, keySelector.Compile(), comparer, true)).WithDependencyExpression(keySelector.Body, keySelector.Parameters[0]);
         }
-
         #endregion
 
         #region OrderByDescending (DONE)
-
         /// <summary>Sorts the elements of a sequence in descending order according to a key.</summary>
         /// <returns>An <see cref="T:System.Linq.IOrderedEnumerable`1" /> whose elements are sorted in descending order according to a key.</returns>
         /// <param name="source">A sequence of values to order.</param>
@@ -625,8 +569,7 @@ namespace Bindable.Linq
         /// <typeparam name="TKey">The type of the key returned by <paramref name="keySelector" />.</typeparam>
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="source" /> or <paramref name="keySelector" /> is null.</exception>
-        public static IOrderedBindableQuery<TSource> OrderByDescending<TSource, TKey>(this IBindableCollection<TSource> source, Expression<Func<TSource, TKey>> keySelector)
-            where TSource : class
+        public static IOrderedBindableQuery<TSource> OrderByDescending<TSource, TKey>(this IBindableCollection<TSource> source, Expression<Func<TSource, TKey>> keySelector) where TSource : class
         {
             return source.OrderByDescending(keySelector, null);
         }
@@ -640,19 +583,15 @@ namespace Bindable.Linq
         /// <typeparam name="TKey">The type of the key returned by <paramref name="keySelector" />.</typeparam>
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="source" /> or <paramref name="keySelector" /> is null.</exception>
-        public static IOrderedBindableQuery<TSource> OrderByDescending<TSource, TKey>(this IBindableCollection<TSource> source, Expression<Func<TSource, TKey>> keySelector, IComparer<TKey> comparer)
-            where TSource : class
+        public static IOrderedBindableQuery<TSource> OrderByDescending<TSource, TKey>(this IBindableCollection<TSource> source, Expression<Func<TSource, TKey>> keySelector, IComparer<TKey> comparer) where TSource : class
         {
             source.ShouldNotBeNull("source");
             keySelector.ShouldNotBeNull("keySelector");
-            return new OrderByIterator<TSource, TKey>(source, new ItemSorter<TSource, TKey>(null, keySelector.Compile(), comparer, false))
-                .WithDependencyExpression(keySelector.Body, keySelector.Parameters[0]);
+            return new OrderByIterator<TSource, TKey>(source, new ItemSorter<TSource, TKey>(null, keySelector.Compile(), comparer, false)).WithDependencyExpression(keySelector.Body, keySelector.Parameters[0]);
         }
-
         #endregion
 
         #region Polling (DONE)
-
 #if !SILVERLIGHT
 
         /// <summary>
@@ -664,10 +603,9 @@ namespace Bindable.Linq
         /// <param name="source">The source Iterator.</param>
         /// <param name="time">The time to wait between polling.</param>
         /// <returns>A <see cref="T:ISyncLinqCollection`1"/> containing the items.</returns>
-        public static IBindableQuery<TSource> Polling<TSource>(this IBindableCollection<TSource> source, TimeSpan time)
-            where TSource : class
+        public static IBindableQuery<TSource> Polling<TSource>(this IBindableCollection<TSource> source, TimeSpan time) where TSource : class
         {
-            return source.Polling(Dispatcher.CurrentDispatcher, time);
+            return source.Polling(DispatcherFactory.Create(Dispatcher.CurrentDispatcher), time);
         }
 
 #endif
@@ -683,26 +621,39 @@ namespace Bindable.Linq
         /// <returns>
         /// A <see cref="T:ISyncLinqCollection`1"/> containing the items.
         /// </returns>
-        public static IBindableQuery<TSource> Polling<TSource>(this IBindableCollection<TSource> source, Dispatcher dispatcher, TimeSpan time)
-            where TSource : class
+        public static IBindableQuery<TSource> Polling<TSource>(this IBindableCollection<TSource> source, Dispatcher dispatcher, TimeSpan time) where TSource : class
+        {
+            return source.Polling(DispatcherFactory.Create(dispatcher), time);
+        }
+
+        /// <summary>
+        /// Converts any <see cref="T:IEnumerable`1"/> into a Bindable LINQ <see cref="T:ISyncLinqCollection`1"/>.
+        /// Bindable LINQ will automatically poll the collection for changes everytime a given
+        /// timespan elapses.
+        /// </summary>
+        /// <typeparam name="TSource">The type of source item.</typeparam>
+        /// <param name="source">The source Iterator.</param>
+        /// <param name="dispatcher">The dispatcher.</param>
+        /// <param name="time">The time to wait between polling.</param>
+        /// <returns>
+        /// A <see cref="T:ISyncLinqCollection`1"/> containing the items.
+        /// </returns>
+        public static IBindableQuery<TSource> Polling<TSource>(this IBindableCollection<TSource> source, IDispatcher dispatcher, TimeSpan time) where TSource : class
         {
             dispatcher.ShouldNotBeNull("dispatcher");
             source.ShouldNotBeNull("source");
             return new PollIterator<TSource>(source, dispatcher, time);
         }
-
         #endregion
 
         #region Select (DONE)
-
         /// <summary>Projects each element of a sequence into a new form.</summary>
         /// <returns>An <see cref="T:IBindableCollection`1" /> whose elements are the result of invoking the transform function on each element of <paramref name="source" />.</returns>
         /// <param name="source">A sequence of values to invoke a transform function on.</param>
         /// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="source" /> or <paramref name="selector" /> is null.</exception>
-        public static IBindableQuery<TSource> Select<TSource>(this IBindableCollection<TSource> source)
-            where TSource : class
+        public static IBindableQuery<TSource> Select<TSource>(this IBindableCollection<TSource> source) where TSource : class
         {
             return source.Select(s => s);
         }
@@ -715,19 +666,15 @@ namespace Bindable.Linq
         /// <typeparam name="TResult">The type of the value returned by <paramref name="selector" />.</typeparam>
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="source" /> or <paramref name="selector" /> is null.</exception>
-        public static IBindableQuery<TResult> Select<TSource, TResult>(this IBindableCollection<TSource> source, Expression<Func<TSource, TResult>> selector)
-            where TSource : class
+        public static IBindableQuery<TResult> Select<TSource, TResult>(this IBindableCollection<TSource> source, Expression<Func<TSource, TResult>> selector) where TSource : class
         {
             source.ShouldNotBeNull("source");
             selector.ShouldNotBeNull("selector");
-            return new SelectIterator<TSource, TResult>(source, selector.Compile())
-                .WithDependencyExpression(selector.Body, selector.Parameters[0]);
+            return new SelectIterator<TSource, TResult>(source, selector.Compile()).WithDependencyExpression(selector.Body, selector.Parameters[0]);
         }
-
         #endregion
 
         #region SelectMany (DONE)
-
         /// <summary>Projects each element of a sequence to an <see cref="T:IBindableCollection`1" /> and flattens the resulting sequences into one sequence.</summary>
         /// <returns>An <see cref="T:IBindableCollection`1" /> whose elements are the result of invoking the one-to-many transform function on each element of the input sequence.</returns>
         /// <param name="source">A sequence of values to project.</param>
@@ -736,18 +683,14 @@ namespace Bindable.Linq
         /// <typeparam name="TResult">The type of the elements of the sequence returned by <paramref name="selector" />.</typeparam>
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="source" /> or <paramref name="selector" /> is null.</exception>
-        public static IBindableQuery<TResult> SelectMany<TSource, TResult>(this IBindableCollection<TSource> source, Expression<Func<TSource, IBindableCollection<TResult>>> selector)
-            where TSource : class
-            where TResult : class
+        public static IBindableQuery<TResult> SelectMany<TSource, TResult>(this IBindableCollection<TSource> source, Expression<Func<TSource, IBindableCollection<TResult>>> selector) where TSource : class where TResult : class
         {
             source.ShouldNotBeNull("source");
             return source.Select(selector).UnionAll();
         }
-
         #endregion
 
         #region ThenBy (DONE)
-
         /// <summary>Performs a subsequent ordering of the elements in a sequence in ascending order according to a key.</summary>
         /// <returns>An <see cref="T:System.Linq.IOrderedEnumerable`1" /> whose elements are sorted according to a key.</returns>
         /// <param name="source">An <see cref="T:System.Linq.IOrderedEnumerable`1" /> that contains elements to sort.</param>
@@ -756,8 +699,7 @@ namespace Bindable.Linq
         /// <typeparam name="TKey">The type of the key returned by <paramref name="keySelector" />.</typeparam>
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="source" /> or <paramref name="keySelector" /> is null.</exception>
-        public static IOrderedBindableQuery<TSource> ThenBy<TSource, TKey>(this IOrderedBindableQuery<TSource> source, Expression<Func<TSource, TKey>> keySelector)
-            where TSource : class
+        public static IOrderedBindableQuery<TSource> ThenBy<TSource, TKey>(this IOrderedBindableQuery<TSource> source, Expression<Func<TSource, TKey>> keySelector) where TSource : class
         {
             return source.ThenBy(keySelector, null);
         }
@@ -771,19 +713,15 @@ namespace Bindable.Linq
         /// <typeparam name="TKey">The type of the key returned by <paramref name="keySelector" />.</typeparam>
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="source" /> or <paramref name="keySelector" /> is null.</exception>
-        public static IOrderedBindableQuery<TSource> ThenBy<TSource, TKey>(this IOrderedBindableQuery<TSource> source, Expression<Func<TSource, TKey>> keySelector, IComparer<TKey> comparer)
-            where TSource : class
+        public static IOrderedBindableQuery<TSource> ThenBy<TSource, TKey>(this IOrderedBindableQuery<TSource> source, Expression<Func<TSource, TKey>> keySelector, IComparer<TKey> comparer) where TSource : class
         {
             source.ShouldNotBeNull("source");
             keySelector.ShouldNotBeNull("keySelector");
-            return source.CreateOrderedIterator(keySelector.Compile(), comparer, false)
-                .WithDependencyExpression(keySelector.Body, keySelector.Parameters[0]);
+            return source.CreateOrderedIterator(keySelector.Compile(), comparer, false).WithDependencyExpression(keySelector.Body, keySelector.Parameters[0]);
         }
-
         #endregion
 
         #region ThenByDescending (DONE)
-
         /// <summary>Performs a subsequent ordering of the elements in a sequence in descending order, according to a key.</summary>
         /// <returns>An <see cref="T:System.Linq.IOrderedEnumerable`1" /> whose elements are sorted in descending order according to a key.</returns>
         /// <param name="source">An <see cref="T:System.Linq.IOrderedEnumerable`1" /> that contains elements to sort.</param>
@@ -792,8 +730,7 @@ namespace Bindable.Linq
         /// <typeparam name="TKey">The type of the key returned by <paramref name="keySelector" />.</typeparam>
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="source" /> or <paramref name="keySelector" /> is null.</exception>
-        public static IOrderedBindableQuery<TSource> ThenByDescending<TSource, TKey>(this IOrderedBindableQuery<TSource> source, Expression<Func<TSource, TKey>> keySelector)
-            where TSource : class
+        public static IOrderedBindableQuery<TSource> ThenByDescending<TSource, TKey>(this IOrderedBindableQuery<TSource> source, Expression<Func<TSource, TKey>> keySelector) where TSource : class
         {
             return source.ThenByDescending(keySelector, null);
         }
@@ -807,19 +744,15 @@ namespace Bindable.Linq
         /// <typeparam name="TKey">The type of the key returned by <paramref name="keySelector" />.</typeparam>
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="source" /> or <paramref name="keySelector" /> is null.</exception>
-        public static IOrderedBindableQuery<TSource> ThenByDescending<TSource, TKey>(this IOrderedBindableQuery<TSource> source, Expression<Func<TSource, TKey>> keySelector, IComparer<TKey> comparer)
-            where TSource : class
+        public static IOrderedBindableQuery<TSource> ThenByDescending<TSource, TKey>(this IOrderedBindableQuery<TSource> source, Expression<Func<TSource, TKey>> keySelector, IComparer<TKey> comparer) where TSource : class
         {
             source.ShouldNotBeNull("source");
             keySelector.ShouldNotBeNull("keySelector");
-            return source.CreateOrderedIterator(keySelector.Compile(), comparer, true)
-                .WithDependencyExpression(keySelector.Body, keySelector.Parameters[0]);
+            return source.CreateOrderedIterator(keySelector.Compile(), comparer, true).WithDependencyExpression(keySelector.Body, keySelector.Parameters[0]);
         }
-
         #endregion
 
         #region ToBindingList
-
 #if !SILVERLIGHT
         // Silverlight does not provide an IBindingList interface, so this code would 
         // not compile.
@@ -830,17 +763,15 @@ namespace Bindable.Linq
         /// <typeparam name="TElement">The type of the element.</typeparam>
         /// <param name="bindableCollection">The bindable collection.</param>
         /// <returns></returns>
-        public static IBindingList ToBindingList<TElement>(this IBindableCollection<TElement> bindableCollection) where TElement: class
+        public static IBindingList ToBindingList<TElement>(this IBindableCollection<TElement> bindableCollection) where TElement : class
         {
             return new BindingListAdapter<TElement>(bindableCollection);
         }
 
 #endif
-
         #endregion
 
         #region Union (DONE)
-
         /// <summary>Produces the set union of two sequences by using the default equality comparer.</summary>
         /// <returns>An <see cref="T:IBindableCollection`1" /> that contains the elements from both input sequences, excluding duplicates.</returns>
         /// <param name="first">An <see cref="T:IBindableCollection`1" /> whose distinct elements form the first set for the union.</param>
@@ -848,12 +779,11 @@ namespace Bindable.Linq
         /// <typeparam name="TSource">The type of the elements of the input sequences.</typeparam>
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="first" /> or <paramref name="second" /> is null.</exception>
-        public static IBindableQuery<TSource> Union<TSource>(this IBindableCollection<TSource> first, IBindableCollection<TSource> second)
-            where TSource : class
+        public static IBindableQuery<TSource> Union<TSource>(this IBindableCollection<TSource> first, IBindableCollection<TSource> second) where TSource : class
         {
             first.ShouldNotBeNull("first");
             second.ShouldNotBeNull("second");
-            BindableCollection<IBindableCollection<TSource>> sources = new BindableCollection<IBindableCollection<TSource>>();
+            var sources = new BindableCollection<IBindableCollection<TSource>>();
             sources.AddRange(first, second);
             return new UnionIterator<TSource>(sources);
         }
@@ -866,32 +796,26 @@ namespace Bindable.Linq
         /// <typeparam name="TSource">The type of the elements of the input sequences.</typeparam>
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="first" /> or <paramref name="second" /> is null.</exception>
-        public static IBindableQuery<TSource> Union<TSource>(this IBindableCollection<TSource> first, IBindableCollection<TSource> second, IEqualityComparer<TSource> comparer)
-            where TSource : class
+        public static IBindableQuery<TSource> Union<TSource>(this IBindableCollection<TSource> first, IBindableCollection<TSource> second, IEqualityComparer<TSource> comparer) where TSource : class
         {
             return first.Union(second).Distinct(comparer);
         }
-
         #endregion
 
         #region UnionAll (DONE)
-
         /// <summary>Produces the set union of multiple sequences.</summary>
         /// <returns>An <see cref="T:IBindableCollection`1" /> that contains the elements from both input sequences, excluding duplicates.</returns>
         /// <param name="sources">An <see cref="T:IBindableCollection`1" /> whose elements are also <see cref="T:IBindableCollection`1" /> of the elements to be combined.</param>
         /// <typeparam name="TSource">The type of the elements of the input sequences.</typeparam>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="sources" /> is null.</exception>
-        public static IBindableQuery<TSource> UnionAll<TSource>(this IBindableCollection<IBindableCollection<TSource>> sources)
-            where TSource : class
+        public static IBindableQuery<TSource> UnionAll<TSource>(this IBindableCollection<IBindableCollection<TSource>> sources) where TSource : class
         {
             sources.ShouldNotBeNull("sources");
             return new UnionIterator<TSource>(sources);
         }
-
         #endregion
 
         #region Where (DONE)
-
         /// <summary>Filters a sequence of values based on a predicate.</summary>
         /// <returns>An <see cref="T:IBindableCollection`1" /> that contains elements from the input sequence that satisfy the condition.</returns>
         /// <param name="source">An <see cref="T:IBindableCollection`1" /> to filter.</param>
@@ -899,15 +823,12 @@ namespace Bindable.Linq
         /// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="source" /> or <paramref name="predicate" /> is null.</exception>
-        public static IBindableQuery<TSource> Where<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, bool>> predicate)
-            where TSource : class
+        public static IBindableQuery<TSource> Where<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, bool>> predicate) where TSource : class
         {
             source.ShouldNotBeNull("source");
             predicate.ShouldNotBeNull("predicate");
-            return new WhereIterator<TSource>(source, predicate.Compile())
-                .WithDependencyExpression(predicate.Body, predicate.Parameters[0]);
+            return new WhereIterator<TSource>(source, predicate.Compile()).WithDependencyExpression(predicate.Body, predicate.Parameters[0]);
         }
-
         #endregion
 
         #endregion
@@ -915,15 +836,14 @@ namespace Bindable.Linq
         #region Aggregators
 
         #region Aggregate (DONE)
-
         /// <summary>
         /// Applies an accumulator function over a sequence.
         /// </summary>
-        /// <param name="source">An <see cref="T:IBindableCollection`1" /> to aggregate over.</param>
+        /// <param name="source">An <see cref="IBindableCollection{TSource}" /> to aggregate over.</param>
         /// <param name="func">An accumulator function to be invoked on each element.</param>
         /// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
         /// <returns>The final accumulator value.</returns>
-        public static IBindable<TSource> Aggregate<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, TSource, TSource>> func)
+        public static IBindable<TSource> Aggregate<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, TSource, TSource>> func) 
         {
             source.ShouldNotBeNull("source");
             func.ShouldNotBeNull("func");
@@ -965,11 +885,9 @@ namespace Bindable.Linq
             resultSelector.ShouldNotBeNull("resultSelector");
             return Aggregate(source, seed, func).Project(resultSelector);
         }
-
         #endregion
 
         #region All (DONE)
-
         /// <summary>
         /// Determines whether all elements of a sequence satisfy a condition.
         /// </summary>
@@ -980,18 +898,15 @@ namespace Bindable.Linq
         /// true if every element of the source sequence passes the test in the specified 
         /// predicate, or if the sequence is empty; otherwise, false.
         /// </returns>
-        public static IBindable<bool> All<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, bool>> predicate)
-            where TSource : class
+        public static IBindable<bool> All<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, bool>> predicate) where TSource : class
         {
             source.ShouldNotBeNull("source");
             predicate.ShouldNotBeNull("predicate");
             return source.Where(predicate).Count().If(count => count >= 1);
         }
-
         #endregion
 
         #region Any (DONE)
-
         /// <summary>
         /// Determines whether a sequence contains any elements.
         /// </summary>
@@ -1011,18 +926,15 @@ namespace Bindable.Linq
         /// <param name="predicate">A function to test each element for a condition.</param>
         /// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
         /// <returns>true if any elements in the source sequence pass the test in the specified predicate; otherwise, false.</returns>
-        public static IBindable<bool> Any<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, bool>> predicate)
-            where TSource : class
+        public static IBindable<bool> Any<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, bool>> predicate) where TSource : class
         {
             source.ShouldNotBeNull("source");
             predicate.ShouldNotBeNull("predicate");
             return source.Where(predicate).Any();
         }
-
         #endregion
 
         #region Average (DONE)
-
         /// <summary>
         /// Computes the average of a sequence of <see cref="T:System.Decimal" /> values.
         /// </summary>
@@ -1146,8 +1058,7 @@ namespace Bindable.Linq
         /// <param name="selector">A transform function to apply to each element.</param>
         /// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
         /// <returns>The average of the sequence of values.</returns>
-        public static IBindable<decimal> Average<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, decimal>> selector)
-            where TSource : class
+        public static IBindable<decimal> Average<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, decimal>> selector) where TSource : class
         {
             return source.Select(selector).Average();
         }
@@ -1160,8 +1071,7 @@ namespace Bindable.Linq
         /// <param name="selector">A transform function to apply to each element.</param>
         /// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
         /// <returns>The average of the sequence of values.</returns>
-        public static IBindable<double> Average<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, double>> selector)
-            where TSource : class
+        public static IBindable<double> Average<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, double>> selector) where TSource : class
         {
             return source.Select(selector).Average();
         }
@@ -1174,8 +1084,7 @@ namespace Bindable.Linq
         /// <param name="selector">A transform function to apply to each element.</param>
         /// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
         /// <returns>The average of the sequence of values.</returns>
-        public static IBindable<double> Average<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, int>> selector)
-            where TSource : class
+        public static IBindable<double> Average<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, int>> selector) where TSource : class
         {
             return source.Select(selector).Average();
         }
@@ -1188,8 +1097,7 @@ namespace Bindable.Linq
         /// <param name="selector">A transform function to apply to each element.</param>
         /// <typeparam name="TSource">The type of the elements of source.</typeparam>
         /// <returns>The average of the sequence of values.</returns>
-        public static IBindable<double> Average<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, long>> selector)
-            where TSource : class
+        public static IBindable<double> Average<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, long>> selector) where TSource : class
         {
             return source.Select(selector).Average();
         }
@@ -1201,8 +1109,7 @@ namespace Bindable.Linq
         /// <param name="selector">A transform function to apply to each element.</param>
         /// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
         /// <returns>The average of the sequence of values, or null if the source sequence is empty or contains only values that are null.</returns>
-        public static IBindable<decimal?> Average<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, decimal?>> selector)
-            where TSource : class
+        public static IBindable<decimal?> Average<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, decimal?>> selector) where TSource : class
         {
             return source.Select(selector).Average();
         }
@@ -1214,8 +1121,7 @@ namespace Bindable.Linq
         /// <param name="selector">A transform function to apply to each element.</param>
         /// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
         /// <returns>The average of the sequence of values, or null if the source sequence is empty or contains only values that are null.</returns>
-        public static IBindable<double?> Average<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, double?>> selector)
-            where TSource : class
+        public static IBindable<double?> Average<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, double?>> selector) where TSource : class
         {
             return source.Select(selector).Average();
         }
@@ -1227,8 +1133,7 @@ namespace Bindable.Linq
         /// <param name="selector">A transform function to apply to each element.</param>
         /// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
         /// <returns>The average of the sequence of values, or null if the source sequence is empty or contains only values that are null.</returns>
-        public static IBindable<double?> Average<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, int?>> selector)
-            where TSource : class
+        public static IBindable<double?> Average<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, int?>> selector) where TSource : class
         {
             return source.Select(selector).Average();
         }
@@ -1241,8 +1146,7 @@ namespace Bindable.Linq
         /// <param name="selector">A transform function to apply to each element.</param>
         /// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
         /// <returns>The average of the sequence of values, or null if the source sequence is empty or contains only values that are null.</returns>
-        public static IBindable<double?> Average<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, long?>> selector)
-            where TSource : class
+        public static IBindable<double?> Average<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, long?>> selector) where TSource : class
         {
             return source.Select(selector).Average();
         }
@@ -1254,8 +1158,7 @@ namespace Bindable.Linq
         /// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="source" /> or <paramref name="selector" /> is null.</exception>
-        public static IBindable<float?> Average<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, float?>> selector)
-            where TSource : class
+        public static IBindable<float?> Average<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, float?>> selector) where TSource : class
         {
             return source.Select(selector).Average();
         }
@@ -1269,16 +1172,13 @@ namespace Bindable.Linq
         /// <paramref name="source" /> or <paramref name="selector" /> is null.</exception>
         /// <exception cref="T:System.InvalidOperationException">
         /// <paramref name="source" /> contains no elements.</exception>
-        public static IBindable<float> Average<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, float>> selector)
-            where TSource : class
+        public static IBindable<float> Average<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, float>> selector) where TSource : class
         {
             return source.Select(selector).Average();
         }
-
         #endregion
 
         #region Contains (DONE)
-
         /// <summary>Determines whether a sequence contains a specified element by using the default equality comparer.</summary>
         /// <returns>true if the source sequence contains an element that has the specified value; otherwise, false.</returns>
         /// <param name="source">A sequence in which to locate a value.</param>
@@ -1286,8 +1186,7 @@ namespace Bindable.Linq
         /// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="source" /> is null.</exception>
-        public static IBindable<bool> Contains<TSource>(this IBindableCollection<TSource> source, TSource value)
-            where TSource : class
+        public static IBindable<bool> Contains<TSource>(this IBindableCollection<TSource> source, TSource value) where TSource : class
         {
             return source.Contains(value, null);
         }
@@ -1300,8 +1199,7 @@ namespace Bindable.Linq
         /// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="source" /> is null.</exception>
-        public static IBindable<bool> Contains<TSource>(this IBindableCollection<TSource> source, TSource value, IEqualityComparer<TSource> comparer)
-            where TSource : class
+        public static IBindable<bool> Contains<TSource>(this IBindableCollection<TSource> source, TSource value, IEqualityComparer<TSource> comparer) where TSource : class
         {
             if (comparer == null)
             {
@@ -1310,11 +1208,9 @@ namespace Bindable.Linq
             value.ShouldNotBeNull("value");
             return source.Where(s => comparer.Equals(s, value)).Any();
         }
-
         #endregion
 
         #region Count (DONE)
-
         /// <summary>Returns the number of elements in a sequence.</summary>
         /// <returns>The number of elements in the input sequence.</returns>
         /// <param name="source">A sequence that contains elements to be counted.</param>
@@ -1336,17 +1232,14 @@ namespace Bindable.Linq
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="source" /> or <paramref name="predicate" /> is null.</exception>
         /// <exception cref="T:System.OverflowException">The number of elements in <paramref name="source" /> is larger than <see cref="F:System.Int32.MaxValue" />.</exception>
-        public static IBindable<int> Count<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, bool>> predicate)
-            where TSource : class
+        public static IBindable<int> Count<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, bool>> predicate) where TSource : class
         {
             predicate.ShouldNotBeNull("predicate");
             return source.Where(predicate).Count();
         }
-
         #endregion
 
         #region ElementAtOrDefault (DONE)
-
         /// <summary>Returns the element at a specified index in a sequence or a default value if the index is out of range.</summary>
         /// <returns>default(<paramref name="TSource" />) if the index is outside the bounds of the source sequence; otherwise, the element at the specified position in the source sequence.</returns>
         /// <param name="source">An <see cref="T:IBindableCollection`1" /> to return an element from.</param>
@@ -1359,11 +1252,9 @@ namespace Bindable.Linq
             source.ShouldNotBeNull("source");
             return new ElementAtAggregator<TSource>(source, index);
         }
-
         #endregion
 
         #region FirstOrDefault (DONE)
-
         /// <summary>Returns the first element of a sequence, or a default value if the sequence contains no elements.</summary>
         /// <returns>default(<paramref name="TSource" />) if <paramref name="source" /> is empty; otherwise, the first element in <paramref name="source" />.</returns>
         /// <param name="source">The <see cref="T:IBindableCollection`1" /> to return the first element of.</param>
@@ -1382,8 +1273,7 @@ namespace Bindable.Linq
         /// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="source" /> or <paramref name="predicate" /> is null.</exception>
-        public static IBindable<TSource> First<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, bool>> predicate)
-            where TSource : class
+        public static IBindable<TSource> First<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, bool>> predicate) where TSource : class
         {
             return source.FirstOrDefault(predicate);
         }
@@ -1407,16 +1297,13 @@ namespace Bindable.Linq
         /// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="source" /> or <paramref name="predicate" /> is null.</exception>
-        public static IBindable<TSource> FirstOrDefault<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, bool>> predicate)
-            where TSource : class
+        public static IBindable<TSource> FirstOrDefault<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, bool>> predicate) where TSource : class
         {
             return source.Where(predicate).FirstOrDefault();
         }
-
         #endregion
 
         #region LastOrDefault (DONE)
-
         /// <summary>Returns the last element of a sequence, or a default value if the sequence contains no elements.</summary>
         /// <returns>default(<paramref name="TSource" />) if the source sequence is empty; otherwise, the last element in the <see cref="T:IBindableCollection`1" />.</returns>
         /// <param name="source">An <see cref="T:IBindableCollection`1" /> to return the last element of.</param>
@@ -1435,16 +1322,13 @@ namespace Bindable.Linq
         /// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="source" /> or <paramref name="predicate" /> is null.</exception>
-        public static IBindable<TSource> LastOrDefault<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, bool>> predicate)
-            where TSource : class
+        public static IBindable<TSource> LastOrDefault<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, bool>> predicate) where TSource : class
         {
             return source.Where(predicate).LastOrDefault();
         }
-
         #endregion
 
         #region Max (DONE)
-
         /// <summary>Returns the maximum value in a sequence of <see cref="T:System.Decimal" /> values.</summary>
         /// <returns>The maximum value in the sequence.</returns>
         /// <param name="source">A sequence of <see cref="T:System.Decimal" /> values to determine the maximum value of.</param>
@@ -1585,8 +1469,7 @@ namespace Bindable.Linq
         /// <paramref name="source" /> or <paramref name="selector" /> is null.</exception>
         /// <exception cref="T:System.InvalidOperationException">
         /// <paramref name="source" /> contains no elements.</exception>
-        public static IBindable<decimal> Max<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, decimal>> selector)
-            where TSource : class
+        public static IBindable<decimal> Max<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, decimal>> selector) where TSource : class
         {
             source.ShouldNotBeNull("source");
             return source.Select(selector).Max();
@@ -1601,8 +1484,7 @@ namespace Bindable.Linq
         /// <paramref name="source" /> or <paramref name="selector" /> is null.</exception>
         /// <exception cref="T:System.InvalidOperationException">
         /// <paramref name="source" /> contains no elements.</exception>
-        public static IBindable<double> Max<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, double>> selector)
-            where TSource : class
+        public static IBindable<double> Max<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, double>> selector) where TSource : class
         {
             source.ShouldNotBeNull("source");
             return source.Select(selector).Max();
@@ -1615,8 +1497,7 @@ namespace Bindable.Linq
         /// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="source" /> or <paramref name="selector" /> is null.</exception>
-        public static IBindable<decimal?> Max<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, decimal?>> selector)
-            where TSource : class
+        public static IBindable<decimal?> Max<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, decimal?>> selector) where TSource : class
         {
             source.ShouldNotBeNull("source");
             return source.Select(selector).Max();
@@ -1629,8 +1510,7 @@ namespace Bindable.Linq
         /// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="source" /> or <paramref name="selector" /> is null.</exception>
-        public static IBindable<double?> Max<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, double?>> selector)
-            where TSource : class
+        public static IBindable<double?> Max<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, double?>> selector) where TSource : class
         {
             source.ShouldNotBeNull("source");
             return source.Select(selector).Max();
@@ -1645,8 +1525,7 @@ namespace Bindable.Linq
         /// <paramref name="source" /> or <paramref name="selector" /> is null.</exception>
         /// <exception cref="T:System.InvalidOperationException">
         /// <paramref name="source" /> contains no elements.</exception>
-        public static IBindable<int> Max<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, int>> selector)
-            where TSource : class
+        public static IBindable<int> Max<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, int>> selector) where TSource : class
         {
             source.ShouldNotBeNull("source");
             return source.Select(selector).Max();
@@ -1660,8 +1539,7 @@ namespace Bindable.Linq
         /// <typeparam name="TResult">The type of the value returned by <paramref name="selector" />.</typeparam>
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="source" /> or <paramref name="selector" /> is null.</exception>
-        public static IBindable<TResult> Max<TSource, TResult>(this IBindableCollection<TSource> source, Expression<Func<TSource, TResult>> selector)
-            where TSource : class
+        public static IBindable<TResult> Max<TSource, TResult>(this IBindableCollection<TSource> source, Expression<Func<TSource, TResult>> selector) where TSource : class
         {
             source.ShouldNotBeNull("source");
             return source.Select(selector).Max();
@@ -1674,8 +1552,7 @@ namespace Bindable.Linq
         /// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="source" /> or <paramref name="selector" /> is null.</exception>
-        public static IBindable<int?> Max<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, int?>> selector)
-            where TSource : class
+        public static IBindable<int?> Max<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, int?>> selector) where TSource : class
         {
             source.ShouldNotBeNull("source");
             return source.Select(selector).Max();
@@ -1688,8 +1565,7 @@ namespace Bindable.Linq
         /// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="source" /> or <paramref name="selector" /> is null.</exception>
-        public static IBindable<long?> Max<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, long?>> selector)
-            where TSource : class
+        public static IBindable<long?> Max<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, long?>> selector) where TSource : class
         {
             source.ShouldNotBeNull("source");
             return source.Select(selector).Max();
@@ -1704,8 +1580,7 @@ namespace Bindable.Linq
         /// <paramref name="source" /> or <paramref name="selector" /> is null.</exception>
         /// <exception cref="T:System.InvalidOperationException">
         /// <paramref name="source" /> contains no elements.</exception>
-        public static IBindable<long> Max<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, long>> selector)
-            where TSource : class
+        public static IBindable<long> Max<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, long>> selector) where TSource : class
         {
             source.ShouldNotBeNull("source");
             return source.Select(selector).Max();
@@ -1718,8 +1593,7 @@ namespace Bindable.Linq
         /// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="source" /> or <paramref name="selector" /> is null.</exception>
-        public static IBindable<float?> Max<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, float?>> selector)
-            where TSource : class
+        public static IBindable<float?> Max<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, float?>> selector) where TSource : class
         {
             source.ShouldNotBeNull("source");
             return source.Select(selector).Max();
@@ -1734,17 +1608,14 @@ namespace Bindable.Linq
         /// <paramref name="source" /> or <paramref name="selector" /> is null.</exception>
         /// <exception cref="T:System.InvalidOperationException">
         /// <paramref name="source" /> contains no elements.</exception>
-        public static IBindable<float> Max<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, float>> selector)
-            where TSource : class
+        public static IBindable<float> Max<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, float>> selector) where TSource : class
         {
             source.ShouldNotBeNull("source");
             return source.Select(selector).Max();
         }
-
         #endregion
 
         #region Min (DONE)
-
         /// <summary>Returns the minimum value in a sequence of <see cref="T:System.Decimal" /> values.</summary>
         /// <returns>The minimum value in the sequence.</returns>
         /// <param name="source">A sequence of <see cref="T:System.Decimal" /> values to determine the minimum value of.</param>
@@ -1885,8 +1756,7 @@ namespace Bindable.Linq
         /// <paramref name="source" /> or <paramref name="selector" /> is null.</exception>
         /// <exception cref="T:System.InvalidOperationException">
         /// <paramref name="source" /> contains no elements.</exception>
-        public static IBindable<decimal> Min<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, decimal>> selector)
-            where TSource : class
+        public static IBindable<decimal> Min<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, decimal>> selector) where TSource : class
         {
             source.ShouldNotBeNull("source");
             return source.Select(selector).Min();
@@ -1901,8 +1771,7 @@ namespace Bindable.Linq
         /// <paramref name="source" /> or <paramref name="selector" /> is null.</exception>
         /// <exception cref="T:System.InvalidOperationException">
         /// <paramref name="source" /> contains no elements.</exception>
-        public static IBindable<double> Min<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, double>> selector)
-            where TSource : class
+        public static IBindable<double> Min<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, double>> selector) where TSource : class
         {
             source.ShouldNotBeNull("source");
             return source.Select(selector).Min();
@@ -1915,8 +1784,7 @@ namespace Bindable.Linq
         /// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="source" /> or <paramref name="selector" /> is null.</exception>
-        public static IBindable<long?> Min<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, long?>> selector)
-            where TSource : class
+        public static IBindable<long?> Min<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, long?>> selector) where TSource : class
         {
             source.ShouldNotBeNull("source");
             return source.Select(selector).Min();
@@ -1931,8 +1799,7 @@ namespace Bindable.Linq
         /// <paramref name="source" /> or <paramref name="selector" /> is null.</exception>
         /// <exception cref="T:System.InvalidOperationException">
         /// <paramref name="source" /> contains no elements.</exception>
-        public static IBindable<int> Min<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, int>> selector)
-            where TSource : class
+        public static IBindable<int> Min<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, int>> selector) where TSource : class
         {
             source.ShouldNotBeNull("source");
             return source.Select(selector).Min();
@@ -1945,8 +1812,7 @@ namespace Bindable.Linq
         /// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="source" /> or <paramref name="selector" /> is null.</exception>
-        public static IBindable<double?> Min<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, double?>> selector)
-            where TSource : class
+        public static IBindable<double?> Min<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, double?>> selector) where TSource : class
         {
             source.ShouldNotBeNull("source");
             return source.Select(selector).Min();
@@ -1959,8 +1825,7 @@ namespace Bindable.Linq
         /// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="source" /> or <paramref name="selector" /> is null.</exception>
-        public static IBindable<float?> Min<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, float?>> selector)
-            where TSource : class
+        public static IBindable<float?> Min<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, float?>> selector) where TSource : class
         {
             source.ShouldNotBeNull("source");
             return source.Select(selector).Min();
@@ -1975,8 +1840,7 @@ namespace Bindable.Linq
         /// <paramref name="source" /> or <paramref name="selector" /> is null.</exception>
         /// <exception cref="T:System.InvalidOperationException">
         /// <paramref name="source" /> contains no elements.</exception>
-        public static IBindable<long> Min<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, long>> selector)
-            where TSource : class
+        public static IBindable<long> Min<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, long>> selector) where TSource : class
         {
             source.ShouldNotBeNull("source");
             return source.Select(selector).Min();
@@ -1989,8 +1853,7 @@ namespace Bindable.Linq
         /// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="source" /> or <paramref name="selector" /> is null.</exception>
-        public static IBindable<decimal?> Min<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, decimal?>> selector)
-            where TSource : class
+        public static IBindable<decimal?> Min<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, decimal?>> selector) where TSource : class
         {
             source.ShouldNotBeNull("source");
             return source.Select(selector).Min();
@@ -2003,8 +1866,7 @@ namespace Bindable.Linq
         /// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="source" /> or <paramref name="selector" /> is null.</exception>
-        public static IBindable<int?> Min<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, int?>> selector)
-            where TSource : class
+        public static IBindable<int?> Min<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, int?>> selector) where TSource : class
         {
             source.ShouldNotBeNull("source");
             return source.Select(selector).Min();
@@ -2019,8 +1881,7 @@ namespace Bindable.Linq
         /// <paramref name="source" /> or <paramref name="selector" /> is null.</exception>
         /// <exception cref="T:System.InvalidOperationException">
         /// <paramref name="source" /> contains no elements.</exception>
-        public static IBindable<float> Min<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, float>> selector)
-            where TSource : class
+        public static IBindable<float> Min<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, float>> selector) where TSource : class
         {
             source.ShouldNotBeNull("source");
             return source.Select(selector).Min();
@@ -2034,16 +1895,13 @@ namespace Bindable.Linq
         /// <typeparam name="TResult">The type of the value returned by <paramref name="selector" />.</typeparam>
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="source" /> or <paramref name="selector" /> is null.</exception>
-        public static IBindable<TResult> Min<TSource, TResult>(this IBindableCollection<TSource> source, Expression<Func<TSource, TResult>> selector)
-            where TSource : class
+        public static IBindable<TResult> Min<TSource, TResult>(this IBindableCollection<TSource> source, Expression<Func<TSource, TResult>> selector) where TSource : class
         {
             return source.Select(selector).Min();
         }
-
         #endregion
 
         #region SequenceEqual (NOT)
-
         /// <summary>Determines whether two sequences are equal by comparing the elements by using the default equality comparer for their type.</summary>
         /// <returns>true if the two source sequences are of equal length and their corresponding elements are equal according to the default equality comparer for their type; otherwise, false.</returns>
         /// <param name="first">An <see cref="T:IBindableCollection`1" /> to compare to <paramref name="second" />.</param>
@@ -2068,11 +1926,9 @@ namespace Bindable.Linq
         {
             throw new NotImplementedException();
         }
-
         #endregion
 
         #region Single (DONE)
-
         /// <summary>Returns the only element of a sequence, and throws an exception if there is not exactly one element in the sequence.</summary>
         /// <returns>The single element of the input sequence.</returns>
         /// <param name="source">An <see cref="T:IBindableCollection`1" /> to return the single element of.</param>
@@ -2093,16 +1949,13 @@ namespace Bindable.Linq
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="source" /> or <paramref name="predicate" /> is null.</exception>
         /// <exception cref="T:System.InvalidOperationException">No element satisfies the condition in <paramref name="predicate" />.-or-More than one element satisfies the condition in <paramref name="predicate" />.-or-The source sequence is empty.</exception>
-        public static IBindable<TSource> Single<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, bool>> predicate)
-            where TSource : class
+        public static IBindable<TSource> Single<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, bool>> predicate) where TSource : class
         {
             return source.FirstOrDefault(predicate);
         }
-
         #endregion
 
         #region SingleOrDefault (DONE)
-
         /// <summary>Returns the only element of a sequence, or a default value if the sequence is empty; this method throws an exception if there is more than one element in the sequence.</summary>
         /// <returns>The single element of the input sequence, or default(<paramref name="TSource" />) if the sequence contains no elements.</returns>
         /// <param name="source">An <see cref="T:IBindableCollection`1" /> to return the single element of.</param>
@@ -2123,16 +1976,13 @@ namespace Bindable.Linq
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="source" /> or <paramref name="predicate" /> is null.</exception>
         /// <exception cref="T:System.InvalidOperationException">More than one element satisfies the condition in <paramref name="predicate" />.</exception>
-        public static IBindable<TSource> SingleOrDefault<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, bool>> predicate)
-            where TSource : class
+        public static IBindable<TSource> SingleOrDefault<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, bool>> predicate) where TSource : class
         {
             return source.FirstOrDefault(predicate);
         }
-
         #endregion
 
         #region Sum (DONE)
-
         /// <summary>Computes the sum of a sequence of <see cref="T:System.Double" /> values.</summary>
         /// <returns>The sum of the values in the sequence.</returns>
         /// <param name="source">A sequence of <see cref="T:System.Double" /> values to calculate the sum of.</param>
@@ -2247,8 +2097,7 @@ namespace Bindable.Linq
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="source" /> or <paramref name="selector" /> is null.</exception>
         /// <exception cref="T:System.OverflowException">The sum is larger than <see cref="F:System.Decimal.MaxValue" />.</exception>
-        public static IBindable<decimal?> Sum<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, decimal?>> selector)
-            where TSource : class
+        public static IBindable<decimal?> Sum<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, decimal?>> selector) where TSource : class
         {
             return source.Select(selector).Sum();
         }
@@ -2260,8 +2109,7 @@ namespace Bindable.Linq
         /// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="source" /> or <paramref name="selector" /> is null.</exception>
-        public static IBindable<double?> Sum<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, double?>> selector)
-            where TSource : class
+        public static IBindable<double?> Sum<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, double?>> selector) where TSource : class
         {
             return source.Select(selector).Sum();
         }
@@ -2274,8 +2122,7 @@ namespace Bindable.Linq
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="source" /> or <paramref name="selector" /> is null.</exception>
         /// <exception cref="T:System.OverflowException">The sum is larger than <see cref="F:System.Decimal.MaxValue" />.</exception>
-        public static IBindable<decimal> Sum<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, decimal>> selector)
-            where TSource : class
+        public static IBindable<decimal> Sum<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, decimal>> selector) where TSource : class
         {
             return source.Select(selector).Sum();
         }
@@ -2288,8 +2135,7 @@ namespace Bindable.Linq
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="source" /> or <paramref name="selector" /> is null.</exception>
         /// <exception cref="T:System.OverflowException">The sum is larger than <see cref="F:System.Int32.MaxValue" />.</exception>
-        public static IBindable<int?> Sum<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, int?>> selector)
-            where TSource : class
+        public static IBindable<int?> Sum<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, int?>> selector) where TSource : class
         {
             return source.Select(selector).Sum();
         }
@@ -2301,8 +2147,7 @@ namespace Bindable.Linq
         /// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="source" /> or <paramref name="selector" /> is null.</exception>
-        public static IBindable<double> Sum<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, double>> selector)
-            where TSource : class
+        public static IBindable<double> Sum<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, double>> selector) where TSource : class
         {
             return source.Select(selector).Sum();
         }
@@ -2315,8 +2160,7 @@ namespace Bindable.Linq
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="source" /> or <paramref name="selector" /> is null.</exception>
         /// <exception cref="T:System.OverflowException">The sum is larger than <see cref="F:System.Int32.MaxValue" />.</exception>
-        public static IBindable<int> Sum<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, int>> selector)
-            where TSource : class
+        public static IBindable<int> Sum<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, int>> selector) where TSource : class
         {
             return source.Select(selector).Sum();
         }
@@ -2329,8 +2173,7 @@ namespace Bindable.Linq
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="source" /> or <paramref name="selector" /> is null.</exception>
         /// <exception cref="T:System.OverflowException">The sum is larger than <see cref="F:System.Int64.MaxValue" />.</exception>
-        public static IBindable<long> Sum<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, long>> selector)
-            where TSource : class
+        public static IBindable<long> Sum<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, long>> selector) where TSource : class
         {
             return source.Select(selector).Sum();
         }
@@ -2343,8 +2186,7 @@ namespace Bindable.Linq
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="source" /> or <paramref name="selector" /> is null.</exception>
         /// <exception cref="T:System.OverflowException">The sum is larger than <see cref="F:System.Int64.MaxValue" />.</exception>
-        public static IBindable<long?> Sum<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, long?>> selector)
-            where TSource : class
+        public static IBindable<long?> Sum<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, long?>> selector) where TSource : class
         {
             return source.Select(selector).Sum();
         }
@@ -2356,8 +2198,7 @@ namespace Bindable.Linq
         /// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="source" /> or <paramref name="selector" /> is null.</exception>
-        public static IBindable<float?> Sum<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, float?>> selector)
-            where TSource : class
+        public static IBindable<float?> Sum<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, float?>> selector) where TSource : class
         {
             return source.Select(selector).Sum();
         }
@@ -2369,12 +2210,10 @@ namespace Bindable.Linq
         /// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="source" /> or <paramref name="selector" /> is null.</exception>
-        public static IBindable<float> Sum<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, float>> selector)
-            where TSource : class
+        public static IBindable<float> Sum<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, float>> selector) where TSource : class
         {
             return source.Select(selector).Sum();
         }
-
         #endregion
 
         #endregion
@@ -2382,7 +2221,6 @@ namespace Bindable.Linq
         #region Operators
 
         #region If (DONE)
-
         /// <summary>
         /// Checks a condition on a specified source.
         /// </summary>
@@ -2392,7 +2230,7 @@ namespace Bindable.Linq
         /// <returns></returns>
         public static IBindable<bool> If<TSource>(this IBindable<TSource> source, Expression<Func<TSource, bool>> condition)
         {
-            return source.If<TSource, bool>(condition, true, false, false);
+            return source.If(condition, true, false, false);
         }
 
         /// <summary>
@@ -2406,7 +2244,7 @@ namespace Bindable.Linq
         /// <returns></returns>
         public static IBindable<TResult> If<TSource, TResult>(this IBindable<TSource> source, Expression<Func<TSource, bool>> condition, TResult valueIfTrue)
         {
-            return source.If<TSource, TResult>(condition, valueIfTrue, default(TResult), default(TResult));
+            return source.If(condition, valueIfTrue, default(TResult), default(TResult));
         }
 
         /// <summary>
@@ -2421,7 +2259,7 @@ namespace Bindable.Linq
         /// <returns></returns>
         public static IBindable<TResult> If<TSource, TResult>(this IBindable<TSource> source, Expression<Func<TSource, bool>> condition, TResult valueIfTrue, TResult valueIfFalse)
         {
-            return source.If<TSource, TResult>(condition, valueIfTrue, valueIfFalse, default(TResult));
+            return source.If(condition, valueIfTrue, valueIfFalse, default(TResult));
         }
 
         /// <summary>
@@ -2437,7 +2275,7 @@ namespace Bindable.Linq
         /// <returns></returns>
         public static IBindable<TResult> If<TSource, TResult>(this IBindable<TSource> source, Expression<Func<TSource, bool>> condition, TResult valueIfTrue, TResult valueIfFalse, TResult valueIfNull)
         {
-            return source.If<TSource, TResult>(condition, c => valueIfTrue, c => valueIfFalse, () => valueIfNull);
+            return source.If(condition, c => valueIfTrue, c => valueIfFalse, () => valueIfNull);
         }
 
         /// <summary>
@@ -2451,7 +2289,7 @@ namespace Bindable.Linq
         /// <returns></returns>
         public static IBindable<TResult> If<TSource, TResult>(this IBindable<TSource> source, Expression<Func<TSource, bool>> condition, Expression<Func<TSource, TResult>> expressionIfTrue)
         {
-            return source.If<TSource, TResult>(condition, expressionIfTrue, c => default(TResult), () => default(TResult));
+            return source.If(condition, expressionIfTrue, c => default(TResult), () => default(TResult));
         }
 
         /// <summary>
@@ -2466,7 +2304,7 @@ namespace Bindable.Linq
         /// <returns></returns>
         public static IBindable<TResult> If<TSource, TResult>(this IBindable<TSource> source, Expression<Func<TSource, bool>> condition, TResult valueIfTrue, Expression<Func<TSource, TResult>> expressionIfFalse)
         {
-            return source.If<TSource, TResult>(condition, c => valueIfTrue, expressionIfFalse, () => default(TResult));
+            return source.If(condition, c => valueIfTrue, expressionIfFalse, () => default(TResult));
         }
 
         /// <summary>
@@ -2481,7 +2319,7 @@ namespace Bindable.Linq
         /// <returns></returns>
         public static IBindable<TResult> If<TSource, TResult>(this IBindable<TSource> source, Expression<Func<TSource, bool>> condition, Expression<Func<TSource, TResult>> expressionIfTrue, TResult valueIfFalse)
         {
-            return source.If<TSource, TResult>(condition, expressionIfTrue, c => valueIfFalse, () => default(TResult));
+            return source.If(condition, expressionIfTrue, c => valueIfFalse, () => default(TResult));
         }
 
         /// <summary>
@@ -2496,7 +2334,7 @@ namespace Bindable.Linq
         /// <returns></returns>
         public static IBindable<TResult> If<TSource, TResult>(this IBindable<TSource> source, Expression<Func<TSource, bool>> condition, Expression<Func<TSource, TResult>> expressionIfTrue, Expression<Func<TSource, TResult>> expressionIfFalse)
         {
-            return source.If<TSource, TResult>(condition, expressionIfTrue, expressionIfFalse, () => default(TResult));
+            return source.If(condition, expressionIfTrue, expressionIfFalse, () => default(TResult));
         }
 
         /// <summary>
@@ -2515,9 +2353,9 @@ namespace Bindable.Linq
             source.ShouldNotBeNull("source");
             condition.ShouldNotBeNull("filter");
 
-            Func<TSource, TResult> compiledValueIfTrue = expressionIfTrue != null ? expressionIfTrue.Compile() : null;
-            Func<TSource, TResult> compiledValueIfFalse = expressionIfFalse != null ? expressionIfFalse.Compile() : null;
-            Func<TResult> compiledValueIfNull = expressionIfNull != null ? expressionIfNull.Compile() : null;
+            var compiledValueIfTrue = expressionIfTrue != null ? expressionIfTrue.Compile() : null;
+            var compiledValueIfFalse = expressionIfFalse != null ? expressionIfFalse.Compile() : null;
+            var compiledValueIfNull = expressionIfNull != null ? expressionIfNull.Compile() : null;
 
             var result = new IfOperator<TSource, TResult>(source, condition.Compile(), compiledValueIfTrue, compiledValueIfFalse, compiledValueIfNull);
             if (expressionIfTrue != null)
@@ -2534,11 +2372,9 @@ namespace Bindable.Linq
             }
             return result;
         }
-
         #endregion
 
         #region Project (DONE)
-
         /// <summary>
         /// Projects a single bindable object into another bindable object, using a lambda to select the new
         /// type of object.
@@ -2552,16 +2388,13 @@ namespace Bindable.Linq
         {
             source.ShouldNotBeNull("source");
             projector.ShouldNotBeNull("projector");
-            return new ProjectOperator<TSource, TResult>(source, projector.Compile())
-                .WithDependencyExpression(projector.Body, projector.Parameters[0]);
+            return new ProjectOperator<TSource, TResult>(source, projector.Compile()).WithDependencyExpression(projector.Body, projector.Parameters[0]);
         }
-
         #endregion
 
         #endregion
 
         #region Dependencies
-
         /// <summary>
         /// Extracts dependencies from the given expression and adds them to the iterator.
         /// </summary>
@@ -2570,10 +2403,9 @@ namespace Bindable.Linq
         /// <param name="expression">The expression.</param>
         /// <param name="itemParameter">The item parameter.</param>
         /// <returns></returns>
-        public static TResult WithDependencyExpression<TResult>(this TResult query, Expression expression, ParameterExpression itemParameter)
-            where TResult : IAcceptsDependencies, IConfigurable
+        public static TResult WithDependencyExpression<TResult>(this TResult query, System.Linq.Expressions.Expression expression, ParameterExpression itemParameter) where TResult : IAcceptsDependencies, IConfigurable
         {
-            IExpressionAnalyzer analyzer = query.Configuration.CreateExpressionAnalyzer();
+            var analyzer = query.Configuration.CreateExpressionAnalyzer();
             var definitions = analyzer.DiscoverDependencies(expression, itemParameter);
             return query.WithDependencies(definitions);
         }
@@ -2587,22 +2419,21 @@ namespace Bindable.Linq
         /// class object, an object that implements <see cref="INotifyCollectionChanged" />, or a Windows Forms control.</param>
         /// <param name="propertyPath">The property path. For example: "HomeAddress.Postcode".</param>
         /// <returns></returns>
-        public static TResult WithDependency<TResult>(this TResult query, object externalObject, string propertyPath)
-            where TResult : IAcceptsDependencies
+        public static TResult WithDependency<TResult>(this TResult query, object externalObject, string propertyPath) where TResult : IAcceptsDependencies
         {
             return query.WithDependency(new ExternalDependencyDefinition(propertyPath, externalObject));
         }
 
 #if SILVERLIGHT
 
-        /// <summary>
-        /// Adds a dependency on a Silverlight dependency object.
-        /// </summary>
-        /// <typeparam name="TResult">The type of the result.</typeparam>
-        /// <param name="query">The query.</param>
-        /// <param name="dependencyObject">A Silverlight dependency object.</param>
-        /// <param name="propertyPath">The name of a property on the dependency object.</param>
-        /// <returns></returns>
+    /// <summary>
+    /// Adds a dependency on a Silverlight dependency object.
+    /// </summary>
+    /// <typeparam name="TResult">The type of the result.</typeparam>
+    /// <param name="query">The query.</param>
+    /// <param name="dependencyObject">A Silverlight dependency object.</param>
+    /// <param name="propertyPath">The name of a property on the dependency object.</param>
+    /// <returns></returns>
         public static TResult WithDependency<TResult>(this TResult query, System.Windows.DependencyObject dependencyObject, string propertyPath)
             where TResult : IAcceptsDependencies
         {
@@ -2619,8 +2450,7 @@ namespace Bindable.Linq
         /// <param name="dependencyObject">A WPF dependency object.</param>
         /// <param name="dependencyProperty">A WPF dependency property.</param>
         /// <returns></returns>
-        public static TResult WithDependency<TResult>(this TResult query, System.Windows.DependencyObject dependencyObject, System.Windows.DependencyProperty dependencyProperty)
-            where TResult : IAcceptsDependencies
+        public static TResult WithDependency<TResult>(this TResult query, DependencyObject dependencyObject, DependencyProperty dependencyProperty) where TResult : IAcceptsDependencies
         {
             return query.WithDependency(new ExternalDependencyDefinition(dependencyProperty.Name, dependencyObject));
         }
@@ -2634,12 +2464,9 @@ namespace Bindable.Linq
         /// <param name="query">The query.</param>
         /// <param name="propertyPath">The property name or path. For example: "HomeAddress.Postcode".</param>
         /// <returns></returns>
-        public static TResult WithDependency<TResult>(this TResult query, string propertyPath)
-            where TResult : IAcceptsDependencies
+        public static TResult WithDependency<TResult>(this TResult query, string propertyPath) where TResult : IAcceptsDependencies
         {
-            return query.WithDependency(
-                new ItemDependencyDefinition(propertyPath)
-                );
+            return query.WithDependency(new ItemDependencyDefinition(propertyPath));
         }
 
         /// <summary>
@@ -2650,8 +2477,7 @@ namespace Bindable.Linq
         /// <param name="query">The query.</param>
         /// <param name="definition">The definition.</param>
         /// <returns></returns>
-        public static TResult WithDependency<TResult>(this TResult query, IDependencyDefinition definition)
-            where TResult : IAcceptsDependencies
+        public static TResult WithDependency<TResult>(this TResult query, IDependencyDefinition definition) where TResult : IAcceptsDependencies
         {
             if (query != null && definition != null)
             {
@@ -2667,12 +2493,11 @@ namespace Bindable.Linq
         /// <param name="query">The query.</param>
         /// <param name="definitions">The definitions.</param>
         /// <returns></returns>
-        public static TResult WithDependencies<TResult>(this TResult query, IEnumerable<IDependencyDefinition> definitions)
-            where TResult : IAcceptsDependencies
+        public static TResult WithDependencies<TResult>(this TResult query, IEnumerable<IDependencyDefinition> definitions) where TResult : IAcceptsDependencies
         {
             if (query != null)
             {
-                foreach (IDependencyDefinition definition in definitions)
+                foreach (var definition in definitions)
                 {
                     if (definition != null)
                     {
@@ -2682,7 +2507,6 @@ namespace Bindable.Linq
             }
             return query;
         }
-
         #endregion
     }
 }

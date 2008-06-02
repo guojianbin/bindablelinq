@@ -1,30 +1,19 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
 
 namespace Bindable.Linq.Tests.TestObjectModel
 {
+    using System.ComponentModel;
+
     /// <summary>
     /// Represents a sample object used for testing against.
     /// </summary>
     public class Contact : BindableObject
     {
-        private string _name;
-        private string _company;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Contact"/> class.
-        /// </summary>
-        public Contact()
-        {
-
-        }
-
+        private static readonly PropertyChangedEventArgs CompanyPropertyChangedEventArgs = new PropertyChangedEventArgs("Company");
         private static readonly PropertyChangedEventArgs ContactIdPropertyChangedEventArgs = new PropertyChangedEventArgs("ContactId");
         private static readonly PropertyChangedEventArgs NamePropertyChangedEventArgs = new PropertyChangedEventArgs("Name");
-        private static readonly PropertyChangedEventArgs CompanyPropertyChangedEventArgs = new PropertyChangedEventArgs("Company");
+        private string _company;
+        private string _name;
 
         /// <summary>
         /// Gets or sets the name.
@@ -60,7 +49,7 @@ namespace Bindable.Linq.Tests.TestObjectModel
         /// </returns>
         public override string ToString()
         {
-            return this.Name;
+            return Name;
         }
 
         /// <summary>
@@ -72,7 +61,7 @@ namespace Bindable.Linq.Tests.TestObjectModel
         /// </returns>
         public override bool Equals(object obj)
         {
-            return this.Name == ((Contact)obj).Name && this.Company == ((Contact)obj).Company;
+            return Name == ((Contact) obj).Name && Company == ((Contact) obj).Company;
         }
 
         /// <summary>
@@ -83,7 +72,7 @@ namespace Bindable.Linq.Tests.TestObjectModel
         /// </returns>
         public override int GetHashCode()
         {
-            return (this.Name + ":::" + this.Company).GetHashCode();
+            return (Name + ":::" + Company).GetHashCode();
         }
     }
 }

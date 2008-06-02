@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System;
 
 namespace Bindable.Linq.Operators
 {
@@ -12,10 +9,10 @@ namespace Bindable.Linq.Operators
     /// <typeparam name="TResult">The type of the result.</typeparam>
     internal sealed class IfOperator<TSource, TResult> : Operator<TSource, TResult>
     {
-        private Func<TSource, bool> _condition;
-        private Func<TSource, TResult> _valueIfTrue;
-        private Func<TSource, TResult> _valueIfFalse;
-        private Func<TResult> _valueIfNull;
+        private readonly Func<TSource, bool> _condition;
+        private readonly Func<TSource, TResult> _valueIfFalse;
+        private readonly Func<TResult> _valueIfNull;
+        private readonly Func<TSource, TResult> _valueIfTrue;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="IfOperator&lt;TSource, TResult&gt;"/> class.
@@ -39,21 +36,21 @@ namespace Bindable.Linq.Operators
         /// </summary>
         protected override void RefreshOverride()
         {
-            TSource source = this.Source.Current;
-            if (source != null) 
+            TSource source = Source.Current;
+            if (source != null)
             {
                 if (_condition(source))
                 {
-                    this.Current = _valueIfTrue(source);
+                    Current = _valueIfTrue(source);
                 }
                 else
                 {
-                    this.Current = _valueIfFalse(source);
+                    Current = _valueIfFalse(source);
                 }
             }
-            else 
+            else
             {
-                this.Current = _valueIfNull == null ? default(TResult) : _valueIfNull();
+                Current = _valueIfNull == null ? default(TResult) : _valueIfNull();
             }
         }
     }

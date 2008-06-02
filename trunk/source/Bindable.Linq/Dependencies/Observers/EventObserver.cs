@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System;
 
 namespace Bindable.Linq.Dependencies
 {
+    using System.Collections;
+    using System.Collections.Generic;
+
     /// <summary>
     /// A base class for managing weak-reference event subscriptions on multiple objects,
     /// ensuring:
@@ -14,7 +13,8 @@ namespace Bindable.Linq.Dependencies
     /// </summary>
     /// <typeparam name="TPublisher">The type of event publisher.</typeparam>
     /// <typeparam name="TEventArgs">The type of event argument.</typeparam>
-    internal abstract class EventDependency<TPublisher, TEventArgs> : IDisposable where TEventArgs : EventArgs
+    internal abstract class EventDependency<TPublisher, TEventArgs> : IDisposable
+        where TEventArgs : EventArgs
     {
         private readonly Dictionary<int, WeakReference> _observables;
         private readonly object _observablesLock = new object();
@@ -26,6 +26,17 @@ namespace Bindable.Linq.Dependencies
         {
             _observables = new Dictionary<int, WeakReference>();
         }
+
+        #region IDisposable Members
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            DisposeOverride();
+            Clear();
+        }
+        #endregion
 
         /// <summary>
         /// When overriden in a derived class, allows the class to subscribe a given event handler to 
@@ -61,7 +72,7 @@ namespace Bindable.Linq.Dependencies
         {
             if (objectToObserve is TPublisher)
             {
-                TPublisher publisher = (TPublisher) objectToObserve;
+                var publisher = (TPublisher) objectToObserve;
                 lock (_observablesLock)
                 {
                     if (Find(publisher) == null)
@@ -103,7 +114,7 @@ namespace Bindable.Linq.Dependencies
         {
             if (objectThatWasObserved is TPublisher)
             {
-                TPublisher publisher = (TPublisher) objectThatWasObserved;
+                var publisher = (TPublisher) objectThatWasObserved;
                 lock (_observablesLock)
                 {
                     WeakReference existingReference = Find(publisher);
@@ -124,7 +135,7 @@ namespace Bindable.Linq.Dependencies
         /// </summary>
         public void Clear()
         {
-            this.Each(o => Detach(o, false));
+            Each(o => Detach(o, false));
             _observables.Clear();
         }
 
@@ -139,7 +150,7 @@ namespace Bindable.Linq.Dependencies
                         object reference = observable.Target;
                         if (reference is TPublisher)
                         {
-                            TPublisher publisher = (TPublisher) reference;
+                            var publisher = (TPublisher) reference;
                             callback(publisher);
                         }
                     }
@@ -168,14 +179,5 @@ namespace Bindable.Linq.Dependencies
         /// When overridden in a derived class, allows the class to add custom code when the object is disposed.
         /// </summary>
         protected abstract void DisposeOverride();
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            DisposeOverride();
-            Clear();
-        }
     }
 }

@@ -1,13 +1,13 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using Bindable.Linq.Helpers;
+using System;
 
 namespace Bindable.Linq.Dependencies.ExpressionAnalysis
 {
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Linq.Expressions;
+    using Helpers;
+
     /// <summary>
     /// Given a LINQ expression, traverses the expression and produces a flat list of all of the 
     /// expressions. A list of expression types can be provided which the expression flattener will stop 
@@ -48,7 +48,7 @@ namespace Bindable.Linq.Dependencies.ExpressionAnalysis
             {
                 foreach (Expression expression in expressions)
                 {
-                    this.TraverseExpression(expression);
+                    TraverseExpression(expression);
                 }
             }
         }
@@ -158,9 +158,7 @@ namespace Bindable.Linq.Dependencies.ExpressionAnalysis
         /// Traverses the constant expression.
         /// </summary>
         /// <param name="constantExpression">The constant expression.</param>
-        private void TraverseConstantExpression(ConstantExpression constantExpression)
-        {
-        }
+        private void TraverseConstantExpression(ConstantExpression constantExpression) {}
 
         /// <summary>
         /// Traverses the invocation expression.
@@ -245,9 +243,7 @@ namespace Bindable.Linq.Dependencies.ExpressionAnalysis
         /// Traverses the parameter expression.
         /// </summary>
         /// <param name="parameterExpression">The parameter expression.</param>
-        private void TraverseParameterExpression(ParameterExpression parameterExpression)
-        {
-        }
+        private void TraverseParameterExpression(ParameterExpression parameterExpression) {}
 
         /// <summary>
         /// Traverses the type binary expression.

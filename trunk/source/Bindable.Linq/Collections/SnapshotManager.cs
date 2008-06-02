@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,7 +12,7 @@ namespace Bindable.Linq.Collections
     /// <typeparam name="TElement">The type of the element.</typeparam>
     internal sealed class SnapshotManager<TElement>
     {
-        private readonly LockScope _snapshotManagerLock = new LockScope();
+        private readonly object _snapshotManagerLock = new object();
         private List<TElement> _latestSnapshot;
         private Func<List<TElement>> _rebuildCallback;
 
@@ -30,7 +30,7 @@ namespace Bindable.Linq.Collections
         /// </summary>
         public void Invalidate()
         {
-            using (_snapshotManagerLock.Enter(this))
+            lock (_snapshotManagerLock)
             {
                 _latestSnapshot = null;
             }
@@ -41,7 +41,7 @@ namespace Bindable.Linq.Collections
         /// </summary>
         public IEnumerator<TElement> CreateEnumerator()
         {
-            using (_snapshotManagerLock.Enter(this))
+            lock (_snapshotManagerLock)
             {
                 if (_latestSnapshot == null)
                 {

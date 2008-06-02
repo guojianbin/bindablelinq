@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using Bindable.Linq.Dependencies;
-using Bindable.Linq.Helpers;
-using Bindable.Linq;
 using Bindable.Linq.Configuration;
+using Bindable.Linq.Helpers;
 
 namespace Bindable.Linq.Adapters
 {
@@ -16,25 +12,22 @@ namespace Bindable.Linq.Adapters
     /// Turns any kind of collection into a bindable collection.
     /// </summary>
     /// <typeparam name="TElement">The type of the element.</typeparam>
-    internal sealed class BindableCollectionAdapter<TElement> : 
-        IBindableCollection<TElement>,
-        IDisposable,
-        IConfigurable
+    internal sealed class BindableCollectionAdapter<TElement> : IBindableCollection<TElement>, IConfigurable
         where TElement : class
     {
-        private readonly IEnumerable _source;
-        private readonly WeakEventReference<PropertyChangedEventArgs> _propertyWeakHandler;
-        private readonly WeakEventReference<NotifyCollectionChangedEventArgs> _collectionWeakHandler;
-        private readonly EventHandler<PropertyChangedEventArgs> _propertyChangedHander;
         private readonly EventHandler<NotifyCollectionChangedEventArgs> _collectionChangedHandler;
+        private readonly WeakEventReference<NotifyCollectionChangedEventArgs> _collectionWeakHandler;
+        private readonly IBindingConfiguration _configuration;
+        private readonly EventHandler<PropertyChangedEventArgs> _propertyChangedHander;
+        private readonly WeakEventReference<PropertyChangedEventArgs> _propertyWeakHandler;
+        private readonly IEnumerable _source;
+        private readonly StateScope _suspendCollectionChangedState = new StateScope();
+        private readonly bool _throwOnInvalidCast;
 #if !SILVERLIGHT
         // Silverlight does not support ListChanged events.
         private readonly EventHandler<ListChangedEventArgs> _listChangedHandler;
         private readonly WeakEventReference<ListChangedEventArgs> _listWeakHandler;
 #endif
-        private readonly StateScope _suspendCollectionChangedState = new StateScope();
-        private readonly bool _throwOnInvalidCast = false;
-        private readonly IBindingConfiguration _configuration;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BindableCollectionAdapter&lt;TElement&gt;"/> class.
@@ -49,35 +42,36 @@ namespace Bindable.Linq.Adapters
             _throwOnInvalidCast = throwOnInvalidCast;
             _configuration = bindingConfiguration;
 
-            INotifyPropertyChanged sourceAsPropertyChanged = source as INotifyPropertyChanged;
-            INotifyCollectionChanged sourceAsCollectionChanged = source as INotifyCollectionChanged;
+            var sourceAsPropertyChanged = source as INotifyPropertyChanged;
+            var sourceAsCollectionChanged = source as INotifyCollectionChanged;
 #if !SILVERLIGHT
             // Silverlight does not provide an IBindingList interface
-            IBindingList sourceAsBindingList = source as IBindingList;
+            var sourceAsBindingList = source as IBindingList;
 #endif
             if (sourceAsPropertyChanged != null)
             {
-                _propertyChangedHander = new EventHandler<PropertyChangedEventArgs>(Source_PropertyChanged);
+                _propertyChangedHander = Source_PropertyChanged;
                 _propertyWeakHandler = new WeakEventReference<PropertyChangedEventArgs>(_propertyChangedHander);
                 sourceAsPropertyChanged.PropertyChanged += _propertyWeakHandler.WeakEventHandler;
             }
             if (sourceAsCollectionChanged != null)
             {
-                _collectionChangedHandler = new EventHandler<NotifyCollectionChangedEventArgs>(Source_CollectionChanged);
+                _collectionChangedHandler = Source_CollectionChanged;
                 _collectionWeakHandler = new WeakEventReference<NotifyCollectionChangedEventArgs>(_collectionChangedHandler);
                 sourceAsCollectionChanged.CollectionChanged += _collectionWeakHandler.WeakEventHandler;
             }
 #if !SILVERLIGHT
-            // Silverlight does not provide an IBindingList interface
+                // Silverlight does not provide an IBindingList interface
             else if (sourceAsBindingList != null)
             {
-                _listChangedHandler = new EventHandler<ListChangedEventArgs>(Source_ListChanged);
+                _listChangedHandler = Source_ListChanged;
                 _listWeakHandler = new WeakEventReference<ListChangedEventArgs>(_listChangedHandler);
                 sourceAsBindingList.ListChanged += _listWeakHandler.WeakEventHandler;
             }
 #endif
         }
 
+        #region IBindableCollection<TElement> Members
         /// <summary>
         /// Occurs when the collection changes.
         /// </summary>
@@ -89,6 +83,23 @@ namespace Bindable.Linq.Adapters
         public event PropertyChangedEventHandler PropertyChanged;
 
         /// <summary>
+        /// Gets the count of items in the collection.
+        /// </summary>
+        /// <value></value>
+        public int Count
+        {
+            get
+            {
+                var result = 0;
+                foreach (object element in this)
+                {
+                    result++;
+                }
+                return result;
+            }
+        }
+
+        /// <summary>
         /// Returns an enumerator that iterates through the collection.
         /// </summary>
         /// <returns>
@@ -98,17 +109,17 @@ namespace Bindable.Linq.Adapters
         {
             using (_suspendCollectionChangedState.Enter())
             {
-                foreach (object element in _source)
+                foreach (var element in _source)
                 {
                     if (element != null)
                     {
                         if (element is TElement)
                         {
-                            yield return (TElement)element;
+                            yield return (TElement) element;
                         }
                         else if (_throwOnInvalidCast)
                         {
-                            throw new InvalidCastException("Could not cast object of type {0} to type {1}".FormatWith(element.GetType(), typeof(TElement)));
+                            throw new InvalidCastException("Could not cast object of type {0} to type {1}".FormatWith(element.GetType(), typeof (TElement)));
                         }
                     }
                 }
@@ -126,19 +137,30 @@ namespace Bindable.Linq.Adapters
             return GetEnumerator();
         }
 
-        public int Count
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
         {
-            get
+            if (_propertyWeakHandler != null)
             {
-                int result = 0;    
-                foreach (object element in this)
-                {
-                    result++;
-                }
-                return result;
+                _propertyWeakHandler.Dispose();
             }
+            if (_collectionWeakHandler != null)
+            {
+                _collectionWeakHandler.Dispose();
+            }
+#if !SILVERLIGHT
+            // Silverlight does not provide ListChanged events
+            if (_listWeakHandler != null)
+            {
+                _listWeakHandler.Dispose();
+            }
+#endif
         }
+        #endregion
 
+        #region IConfigurable Members
         /// <summary>
         /// Gets the configuration.
         /// </summary>
@@ -146,6 +168,7 @@ namespace Bindable.Linq.Adapters
         {
             get { return _configuration; }
         }
+        #endregion
 
         private void Source_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
@@ -161,44 +184,44 @@ namespace Bindable.Linq.Adapters
         // Silverlight does not provide ListChanged events
         private void Source_ListChanged(object sender, ListChangedEventArgs e)
         {
-            IBindingList list = sender as IBindingList;
+            var list = sender as IBindingList;
             if (list != null)
             {
                 NotifyCollectionChangedEventArgs argumentsToRaise = null;
                 switch (e.ListChangedType)
                 {
                     case ListChangedType.ItemAdded:
+                    {
+                        var array = new object[list.Count];
+                        list.CopyTo(array, 0);
+                        if (e.NewIndex >= 0 && e.NewIndex < array.Length)
                         {
-                            object[] array = new object[list.Count];
-                            list.CopyTo(array, 0);
-                            if (e.NewIndex >= 0 && e.NewIndex < array.Length)
-                            {
-                                object itemAtIndex = list[e.NewIndex];
-                                argumentsToRaise = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, itemAtIndex, e.NewIndex);
-                            }
+                            var itemAtIndex = list[e.NewIndex];
+                            argumentsToRaise = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, itemAtIndex, e.NewIndex);
                         }
+                    }
                         break;
                     case ListChangedType.ItemDeleted:
+                    {
+                        var array = new object[list.Count];
+                        list.CopyTo(array, 0);
+                        if (e.OldIndex >= 0 && e.OldIndex < array.Length)
                         {
-                            object[] array = new object[list.Count];
-                            list.CopyTo(array, 0);
-                            if (e.OldIndex >= 0 && e.OldIndex < array.Length)
-                            {
-                                object itemAtIndex = list[e.OldIndex];
-                                argumentsToRaise = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, itemAtIndex, e.NewIndex);
-                            }
+                            var itemAtIndex = list[e.OldIndex];
+                            argumentsToRaise = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, itemAtIndex, e.NewIndex);
                         }
+                    }
                         break;
                     case ListChangedType.ItemMoved:
+                    {
+                        var array = new object[list.Count];
+                        list.CopyTo(array, 0);
+                        if (e.OldIndex >= 0 && e.OldIndex < array.Length)
                         {
-                            object[] array = new object[list.Count];
-                            list.CopyTo(array, 0);
-                            if (e.OldIndex >= 0 && e.OldIndex < array.Length)
-                            {
-                                object itemAtIndex = list[e.NewIndex];
-                                argumentsToRaise = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Move, itemAtIndex, e.NewIndex, e.OldIndex);
-                            }
-                        } 
+                            var itemAtIndex = list[e.NewIndex];
+                            argumentsToRaise = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Move, itemAtIndex, e.NewIndex, e.OldIndex);
+                        }
+                    }
                         break;
                     case ListChangedType.ItemChanged:
                     case ListChangedType.Reset:
@@ -213,39 +236,32 @@ namespace Bindable.Linq.Adapters
 
         private void OnPropertyChanged(PropertyChangedEventArgs e)
         {
-            if (!_suspendCollectionChangedState.IsWithin)
+            if (_suspendCollectionChangedState.IsWithin)
             {
-                PropertyChangedEventHandler handler = PropertyChanged;
-                if (handler != null)
-                {
-                    handler(this, e);
-                }
+                return;
             }
-        }
 
-        private void OnCollectionChanged(NotifyCollectionChangedEventArgs e)
-        {
-            if (!_suspendCollectionChangedState.IsWithin)
+            var handler = PropertyChanged;
+            if (handler != null)
             {
-                NotifyCollectionChangedEventHandler handler = CollectionChanged;
-                if (handler != null)
-                {
-                    handler(this, e);
-                }
+                handler(this, e);
             }
         }
 
         /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// Raises the <see cref="E:CollectionChanged"/> event.
         /// </summary>
-        public void Dispose()
+        /// <param name="e">The <see cref="System.Collections.Specialized.NotifyCollectionChangedEventArgs"/> instance containing the event data.</param>
+        private void OnCollectionChanged(NotifyCollectionChangedEventArgs e)
         {
-            _propertyWeakHandler.Dispose();
-            _collectionWeakHandler.Dispose();
-#if !SILVERLIGHT
-            // Silverlight does not provide ListChanged events
-            _listWeakHandler.Dispose();
-#endif
+            if (!_suspendCollectionChangedState.IsWithin)
+            {
+                var handler = CollectionChanged;
+                if (handler != null)
+                {
+                    handler(this, e);
+                }
+            }
         }
     }
 }

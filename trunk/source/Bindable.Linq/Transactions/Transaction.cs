@@ -1,37 +1,34 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Collections.Specialized;
-using Bindable.Linq.Eventing;
-using Bindable.Linq.Helpers;
-using System.Diagnostics;
+using System;
 
-namespace Bindable.Linq.Eventing
+namespace Bindable.Linq.Transactions
 {
+    using System.Collections.Generic;
+    using System.Collections.Specialized;
+    using System.Diagnostics;
+    using System.Linq;
+    using Helpers;
+
     /// <summary>
     /// This class abstracts recording of collection changed events and raising them when complete. Events can be 
     /// recorded whilst locks are held, and then raised at once. It automatically figures out whether events are 
     /// contiguous (i.e., you add an item at index 1, then at index two) or not and combines them appropriately.
     /// </summary>
-    /// <remarks>
-    /// Think of this as the builder pattern. 
-    /// </remarks>
-    internal sealed class CollectionChangeRecorder<TElement> : ICollectionChangedRecorder<TElement>
+    internal sealed class Transaction : ITransaction
     {
-        private readonly LockScope _recorderLock = new LockScope();
+        private readonly Action<TransactionLog> _commitTransactionCallback;
         private readonly List<NotifyCollectionChangedEventArgs> _recorded = new List<NotifyCollectionChangedEventArgs>();
-        private readonly ICollectionChangedPublisher<TElement> _publisher;
+        private readonly object _transactionLock = new object();
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CollectionChangeRecorder&lt;TElement&gt;"/> class.
+        /// Initializes a new instance of the <see cref="Transaction"/> class.
         /// </summary>
-        /// <param name="publisher">The publisher.</param>
-        public CollectionChangeRecorder(ICollectionChangedPublisher<TElement> publisher)
+        /// <param name="commitTransactionCallback">The commit transaction callback.</param>
+        public Transaction(Action<TransactionLog> commitTransactionCallback)
         {
-            _publisher = publisher;
+            _commitTransactionCallback = commitTransactionCallback;
         }
 
+        #region ITransaction Members
         /// <summary>
         /// Records the fact that an element was added.
         /// </summary>
@@ -39,19 +36,19 @@ namespace Bindable.Linq.Eventing
         /// <param name="index">The index.</param>
         /// <exception cref="ArgumentNullException"><paramref name="elementAdded"/> is null.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is less than zero.</exception>
-        public void RecordAdd(TElement elementAdded, int index)
+        public void LogAddEvent(object elementAdded, int index)
         {
             elementAdded.ShouldNotBeNull("elementAdded");
             index.ShouldBe(e => (e >= 0), "index");
-            this.Append(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, elementAdded, index));
+            Append(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, elementAdded, index));
         }
 
         /// <summary>
         /// Records the fact that the collection has changed dramatically and should be refreshed.
         /// </summary>
-        public void RecordReset()
+        public void LogResetEvent()
         {
-            this.Append(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+            Append(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
         }
 
         /// <summary>
@@ -63,18 +60,18 @@ namespace Bindable.Linq.Eventing
         /// <exception cref="ArgumentNullException"><paramref name="elementMoved"/> is null.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="oldIndex"/> is less than zero.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="newIndex"/> is less than zero.</exception>
-        public void RecordMove(TElement elementMoved, int oldIndex, int newIndex)
+        public void LogMoveEvent(object elementMoved, int oldIndex, int newIndex)
         {
             elementMoved.ShouldNotBeNull("elementMoved");
             oldIndex.ShouldBe(e => (e >= 0), "oldIndex");
             newIndex.ShouldBe(e => (e >= 0), "newIndex");
-            
+
 #if SILVERLIGHT
-            // In Silverlight 2.0 beta 1, Move is not supported.
-            this.RecordRemove(elementMoved, oldIndex);
-            this.RecordAdd(elementMoved, newIndex);
+    // In Silverlight 2.0 beta 1, Move is not supported.
+            this.LogRemoveEvent(elementMoved, oldIndex);
+            this.LogAddEvent(elementMoved, newIndex);
 #else
-            this.Append(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Move, elementMoved, newIndex, oldIndex));
+            Append(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Move, elementMoved, newIndex, oldIndex));
 #endif
         }
 
@@ -85,11 +82,11 @@ namespace Bindable.Linq.Eventing
         /// <param name="index">The index.</param>
         /// <exception cref="ArgumentNullException"><paramref name="removedElement"/> is null.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is less than zero.</exception>
-        public void RecordRemove(TElement removedElement, int index)
+        public void LogRemoveEvent(object removedElement, int index)
         {
             removedElement.ShouldNotBeNull("removedElement");
             index.ShouldBe(e => (e >= 0), "index");
-            this.Append(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, removedElement, index));
+            Append(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, removedElement, index));
         }
 
         /// <summary>
@@ -101,27 +98,50 @@ namespace Bindable.Linq.Eventing
         /// <exception cref="ArgumentNullException"><paramref name="originalElement"/> is null.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="replacementElement"/> is null.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is less than zero.</exception>
-        public void RecordReplace(TElement originalElement, TElement replacementElement, int index)
+        public void LogReplaceEvent(object originalElement, object replacementElement, int index)
         {
             originalElement.ShouldNotBeNull("originalElement");
             replacementElement.ShouldNotBeNull("replacementElement");
             index.ShouldBe(e => (e >= 0), "index");
-            this.Append(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, replacementElement, originalElement, index));
+            Append(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, replacementElement, originalElement, index));
         }
+
+        /// <summary>
+        /// Raises the events. It is imperative that the caller does not hold any locks at this point.
+        /// </summary>
+        public void Commit()
+        {
+            var eventsToRaise = new List<NotifyCollectionChangedEventArgs>();
+            lock (_transactionLock)
+            {
+                eventsToRaise.AddRange(_recorded);
+                _recorded.Clear();
+            }
+            if (_commitTransactionCallback != null)
+            {
+                _commitTransactionCallback(new TransactionLog(eventsToRaise));
+            }
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Commit();
+        }
+        #endregion
 
         private void Append(NotifyCollectionChangedEventArgs eventToAppend)
         {
             // This method is only called within this class, so the following assertion should always be true
-            Debug.Assert(
-                (eventToAppend.NewItems == null || eventToAppend.NewItems.Count == 1) || 
-                (eventToAppend.OldItems == null || eventToAppend.OldItems.Count == 1));
-            using (_recorderLock.Enter(this))
+            Debug.Assert((eventToAppend.NewItems == null || eventToAppend.NewItems.Count == 1) || (eventToAppend.OldItems == null || eventToAppend.OldItems.Count == 1));
+            lock (_transactionLock)
             {
                 bool appended = false;
 #if !SILVERLIGHT
                 // In Silverlight 2.0 beta 1, events cannot be raised with multiple objects.
-                if (eventToAppend.Action != NotifyCollectionChangedAction.Reset 
-                    && eventToAppend.Action != NotifyCollectionChangedAction.Move)
+                if (eventToAppend.Action != NotifyCollectionChangedAction.Reset && eventToAppend.Action != NotifyCollectionChangedAction.Move)
                 {
                     for (int ixEvent = 0; ixEvent < _recorded.Count; ixEvent++)
                     {
@@ -150,17 +170,17 @@ namespace Bindable.Linq.Eventing
                             {
                                 int oldStartingIndex = existingEvent.OldStartingIndex;
                                 int newStartingIndex = existingEvent.NewStartingIndex;
-                                List<TElement> oldItems = new List<TElement>();
-                                List<TElement> newItems = new List<TElement>();
+                                var oldItems = new List<object>();
+                                var newItems = new List<object>();
                                 if (existingEvent.OldItems != null)
                                 {
-                                    oldItems.AddRange(existingEvent.OldItems.Cast<TElement>());
-                                    oldItems.Add((TElement)eventToAppend.OldItems[0]);
+                                    oldItems.AddRange(existingEvent.OldItems.Cast<object>());
+                                    oldItems.Add(eventToAppend.OldItems[0]);
                                 }
                                 if (existingEvent.NewItems != null)
                                 {
-                                    newItems.AddRange(existingEvent.NewItems.Cast<TElement>());
-                                    newItems.Add((TElement)eventToAppend.NewItems[0]);
+                                    newItems.AddRange(existingEvent.NewItems.Cast<object>());
+                                    newItems.Add(eventToAppend.NewItems[0]);
                                 }
 
                                 switch (existingEvent.Action)
@@ -190,31 +210,6 @@ namespace Bindable.Linq.Eventing
                     _recorded.Add(eventToAppend);
                 }
             }
-        }
-
-        /// <summary>
-        /// Raises the events. It is imperative that the caller does not hold any locks at this point.
-        /// </summary>
-        public void RaiseAll()
-        {
-            List<NotifyCollectionChangedEventArgs> eventsToRaise = new List<NotifyCollectionChangedEventArgs>();
-            using (_recorderLock.Enter(this))
-            {
-                eventsToRaise.AddRange(_recorded);
-                _recorded.Clear();
-            }
-            foreach (NotifyCollectionChangedEventArgs e in eventsToRaise)
-            {
-                _publisher.Raise(e);
-            }
-        }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            this.RaiseAll();
         }
     }
 }

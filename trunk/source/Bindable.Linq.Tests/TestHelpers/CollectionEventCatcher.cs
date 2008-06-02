@@ -1,28 +1,35 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Collections.Specialized;
-using NUnit.Framework;
-using System.Collections;
+using System;
 
 namespace Bindable.Linq.Tests.TestHelpers
 {
+    using System.Collections;
+    using System.Collections.Specialized;
+    using NUnit.Framework;
+
     internal class CollectionEventCatcher : EventCatcher<INotifyCollectionChanged, NotifyCollectionChangedEventArgs>
     {
         public CollectionEventCatcher(INotifyCollectionChanged publisher)
-            : base(publisher)
-        {
-        }
+            : base(publisher) {}
 
         protected override void Subscribe(INotifyCollectionChanged publisher)
         {
-            publisher.CollectionChanged += new NotifyCollectionChangedEventHandler(Publisher_CollectionChanged);
+            publisher.CollectionChanged += Publisher_CollectionChanged;
         }
 
         protected override void Unsubscribe(INotifyCollectionChanged publisher)
         {
-            publisher.CollectionChanged -= new NotifyCollectionChangedEventHandler(Publisher_CollectionChanged);
+            publisher.CollectionChanged -= Publisher_CollectionChanged;
+        }
+
+        private void SubscribeChildren(IEnumerable items)
+        {
+            foreach (object o in items)
+            {
+                if (o is INotifyCollectionChanged)
+                {
+                    Monitor((INotifyCollectionChanged) o);
+                }
+            }
         }
 
         private void Publisher_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -65,17 +72,5 @@ namespace Bindable.Linq.Tests.TestHelpers
             }
             RecordEvent(sender, e);
         }
-
-        private void SubscribeChildren(IEnumerable items)
-        {
-            foreach (object o in items)
-            {
-                if (o is INotifyCollectionChanged)
-                {
-                    this.Monitor((INotifyCollectionChanged)o);
-                }
-            }
-        }
     }
-
 }

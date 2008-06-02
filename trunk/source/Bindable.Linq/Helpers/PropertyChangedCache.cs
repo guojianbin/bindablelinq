@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.ComponentModel;
+using System;
 
 namespace Bindable.Linq.Helpers
 {
+    using System.ComponentModel;
+
     internal static class PropertyChangedCache
     {
         public static readonly PropertyChangedEventArgs Count = new PropertyChangedEventArgs("Count");

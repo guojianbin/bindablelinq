@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Bindable.Linq.Helpers;
+using System;
 
 namespace Bindable.Linq.Iterators
 {
+    using System.Collections.Generic;
+    using Helpers;
+
     /// <summary>
     /// A lookup for projections.
     /// </summary>
@@ -13,7 +12,7 @@ namespace Bindable.Linq.Iterators
     /// <typeparam name="TResult">The type of the result.</typeparam>
     internal sealed class ProjectionRegister<TSource, TResult> : IDisposable
     {
-        private readonly LockScope _projectionLock = new LockScope();
+        private readonly object _projectionLock = new object();
         private readonly Dictionary<TSource, TResult> _projections = new Dictionary<TSource, TResult>();
         private readonly Func<TSource, TResult> _projector;
 
@@ -28,7 +27,7 @@ namespace Bindable.Linq.Iterators
         /// <summary>
         /// Gets the projection lock.
         /// </summary>
-        private LockScope ProjectionLock
+        private object ProjectionLock
         {
             get { return _projectionLock; }
         }
@@ -47,7 +46,7 @@ namespace Bindable.Linq.Iterators
         /// </summary>
         public void Dispose()
         {
-            this.Clear();
+            Clear();
         }
         #endregion
 
@@ -58,7 +57,7 @@ namespace Bindable.Linq.Iterators
         /// <param name="result">The result type.</param>
         public void Store(TSource source, TResult result)
         {
-            using (this.ProjectionLock.Enter(this))
+            lock (ProjectionLock)
             {
                 if (_projections.ContainsKey(source))
                 {
@@ -91,11 +90,11 @@ namespace Bindable.Linq.Iterators
             object result = null;
             if (source != null)
             {
-                using (this.ProjectionLock.Enter(this))
+                lock (ProjectionLock)
                 {
-                    if (this.Projections.ContainsKey(source))
+                    if (Projections.ContainsKey(source))
                     {
-                        result = this.Projections[source];
+                        result = Projections[source];
                     }
                 }
             }
@@ -110,7 +109,7 @@ namespace Bindable.Linq.Iterators
         public TResult ReProject(TSource source)
         {
             TResult projected = _projector(source);
-            this.Store(source, projected);
+            Store(source, projected);
             return projected;
         }
 
@@ -121,7 +120,7 @@ namespace Bindable.Linq.Iterators
         /// <returns></returns>
         public TResult Project(TSource source)
         {
-            object result = this.InnerGetExistingProjection(source);
+            object result = InnerGetExistingProjection(source);
 
             if (result != null)
             {
@@ -130,7 +129,7 @@ namespace Bindable.Linq.Iterators
             else
             {
                 TResult projected = _projector(source);
-                this.Store(source, projected);
+                Store(source, projected);
                 return projected;
             }
         }
@@ -146,7 +145,7 @@ namespace Bindable.Linq.Iterators
             {
                 if (source != null)
                 {
-                    yield return this.Project(source);
+                    yield return Project(source);
                 }
             }
         }
@@ -158,7 +157,7 @@ namespace Bindable.Linq.Iterators
         /// <returns></returns>
         public IEnumerable<TResult> GetProjections(IEnumerable<TSource> range)
         {
-            List<TResult> results = new List<TResult>();
+            var results = new List<TResult>();
             foreach (TSource source in range)
             {
                 if (source != null)
@@ -166,7 +165,7 @@ namespace Bindable.Linq.Iterators
                     object existing = InnerGetExistingProjection(source);
                     if (existing != null)
                     {
-                        results.Add((TResult)existing);
+                        results.Add((TResult) existing);
                     }
                 }
             }
@@ -179,7 +178,7 @@ namespace Bindable.Linq.Iterators
         /// <param name="source">The source.</param>
         public void Remove(TSource source)
         {
-            using (this.ProjectionLock.Enter(this))
+            lock (ProjectionLock)
             {
                 if (_projections.ContainsKey(source))
                 {
@@ -196,7 +195,7 @@ namespace Bindable.Linq.Iterators
         {
             foreach (TSource source in sourceItems)
             {
-                this.Remove(source);
+                Remove(source);
             }
         }
 
@@ -205,9 +204,9 @@ namespace Bindable.Linq.Iterators
         /// </summary>
         public void Clear()
         {
-            using (this.ProjectionLock.Enter(this))
+            lock (ProjectionLock)
             {
-                this.Projections.Clear();
+                Projections.Clear();
             }
         }
 

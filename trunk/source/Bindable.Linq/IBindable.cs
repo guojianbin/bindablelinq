@@ -1,19 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
+using System;
 
 namespace Bindable.Linq
 {
+    using System.ComponentModel;
+
     /// <summary>
     /// This interface is implemented by the results of any Bindable LINQ query which result in 
     /// single items, as opposed to collections. 
     /// </summary>
-    public interface IBindable : INotifyPropertyChanged, IRefreshable, IDisposable
-    {
-
-    }
+    public interface IBindable : INotifyPropertyChanged, IRefreshable, IDisposable {}
 
     /// <summary>
     /// This interface is implemented by the results of any Bindable LINQ query which result in 

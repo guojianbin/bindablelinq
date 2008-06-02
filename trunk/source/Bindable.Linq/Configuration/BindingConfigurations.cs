@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Bindable.Linq.Dependencies.ExpressionAnalysis;
-using Bindable.Linq.Dependencies.ExpressionAnalysis.Extractors;
-using Bindable.Linq.Dependencies.PathNavigation;
-using Bindable.Linq.Dependencies.PathNavigation.TokenFactories;
+using System;
 
 namespace Bindable.Linq.Configuration
 {

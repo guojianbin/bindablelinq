@@ -1,21 +1,15 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using Bindable.Linq;
-using Bindable.Linq.Collections;
-using Bindable.Linq.Eventing;
-using Bindable.Linq.Helpers;
-using Bindable.Linq.Iterators;
-
 namespace Bindable.Linq.Collections
 {
+    using System;
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.Collections.Specialized;
+    using System.ComponentModel;
+    using System.Globalization;
+    using System.Threading;
+    using Helpers;
+    using Transactions;
+
     /// <summary>
     /// This class is used as the primary implementation of a bindable collection. Most of the Iterators
     /// in Bindable LINQ use this class eventually to store their bindable results, as it abstracts a lot of the 
@@ -24,24 +18,13 @@ namespace Bindable.Linq.Collections
     /// additional functionality.
     /// </summary>
     /// <typeparam name="TElement">The type of item held within the collection.</typeparam>
-    public class BindableCollection<TElement> :
-        IBindableCollection<TElement>,
-        IBindableCollectionInterceptor<TElement>,
-        IList<TElement>,
-        IEnumerable<TElement>,
-        INotifyCollectionChanged,
-        INotifyPropertyChanged,
-        IList,
-        IBindableCollection,
-        IDisposable
+    public class BindableCollection<TElement> : IBindableCollection<TElement>, IList<TElement>, IEnumerable<TElement>, INotifyCollectionChanged, INotifyPropertyChanged, IList, IBindableCollection, IDisposable
     {
         private static readonly PropertyChangedEventArgs CountPropertyChangedEventArgs = new PropertyChangedEventArgs("Count");
-        private readonly LockScope _bindableCollectionLock = new LockScope();
-        private readonly List<TElement> _innerList;
+        private readonly object _bindableCollectionLock = new object();
         private readonly IEqualityComparer<TElement> _comparer = ElementComparerFactory.Create<TElement>();
+        private readonly List<TElement> _innerList;
         private readonly SnapshotManager<TElement> _snapshotManager;
-        private readonly CollectionChangedPublisher<TElement> _eventPublisher;
-        private readonly List<Action<TElement>> _preYieldSteps;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="T:BindableCollection`1"/> class.
@@ -49,9 +32,7 @@ namespace Bindable.Linq.Collections
         public BindableCollection()
         {
             _innerList = new List<TElement>();
-            _eventPublisher = new CollectionChangedPublisher<TElement>(this);
             _snapshotManager = new SnapshotManager<TElement>(RebuildSnapshotCallback);
-            _preYieldSteps = new List<Action<TElement>>();
         }
 
         /// <summary>
@@ -60,7 +41,7 @@ namespace Bindable.Linq.Collections
         /// <remarks>
         /// TODO: This should not be internal.
         /// </remarks>
-        protected internal LockScope BindableCollectionLock
+        protected object BindableCollectionLock
         {
             get { return _bindableCollectionLock; }
         }
@@ -74,46 +55,6 @@ namespace Bindable.Linq.Collections
         }
 
         /// <summary>
-        /// Gets or sets the item at the specified index.
-        /// </summary>
-        /// <value>The item at the specified index.</value>
-        public TElement this[int index]
-        {
-            get
-            {
-                using (this.BindableCollectionLock.Enter(this))
-                {
-                    return this.InnerList[index];
-                }
-            }
-            set { Replace(this.InnerList[index], value); }
-        }
-
-        /// <summary>
-        /// Gets the event publisher.
-        /// </summary>
-        protected ICollectionChangedPublisher<TElement> EventPublisher
-        {
-            get { return _eventPublisher; }
-        }
-
-        /// <summary>
-        /// Occurs when the collection changes.
-        /// </summary>
-        /// <remarks>Warning: No locks should be held when raising this event.</remarks>
-        public event NotifyCollectionChangedEventHandler CollectionChanged
-        {
-            add { _eventPublisher.CollectionChanged += value; }
-            remove { _eventPublisher.CollectionChanged -= value; }
-        }
-
-        /// <summary>
-        /// Occurs when a property value changes.
-        /// </summary>
-        /// <remarks>Warning: No locks should be held when raising this event.</remarks>
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        /// <summary>
         /// Gets a value indicating whether this instance has property changed subscribers.
         /// </summary>
         /// <value>
@@ -121,7 +62,7 @@ namespace Bindable.Linq.Collections
         /// </value>
         internal bool HasPropertyChangedSubscribers
         {
-            get { return this.PropertyChanged != null; }
+            get { return PropertyChanged != null; }
         }
 
         /// <summary>
@@ -132,11 +73,10 @@ namespace Bindable.Linq.Collections
         /// </value>
         internal bool HasCollectionChangedSubscribers
         {
-            get { return _eventPublisher.HasCollectionChangedSubscribers; }
+            get { return CollectionChanged != null; }
         }
 
         #region Add
-
         /// <summary>
         /// Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1"/>.
         /// </summary>
@@ -144,18 +84,18 @@ namespace Bindable.Linq.Collections
         /// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only.</exception>
         public void Add(TElement item)
         {
-            this.AddRange(new TElement[] { item });
+            AddRange(new[] {item});
         }
 
         /// <summary>
         /// Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1"/>.
         /// </summary>
         /// <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1"/>.</param>
-        /// <param name="recorder">The recorder.</param>
+        /// <param name="transaction">The transaction.</param>
         /// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only.</exception>
-        public void Add(TElement item, ICollectionChangedRecorder<TElement> recorder)
+        public void Add(TElement item, ITransaction transaction)
         {
-            this.AddRange(new TElement[] { item }, recorder);
+            AddRange(new[] {item}, transaction);
         }
 
         /// <summary>
@@ -164,7 +104,7 @@ namespace Bindable.Linq.Collections
         /// <param name="range">The items to add.</param>
         public void AddRange(params TElement[] range)
         {
-            this.AddRange((IEnumerable<TElement>)range);
+            AddRange((IEnumerable<TElement>) range);
         }
 
         /// <summary>
@@ -173,9 +113,9 @@ namespace Bindable.Linq.Collections
         /// <param name="range">The items to add.</param>
         public void AddRange(IEnumerable<TElement> range)
         {
-            using (var recorder = this.EventPublisher.Record())
+            using (ITransaction transaction = BeginTransaction())
             {
-                this.AddRange(range, recorder);
+                AddRange(range, transaction);
             }
         }
 
@@ -183,18 +123,18 @@ namespace Bindable.Linq.Collections
         /// Adds a range of items to the collection (whilst holding a lock) without raising any collection changed events.
         /// </summary>
         /// <param name="range">The range.</param>
-        /// <param name="recorder">The recorder.</param>
-        public void AddRange(IEnumerable<TElement> range, ICollectionChangedRecorder<TElement> recorder)
+        /// <param name="transaction">The transaction.</param>
+        public void AddRange(IEnumerable<TElement> range, ITransaction transaction)
         {
             List<TElement> itemsToAdd = range.EnumerateSafely();
 
-            using (this.BindableCollectionLock.Enter(this))
+            lock (BindableCollectionLock)
             {
                 foreach (TElement item in itemsToAdd)
                 {
-                    int index = ((IList)this.InnerList).Add(item);
+                    int index = ((IList) InnerList).Add(item);
                     _snapshotManager.Invalidate();
-                    recorder.RecordAdd(item, index);
+                    transaction.LogAddEvent(item, index);
                 }
             }
         }
@@ -207,14 +147,18 @@ namespace Bindable.Linq.Collections
         /// <param name="items">The items to add.</param>
         public void AddOrInsertRange(int index, IEnumerable<TElement> items)
         {
-            if (index == -1) this.AddRange(items);
-            else this.InsertRange(index, items);
+            if (index == -1)
+            {
+                AddRange(items);
+            }
+            else
+            {
+                InsertRange(index, items);
+            }
         }
-
         #endregion
 
         #region Insert
-
         /// <summary>
         /// Inserts an item to the <see cref="T:BindableCollection`1"/> at the specified index.
         /// </summary>
@@ -222,7 +166,7 @@ namespace Bindable.Linq.Collections
         /// <param name="item">The object to insert into the <see cref="T:BindableCollection`1"/>.</param>
         public void Insert(int index, TElement item)
         {
-            this.InsertRange(index, new TElement[] { item });
+            InsertRange(index, new[] {item});
         }
 
         /// <summary>
@@ -230,10 +174,10 @@ namespace Bindable.Linq.Collections
         /// </summary>
         /// <param name="index">The zero-based index at which <paramref name="item"/> should be inserted.</param>
         /// <param name="item">The object to insert into the <see cref="T:BindableCollection`1"/>.</param>
-        /// <param name="recorder">The recorder.</param>
-        public void Insert(int index, TElement item, ICollectionChangedRecorder<TElement> recorder)
+        /// <param name="transaction">The transaction.</param>
+        public void Insert(int index, TElement item, ITransaction transaction)
         {
-            this.InsertRange(index, new TElement[] { item }, recorder);
+            InsertRange(index, new[] {item}, transaction);
         }
 
         /// <summary>
@@ -243,9 +187,9 @@ namespace Bindable.Linq.Collections
         /// <param name="range">The items to insert into the <see cref="T:BindableCollection`1"/>.</param>
         public void InsertRange(int index, IEnumerable<TElement> range)
         {
-            using (var recorder = this.EventPublisher.Record())
+            using (ITransaction transaction = BeginTransaction())
             {
-                this.InsertRange(index, range, recorder);
+                InsertRange(index, range, transaction);
             }
         }
 
@@ -254,32 +198,32 @@ namespace Bindable.Linq.Collections
         /// </summary>
         /// <param name="index">The index to start inserting at.</param>
         /// <param name="range">The items to insert into the <see cref="T:BindableCollection`1"/>.</param>
-        /// <param name="recorder">The recorder.</param>
-        public void InsertRange(int index, IEnumerable<TElement> range, ICollectionChangedRecorder<TElement> recorder)
+        /// <param name="transaction">The transaction.</param>
+        public void InsertRange(int index, IEnumerable<TElement> range, ITransaction transaction)
         {
             if (index < 0)
             {
-                this.AddRange(range, recorder);
+                AddRange(range, transaction);
                 return;
             }
 
             List<TElement> itemsToInsert = range.EnumerateSafely();
 
-            using (this.BindableCollectionLock.Enter(this))
+            lock (BindableCollectionLock)
             {
-                if (index > this.InnerList.Count)
+                if (index > InnerList.Count)
                 {
-                    index = this.InnerList.Count;
+                    index = InnerList.Count;
                 }
 
                 for (int ixCurrentItem = 0; ixCurrentItem < itemsToInsert.Count; ixCurrentItem++)
                 {
                     int insertionIndex = index + ixCurrentItem;
 
-                    this.InnerList.Insert(insertionIndex, itemsToInsert[ixCurrentItem]);
+                    InnerList.Insert(insertionIndex, itemsToInsert[ixCurrentItem]);
                     _snapshotManager.Invalidate();
 
-                    recorder.RecordAdd(itemsToInsert[ixCurrentItem], insertionIndex);
+                    transaction.LogAddEvent(itemsToInsert[ixCurrentItem], insertionIndex);
                 }
             }
         }
@@ -291,9 +235,9 @@ namespace Bindable.Linq.Collections
         /// <param name="comparer">The comparer.</param>
         public void InsertRangeOrder(IEnumerable<TElement> range, Comparison<TElement> comparer)
         {
-            using (var recorder = this.EventPublisher.Record())
+            using (ITransaction transaction = BeginTransaction())
             {
-                this.InsertRangeOrder(range, comparer, recorder);
+                InsertRangeOrder(range, comparer, transaction);
             }
         }
 
@@ -302,38 +246,36 @@ namespace Bindable.Linq.Collections
         /// </summary>
         /// <param name="range">The range.</param>
         /// <param name="comparer">The comparer.</param>
-        /// <param name="recorder">The recorder.</param>
-        public void InsertRangeOrder(IEnumerable<TElement> range, Comparison<TElement> comparer, ICollectionChangedRecorder<TElement> recorder)
+        /// <param name="transaction">The transaction.</param>
+        public void InsertRangeOrder(IEnumerable<TElement> range, Comparison<TElement> comparer, ITransaction transaction)
         {
             List<TElement> itemsToInsert = range.EnumerateSafely();
 
-            using (this.BindableCollectionLock.Enter(this))
+            lock (BindableCollectionLock)
             {
                 foreach (TElement element in itemsToInsert)
                 {
                     bool inserted = false;
-                    for (int i = 0; i < this.InnerList.Count; i++)
+                    for (int i = 0; i < InnerList.Count; i++)
                     {
-                        int result = comparer(element, this.InnerList[i]);
+                        int result = comparer(element, InnerList[i]);
                         if (result <= 0)
                         {
-                            this.Insert(i, element, recorder);
+                            Insert(i, element, transaction);
                             inserted = true;
                             break;
                         }
                     }
                     if (!inserted)
                     {
-                        this.Add(element, recorder);
+                        Add(element, transaction);
                     }
                 }
             }
         }
-
         #endregion
 
         #region Move
-
         /// <summary>
         /// Moves an item to a new location within the collection.
         /// </summary>
@@ -341,7 +283,7 @@ namespace Bindable.Linq.Collections
         /// <param name="item">The item to move.</param>
         public void Move(int newIndex, TElement item)
         {
-            this.MoveRange(newIndex, new TElement[] { item });
+            MoveRange(newIndex, new[] {item});
         }
 
         /// <summary>
@@ -349,10 +291,10 @@ namespace Bindable.Linq.Collections
         /// </summary>
         /// <param name="newIndex">The new index.</param>
         /// <param name="item">The item to move.</param>
-        /// <param name="recorder">The recorder.</param>
-        public void Move(int newIndex, TElement item, ICollectionChangedRecorder<TElement> recorder)
+        /// <param name="transaction">The transaction.</param>
+        public void Move(int newIndex, TElement item, ITransaction transaction)
         {
-            this.MoveRange(newIndex, new TElement[] { item }, recorder);
+            MoveRange(newIndex, new[] {item}, transaction);
         }
 
         /// <summary>
@@ -363,9 +305,9 @@ namespace Bindable.Linq.Collections
         /// <param name="newIndex">The new index to move the items to.</param>
         public void MoveRange(int newIndex, IEnumerable<TElement> range)
         {
-            using (var recorder = this.EventPublisher.Record())
+            using (ITransaction transaction = BeginTransaction())
             {
-                this.MoveRange(newIndex, range, recorder);
+                MoveRange(newIndex, range, transaction);
             }
         }
 
@@ -375,7 +317,7 @@ namespace Bindable.Linq.Collections
         /// </summary>
         /// <param name="newIndex">The new index to move the items to.</param>
         /// <param name="range">The items to move.</param>
-        /// <param name="recorder">The recorder.</param>
+        /// <param name="transaction">The transaction.</param>
         /// <remarks>
         /// Here is an example of how this logic works:
         /// Index     Start        Step 1       Step 2
@@ -390,45 +332,45 @@ namespace Bindable.Linq.Collections
         /// 1) Remove "Chuck" - removedIndex = 1
         /// 2) Insert "Chuck" - newIndex = 4
         /// </remarks>
-        public void MoveRange(int newIndex, IEnumerable<TElement> range, ICollectionChangedRecorder<TElement> recorder)
+        public void MoveRange(int newIndex, IEnumerable<TElement> range, ITransaction transaction)
         {
             List<TElement> itemsToMove = range.EnumerateSafely();
 
-            using (this.BindableCollectionLock.Enter(this))
+            lock (BindableCollectionLock)
             {
                 for (int ixCurrentItem = 0; ixCurrentItem < itemsToMove.Count; ixCurrentItem++)
                 {
                     TElement element = itemsToMove[ixCurrentItem];
-                    int originalIndex = this.IndexOf(element);
+                    int originalIndex = IndexOf(element);
                     int desiredIndex = newIndex + ixCurrentItem;
 
                     // Remove it temporarily
                     bool removed = false;
                     if (originalIndex >= 0)
                     {
-                        this.InnerList.Remove(element);
+                        InnerList.Remove(element);
                         removed = true;
                     }
 
                     // Insert it into the correct spot
-                    if (desiredIndex >= this.InnerList.Count)
+                    if (desiredIndex >= InnerList.Count)
                     {
-                        desiredIndex = ((IList)this.InnerList).Add(element);
+                        desiredIndex = ((IList) InnerList).Add(element);
                     }
                     else
                     {
-                        this.InnerList.Insert(desiredIndex, element);
+                        InnerList.Insert(desiredIndex, element);
                     }
                     _snapshotManager.Invalidate();
 
                     // Record the appropriate event
                     if (removed)
                     {
-                        recorder.RecordMove(element, originalIndex, desiredIndex);
+                        transaction.LogMoveEvent(element, originalIndex, desiredIndex);
                     }
                     else
                     {
-                        recorder.RecordAdd(element, desiredIndex);
+                        transaction.LogAddEvent(element, desiredIndex);
                     }
                 }
             }
@@ -441,9 +383,9 @@ namespace Bindable.Linq.Collections
         /// <param name="comparer">The comparer.</param>
         public void MoveItemOrdered(TElement item, Comparison<TElement> comparer)
         {
-            using (var recorder = this.EventPublisher.Record())
+            using (ITransaction transaction = BeginTransaction())
             {
-                this.MoveOrdered(item, comparer, recorder);
+                MoveOrdered(item, comparer, transaction);
             }
         }
 
@@ -452,23 +394,23 @@ namespace Bindable.Linq.Collections
         /// </summary>
         /// <param name="element">The element.</param>
         /// <param name="comparer">The comparer.</param>
-        /// <param name="recorder">The recorder.</param>
-        public void MoveOrdered(TElement element, Comparison<TElement> comparer, ICollectionChangedRecorder<TElement> recorder)
+        /// <param name="transaction">The transaction.</param>
+        public void MoveOrdered(TElement element, Comparison<TElement> comparer, ITransaction transaction)
         {
-            using (this.BindableCollectionLock.Enter(this))
+            lock (BindableCollectionLock)
             {
-                int originalIndex = this.IndexOf(element);
+                int originalIndex = IndexOf(element);
                 if (originalIndex >= 0)
                 {
-                    for (int i = 0; i < this.InnerList.Count; i++)
+                    for (int i = 0; i < InnerList.Count; i++)
                     {
-                        int result = comparer(element, this.InnerList[i]);
+                        int result = comparer(element, InnerList[i]);
                         if (result <= 0)
                         {
                             bool itemAlreadyInOrder = true;
-                            for (int j = i; j < originalIndex && j < this.InnerList.Count; j++)
+                            for (int j = i; j < originalIndex && j < InnerList.Count; j++)
                             {
-                                if (comparer(element, this.InnerList[j]) > 0)
+                                if (comparer(element, InnerList[j]) > 0)
                                 {
                                     itemAlreadyInOrder = false;
                                     break;
@@ -479,7 +421,7 @@ namespace Bindable.Linq.Collections
                             {
                                 if (i != originalIndex)
                                 {
-                                    this.Move(i, element, recorder);
+                                    Move(i, element, transaction);
                                 }
                             }
                             break;
@@ -488,11 +430,9 @@ namespace Bindable.Linq.Collections
                 }
             }
         }
-
         #endregion
 
         #region Replace
-
         /// <summary>
         /// Replaces a given item with another item.
         /// </summary>
@@ -500,7 +440,7 @@ namespace Bindable.Linq.Collections
         /// <param name="newItem">The new item.</param>
         public void Replace(TElement oldItem, TElement newItem)
         {
-            this.ReplaceRange(new TElement[] { oldItem }, new TElement[] { newItem });
+            ReplaceRange(new[] {oldItem}, new[] {newItem});
         }
 
         /// <summary>
@@ -508,10 +448,10 @@ namespace Bindable.Linq.Collections
         /// </summary>
         /// <param name="oldItem">The old item.</param>
         /// <param name="newItem">The new item.</param>
-        /// <param name="recorder">The recorder.</param>
-        public void Replace(TElement oldItem, TElement newItem, ICollectionChangedRecorder<TElement> recorder)
+        /// <param name="transaction">The transaction.</param>
+        public void Replace(TElement oldItem, TElement newItem, ITransaction transaction)
         {
-            this.ReplaceRange(new TElement[] { oldItem }, new TElement[] { newItem });
+            ReplaceRange(new[] {oldItem}, new[] {newItem});
         }
 
         /// <summary>
@@ -521,7 +461,7 @@ namespace Bindable.Linq.Collections
         /// <param name="newItemsRange">The new items range.</param>
         public void ReplaceRange(IEnumerable<TElement> oldItemsRange, IEnumerable<TElement> newItemsRange)
         {
-            this.ReplaceRange(oldItemsRange, newItemsRange, new List<int>());
+            ReplaceRange(oldItemsRange, newItemsRange, new List<int>());
         }
 
         /// <summary>
@@ -535,9 +475,9 @@ namespace Bindable.Linq.Collections
         /// </remarks>
         public void ReplaceRange(IEnumerable<TElement> oldItemsRange, IEnumerable<TElement> newItemsRange, List<int> newItemsToSkip)
         {
-            using (var recorder = this.EventPublisher.Record())
+            using (ITransaction transaction = BeginTransaction())
             {
-                this.ReplaceRange(oldItemsRange, newItemsRange, newItemsToSkip, recorder);
+                ReplaceRange(oldItemsRange, newItemsRange, newItemsToSkip, transaction);
             }
         }
 
@@ -547,11 +487,11 @@ namespace Bindable.Linq.Collections
         /// <param name="oldItemsRange">The old items range.</param>
         /// <param name="newItemsRange">The new items range.</param>
         /// <param name="newItemsToSkip">The new items to skip.</param>
-        /// <param name="recorder">The recorder.</param>
+        /// <param name="transaction">The transaction.</param>
         /// <remarks>
         /// TODO: newItemsToSkip is a HACK. Should find a better approach.
         /// </remarks>
-        public void ReplaceRange(IEnumerable<TElement> oldItemsRange, IEnumerable<TElement> newItemsRange, List<int> newItemsToSkip, ICollectionChangedRecorder<TElement> recorder)
+        public void ReplaceRange(IEnumerable<TElement> oldItemsRange, IEnumerable<TElement> newItemsRange, List<int> newItemsToSkip, ITransaction transaction)
         {
             List<TElement> oldItems = oldItemsRange.EnumerateSafely();
             List<TElement> newItems = newItemsRange.EnumerateSafely();
@@ -563,49 +503,44 @@ namespace Bindable.Linq.Collections
 
             // Now begin replacing the items. It is safe to acquire a lock at this point as we won't be 
             // touching the source collection nor raising any events (yet).
-            using (this.BindableCollectionLock.Enter(this))
+            lock (BindableCollectionLock)
             {
                 for (int relativeIndex = 0; relativeIndex < oldItems.Count || relativeIndex < newItems.Count; relativeIndex++)
                 {
-                    object oldItem = (relativeIndex < oldItems.Count) ? (object)oldItems[relativeIndex] : null;
-                    object newItem = (relativeIndex < newItems.Count && !newItemsToSkip.Contains(relativeIndex)) ? (object)newItems[relativeIndex] : null;
-                    TElement oldElement = (oldItem != null) ? (TElement)oldItem : default(TElement);
-                    TElement newElement = (newItem != null) ? (TElement)newItem : default(TElement);
+                    object oldItem = (relativeIndex < oldItems.Count) ? (object) oldItems[relativeIndex] : null;
+                    object newItem = (relativeIndex < newItems.Count && !newItemsToSkip.Contains(relativeIndex)) ? (object) newItems[relativeIndex] : null;
+                    TElement oldElement = (oldItem != null) ? (TElement) oldItem : default(TElement);
+                    TElement newElement = (newItem != null) ? (TElement) newItem : default(TElement);
 
                     if (oldItem != null && newItem != null)
                     {
-                        int oldItemIndex = this.IndexOf(oldElement);
+                        int oldItemIndex = IndexOf(oldElement);
                         if (oldItemIndex >= 0)
                         {
-                            this.InnerList[oldItemIndex] = newElement;
-                            recorder.RecordReplace(oldElement, newElement, oldItemIndex);
+                            InnerList[oldItemIndex] = newElement;
+                            transaction.LogReplaceEvent(oldElement, newElement, oldItemIndex);
                             _snapshotManager.Invalidate();
                         }
                         else
                         {
-                            this.Add(newElement, recorder);
+                            Add(newElement, transaction);
                         }
                     }
-                    else if (newItem == null && oldItem == null)
-                    {
-                    }
+                    else if (newItem == null && oldItem == null) {}
                     else if (newItem == null)
                     {
-                        this.Remove(oldElement, recorder);
+                        Remove(oldElement, transaction);
                     }
                     else if (oldItem == null)
                     {
-                        this.Add(newElement, recorder);
+                        Add(newElement, transaction);
                     }
                 }
             }
-
         }
-
         #endregion
 
         #region Remove
-
         /// <summary>
         /// Removes the first occurrence of a specific object from the <see cref="T:BindableCollection`1"/>.
         /// </summary>
@@ -615,20 +550,7 @@ namespace Bindable.Linq.Collections
         /// </returns>
         public bool Remove(TElement element)
         {
-            return this.RemoveRange(new TElement[] { element });
-        }
-
-        /// <summary>
-        /// Removes the first occurrence of a specific object from the <see cref="T:BindableCollection`1"/>.
-        /// </summary>
-        /// <param name="element">The element.</param>
-        /// <param name="recorder">The recorder.</param>
-        /// <returns>
-        /// true if <paramref name="item"/> was successfully removed from the <see cref="T:BindableCollection`1"/>; otherwise, false. This method also returns false if <paramref name="item"/> is not found in the original <see cref="T:BindableCollection`1"/>.
-        /// </returns>
-        public bool Remove(TElement element, ICollectionChangedRecorder<TElement> recorder)
-        {
-            return this.RemoveRange(new TElement[] {element}, recorder);
+            return RemoveRange(new[] {element});
         }
 
         /// <summary>
@@ -637,26 +559,39 @@ namespace Bindable.Linq.Collections
         /// <param name="index">The zero-based index of the item to remove.</param>
         public void RemoveAt(int index)
         {
-            using (var recorder = this.EventPublisher.Record())
+            using (ITransaction transaction = BeginTransaction())
             {
                 TElement item = default(TElement);
-                using (this.BindableCollectionLock.Enter(this))
+                lock (BindableCollectionLock)
                 {
-                    item = this.InnerList[index];
-                    this.Remove(item, recorder);
+                    item = InnerList[index];
+                    Remove(item, transaction);
                 }
             }
         }
-        
+
+        /// <summary>
+        /// Removes the first occurrence of a specific object from the <see cref="T:BindableCollection`1"/>.
+        /// </summary>
+        /// <param name="element">The element.</param>
+        /// <param name="transaction">The transaction.</param>
+        /// <returns>
+        /// true if <paramref name="item"/> was successfully removed from the <see cref="T:BindableCollection`1"/>; otherwise, false. This method also returns false if <paramref name="item"/> is not found in the original <see cref="T:BindableCollection`1"/>.
+        /// </returns>
+        public bool Remove(TElement element, ITransaction transaction)
+        {
+            return RemoveRange(new[] {element}, transaction);
+        }
+
         /// <summary>
         /// Removes a range of items from the <see cref="T:BindableCollection`1"/>.
         /// </summary>
         /// <param name="range">The items to remove.</param>
         public bool RemoveRange(IEnumerable<TElement> range)
         {
-            using (var recorder = this.EventPublisher.Record())
+            using (ITransaction transaction = BeginTransaction())
             {
-                return this.RemoveRange(range, recorder);
+                return RemoveRange(range, transaction);
             }
         }
 
@@ -664,63 +599,59 @@ namespace Bindable.Linq.Collections
         /// Removes a range of items from the <see cref="T:BindableCollection`1"/>.
         /// </summary>
         /// <param name="range">The items to remove.</param>
-        /// <param name="recorder">The recorder.</param>
+        /// <param name="transaction">The transaction.</param>
         /// <returns></returns>
-        public bool RemoveRange(IEnumerable<TElement> range, ICollectionChangedRecorder<TElement> recorder)
+        public bool RemoveRange(IEnumerable<TElement> range, ITransaction transaction)
         {
             bool result = false;
             List<TElement> itemsToRemove = range.EnumerateSafely();
 
-            using (this.BindableCollectionLock.Enter(this))
+            lock (BindableCollectionLock)
             {
                 foreach (TElement element in itemsToRemove)
                 {
-                    int index = this.IndexOf(element);
+                    int index = IndexOf(element);
                     if (index >= 0)
                     {
-                        this.InnerList.RemoveAt(index);
+                        InnerList.RemoveAt(index);
                         _snapshotManager.Invalidate();
-                        recorder.RecordRemove(element, index);
+                        transaction.LogRemoveEvent(element, index);
                         result = true;
                     }
                 }
             }
             return result;
         }
-
         #endregion
 
         #region Clear
-
         /// <summary>
         /// Removes all items from the <see cref="T:BindableCollection`1"/>.
         /// </summary>
         public void Clear()
         {
-            using (var recorder = this.EventPublisher.Record())
+            using (ITransaction transaction = BeginTransaction())
             {
-                this.Clear(recorder);
+                Clear(transaction);
             }
         }
 
         /// <summary>
         /// Removes all items from the <see cref="T:BindableCollection`1"/>.
         /// </summary>
-        /// <param name="recorder">The recorder.</param>
-        public void Clear(ICollectionChangedRecorder<TElement> recorder)
+        /// <param name="transaction">The transaction.</param>
+        public void Clear(ITransaction transaction)
         {
-            using (this.BindableCollectionLock.Enter(this))
+            lock (BindableCollectionLock)
             {
-                this.InnerList.Clear();
+                InnerList.Clear();
                 _snapshotManager.Invalidate();
-                recorder.RecordReset();
+                transaction.LogResetEvent();
             }
         }
-
         #endregion
 
         #region GetEnumerator
-
         /// <summary>
         /// Returns an enumerator that iterates through the <see cref="T:BindableCollection`1"/>. The 
         /// enumerator returned is a special kind of enumerator that allows the collection to be 
@@ -731,7 +662,7 @@ namespace Bindable.Linq.Collections
         /// </returns>
         public IEnumerator<TElement> GetEnumerator()
         {
-            using (this.BindableCollectionLock.Enter(this))
+            lock (BindableCollectionLock)
             {
                 return _snapshotManager.CreateEnumerator();
             }
@@ -753,18 +684,45 @@ namespace Bindable.Linq.Collections
         /// </summary>
         private List<TElement> RebuildSnapshotCallback()
         {
-            using (this.BindableCollectionLock.Enter(this))
+            lock (BindableCollectionLock)
             {
-                List<TElement> snapshot = new List<TElement>(this.InnerList.Count);
-                snapshot.AddRange(this.InnerList);
+                var snapshot = new List<TElement>(InnerList.Count);
+                snapshot.AddRange(InnerList);
                 return snapshot;
             }
         }
+        #endregion
 
+        #region IBindableCollection<TElement> Members
+        /// <summary>
+        /// Occurs when the collection changes.
+        /// </summary>
+        /// <remarks>Warning: No locks should be held when raising this event.</remarks>
+        public event NotifyCollectionChangedEventHandler CollectionChanged;
+
+        /// <summary>
+        /// Occurs when a property value changes.
+        /// </summary>
+        /// <remarks>Warning: No locks should be held when raising this event.</remarks>
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        /// <summary>
+        /// Gets the number of elements contained in the <see cref="T:BindableCollection`1"/>.
+        /// </summary>
+        /// <value></value>
+        /// <returns>The number of elements contained in the <see cref="T:BindableCollection`1"/>.</returns>
+        public int Count
+        {
+            get { return InnerList.Count; }
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose() {}
         #endregion
 
         #region IList Members
-
         /// <summary>
         /// Adds an item to the <see cref="T:System.Collections.IList"/>.
         /// </summary>
@@ -775,12 +733,12 @@ namespace Bindable.Linq.Collections
         /// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.IList"/> is read-only.-or- The <see cref="T:System.Collections.IList"/> has a fixed size. </exception>
         public int Add(object value)
         {
-            using (var recorder = this.EventPublisher.Record())
+            using (ITransaction transaction = BeginTransaction())
             {
-                using (this.BindableCollectionLock.Enter(this))
+                lock (BindableCollectionLock)
                 {
-                    this.Add((TElement)value, recorder);
-                    return this.IndexOf((TElement)value);
+                    Add((TElement) value, transaction);
+                    return IndexOf((TElement) value);
                 }
             }
         }
@@ -794,19 +752,7 @@ namespace Bindable.Linq.Collections
         /// </returns>
         public bool Contains(object value)
         {
-            return this.Contains((TElement)value);
-        }
-
-        /// <summary>
-        /// Determines whether the <see cref="T:BindableCollection`1"/> contains a specific value.
-        /// </summary>
-        /// <param name="item">The object to locate in the <see cref="T:BindableCollection`1"/>.</param>
-        /// <returns>
-        /// true if <paramref name="item"/> is found in the <see cref="T:BindableCollection`1"/>; otherwise, false.
-        /// </returns>
-        public bool Contains(TElement item)
-        {
-            return this.IndexOf(item) >= 0;
+            return Contains((TElement) value);
         }
 
         /// <summary>
@@ -818,33 +764,7 @@ namespace Bindable.Linq.Collections
         /// </returns>
         public int IndexOf(object value)
         {
-            return this.IndexOf((TElement)value);
-        }
-
-        /// <summary>
-        /// Determines the index of a specific item in the <see cref="T:BindableCollection`1"/>.
-        /// </summary>
-        /// <param name="item">The object to locate in the <see cref="T:BindableCollection`1"/>.</param>
-        /// <returns>
-        /// The index of <paramref name="item"/> if found in the list; otherwise, -1.
-        /// </returns>
-        public int IndexOf(TElement item)
-        {
-            using (this.BindableCollectionLock.Enter(this))
-            {
-                // List<T>.IndexOf(item) underneath uses object.Equals(). We want to use object.ReferenceEquals() so that 
-                // overloaded Equals operations do not have an effect. 
-                int index = -1;
-                for (int i = 0; i < this.InnerList.Count; i++)
-                {
-                    if (_comparer.Equals(item, this.InnerList[i]))
-                    {
-                        index = i;
-                        break;
-                    }
-                }
-                return index;
-            }
+            return IndexOf((TElement) value);
         }
 
         /// <summary>
@@ -859,7 +779,7 @@ namespace Bindable.Linq.Collections
         /// 	<paramref name="value"/> is null reference in the <see cref="T:System.Collections.IList"/>.</exception>
         public void Insert(int index, object value)
         {
-            this.Insert(index, (TElement)value);
+            Insert(index, (TElement) value);
         }
 
         /// <summary>
@@ -879,17 +799,7 @@ namespace Bindable.Linq.Collections
         /// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.IList"/> is read-only.-or- The <see cref="T:System.Collections.IList"/> has a fixed size. </exception>
         public void Remove(object value)
         {
-            this.Remove((TElement)value);
-        }
-
-        /// <summary>
-        /// Gets a value indicating whether the <see cref="T:BindableCollection`1"/> is read-only.
-        /// </summary>
-        /// <value></value>
-        /// <returns>true if the <see cref="T:BindableCollection`1"/> is read-only; otherwise, false.</returns>
-        public bool IsReadOnly
-        {
-            get { return false; }
+            Remove((TElement) value);
         }
 
         /// <summary>
@@ -898,14 +808,8 @@ namespace Bindable.Linq.Collections
         /// <value></value>
         object IList.this[int index]
         {
-            get
-            {
-                return this[index];
-            }
-            set
-            {
-                this[index] = (TElement)value;
-            }
+            get { return this[index]; }
+            set { this[index] = (TElement) value; }
         }
 
         /// <summary>
@@ -942,16 +846,80 @@ namespace Bindable.Linq.Collections
         /// <exception cref="T:System.ArgumentException">The type of the source <see cref="T:System.Collections.ICollection"/> cannot be cast automatically to the type of the destination <paramref name="array"/>. </exception>
         public void CopyTo(Array array, int index)
         {
-            object[] underlyingArray = (object[])array;
-            using (this.BindableCollectionLock.Enter(this))
+            var underlyingArray = (object[]) array;
+            lock (BindableCollectionLock)
             {
-                for (int arrayIndex = 0, innerIndex = index;
-                    innerIndex < this.InnerList.Count && arrayIndex < array.Length;
-                    innerIndex++, arrayIndex++)
+                for (int arrayIndex = 0, innerIndex = index; innerIndex < InnerList.Count && arrayIndex < array.Length; innerIndex++, arrayIndex++)
                 {
-                    array.SetValue(this.InnerList[innerIndex], arrayIndex);
+                    array.SetValue(InnerList[innerIndex], arrayIndex);
                 }
             }
+        }
+        #endregion
+
+        #region IList<TElement> Members
+        /// <summary>
+        /// Gets or sets the item at the specified index.
+        /// </summary>
+        /// <value>The item at the specified index.</value>
+        public TElement this[int index]
+        {
+            get
+            {
+                lock (BindableCollectionLock)
+                {
+                    return InnerList[index];
+                }
+            }
+            set { Replace(InnerList[index], value); }
+        }
+
+        /// <summary>
+        /// Determines whether the <see cref="T:BindableCollection`1"/> contains a specific value.
+        /// </summary>
+        /// <param name="item">The object to locate in the <see cref="T:BindableCollection`1"/>.</param>
+        /// <returns>
+        /// true if <paramref name="item"/> is found in the <see cref="T:BindableCollection`1"/>; otherwise, false.
+        /// </returns>
+        public bool Contains(TElement item)
+        {
+            return IndexOf(item) >= 0;
+        }
+
+        /// <summary>
+        /// Determines the index of a specific item in the <see cref="T:BindableCollection`1"/>.
+        /// </summary>
+        /// <param name="item">The object to locate in the <see cref="T:BindableCollection`1"/>.</param>
+        /// <returns>
+        /// The index of <paramref name="item"/> if found in the list; otherwise, -1.
+        /// </returns>
+        public int IndexOf(TElement item)
+        {
+            lock (BindableCollectionLock)
+            {
+                // List<T>.IndexOf(item) underneath uses object.Equals(). We want to use object.ReferenceEquals() so that 
+                // overloaded Equals operations do not have an effect. 
+                int index = -1;
+                for (int i = 0; i < InnerList.Count; i++)
+                {
+                    if (_comparer.Equals(item, InnerList[i]))
+                    {
+                        index = i;
+                        break;
+                    }
+                }
+                return index;
+            }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether the <see cref="T:BindableCollection`1"/> is read-only.
+        /// </summary>
+        /// <value></value>
+        /// <returns>true if the <see cref="T:BindableCollection`1"/> is read-only; otherwise, false.</returns>
+        public bool IsReadOnly
+        {
+            get { return false; }
         }
 
         /// <summary>
@@ -961,35 +929,36 @@ namespace Bindable.Linq.Collections
         /// <param name="arrayIndex">The zero-based index in <paramref name="array"/> at which copying begins.</param>
         public void CopyTo(TElement[] array, int arrayIndex)
         {
-            using (this.BindableCollectionLock.Enter(this))
+            lock (BindableCollectionLock)
             {
-                this.InnerList.CopyTo(array, arrayIndex);
+                InnerList.CopyTo(array, arrayIndex);
             }
         }
-
-        /// <summary>
-        /// Gets the number of elements contained in the <see cref="T:BindableCollection`1"/>.
-        /// </summary>
-        /// <value></value>
-        /// <returns>The number of elements contained in the <see cref="T:BindableCollection`1"/>.</returns>
-        public int Count
-        {
-            get { return this.InnerList.Count; }
-        }
-
         #endregion
 
-        public void AddPreYieldStep(Action<TElement> step)
+        /// <summary>
+        /// Begins a transaction. Transactions can only be used by the thread controlling the 
+        /// transaction, and involve locking the current collection so that other threads may 
+        /// not access it. 
+        /// </summary>
+        public ITransaction BeginTransaction()
         {
-            _preYieldSteps.Add(step);
+            Monitor.Enter(BindableCollectionLock);
+            var transaction = new Transaction(CommitTransaction);
+            return transaction;
         }
 
         /// <summary>
-        /// Records this instance.
+        /// Commits the transaction. 
         /// </summary>
-        public ICollectionChangedRecorder<TElement> Record()
+        /// <param name="transactionLog">The transaction log.</param>
+        private void CommitTransaction(TransactionLog transactionLog)
         {
-            return this.EventPublisher.Record();
+            Monitor.Exit(BindableCollectionLock);
+            foreach (NotifyCollectionChangedEventArgs eventToRaise in transactionLog.Events)
+            {
+                OnCollectionChanged(eventToRaise);
+            }
         }
 
         /// <summary>
@@ -1000,7 +969,7 @@ namespace Bindable.Linq.Collections
         /// </returns>
         public override string ToString()
         {
-            return string.Format(CultureInfo.InvariantCulture, "BindableCollection - Count: " + this.Count);
+            return string.Format(CultureInfo.InvariantCulture, "BindableCollection - Count: " + Count);
         }
 
         /// <summary>
@@ -1009,7 +978,7 @@ namespace Bindable.Linq.Collections
         /// <param name="e">The <see cref="System.ComponentModel.PropertyChangedEventArgs"/> instance containing the event data.</param>
         protected virtual void OnPropertyChanged(PropertyChangedEventArgs e)
         {
-            PropertyChangedEventHandler handler = this.PropertyChanged;
+            PropertyChangedEventHandler handler = PropertyChanged;
             if (handler != null)
             {
                 handler(this, e);
@@ -1017,11 +986,16 @@ namespace Bindable.Linq.Collections
         }
 
         /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// Raises the <see cref="E:CollectionChanged"/> event.
         /// </summary>
-        public void Dispose()
+        /// <param name="e">The <see cref="System.Collections.Specialized.NotifyCollectionChangedEventArgs"/> instance containing the event data.</param>
+        protected virtual void OnCollectionChanged(NotifyCollectionChangedEventArgs e)
         {
-
+            NotifyCollectionChangedEventHandler handler = CollectionChanged;
+            if (handler != null)
+            {
+                handler(this, e);
+            }
         }
     }
 }

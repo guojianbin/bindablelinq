@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Collections;
+using System;
 
 namespace Bindable.Linq.Helpers
 {
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.Text;
+
     /// <summary>
     /// Contains useful extension methods used only in Bindable LINQ.
     /// </summary>
@@ -45,8 +45,7 @@ namespace Bindable.Linq.Helpers
         /// <param name="format">The format.</param>
         /// <param name="arguments">The arguments.</param>
         /// <returns></returns>
-        public static string FormatWith(this string format,
-            params object[] arguments)
+        public static string FormatWith(this string format, params object[] arguments)
         {
             return string.Format(format, arguments);
         }
@@ -60,15 +59,15 @@ namespace Bindable.Linq.Helpers
         public static List<TElement> EnumerateSafely<TElement>(this IEnumerable<TElement> elements)
         {
             Type elementsType = elements.GetType();
-            if (elementsType == typeof(List<TElement>))
+            if (elementsType == typeof (List<TElement>))
             {
-                return (List<TElement>)elements;
+                return (List<TElement>) elements;
             }
 
             List<TElement> results = null;
             if (elements is ICollection)
             {
-                results = new List<TElement>(((ICollection)elements).Count);
+                results = new List<TElement>(((ICollection) elements).Count);
             }
             else
             {
@@ -88,7 +87,7 @@ namespace Bindable.Linq.Helpers
         {
             if (enumerables != null)
             {
-                foreach (IEnumerable<TElement> enumerable in enumerables)
+                foreach (var enumerable in enumerables)
                 {
                     if (enumerable != null)
                     {
@@ -107,11 +106,10 @@ namespace Bindable.Linq.Helpers
         /// <param name="strings">The strings.</param>
         /// <param name="separator">The separator.</param>
         /// <returns></returns>
-        public static string ConcatStrings(this IEnumerable<string> strings,
-            string separator)
+        public static string ConcatStrings(this IEnumerable<string> strings, string separator)
         {
-            StringBuilder result = new StringBuilder();
-            var stringEnumerator = strings.GetEnumerator();
+            var result = new StringBuilder();
+            IEnumerator<string> stringEnumerator = strings.GetEnumerator();
             bool hasNext = stringEnumerator.MoveNext();
             while (hasNext)
             {

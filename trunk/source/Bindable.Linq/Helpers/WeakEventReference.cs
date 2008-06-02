@@ -1,7 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Bindable.Linq.Helpers
 {
@@ -16,7 +13,8 @@ namespace Bindable.Linq.Helpers
     /// For examples on how this is used, it is best to look at the unit test: 
     ///     WeakEventReferenceTests.cs
     /// </remarks>
-    internal sealed class WeakEventReference<A> : IDisposable where A : EventArgs
+    internal sealed class WeakEventReference<A> : IDisposable
+        where A : EventArgs
     {
         private readonly WeakReference _callbackReference;
         private readonly object _lock = new object();
@@ -30,6 +28,16 @@ namespace Bindable.Linq.Helpers
             _callbackReference = new WeakReference(callback, true);
         }
 
+        #region IDisposable Members
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            GC.SuppressFinalize(this);
+        }
+        #endregion
+
         /// <summary>
         /// Used as the event handler which should be subscribed to source collections.
         /// </summary>
@@ -39,20 +47,12 @@ namespace Bindable.Linq.Helpers
         {
             lock (_lock)
             {
-                EventHandler<A> callback = _callbackReference.Target as EventHandler<A>;
+                var callback = _callbackReference.Target as EventHandler<A>;
                 if (callback != null)
                 {
                     callback(sender, e);
                 }
             }
-        }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
         }
     }
 }

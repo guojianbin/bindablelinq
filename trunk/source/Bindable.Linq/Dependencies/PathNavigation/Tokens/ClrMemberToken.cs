@@ -1,18 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.ComponentModel;
-using Bindable.Linq.Helpers;
+using System;
 
 namespace Bindable.Linq.Dependencies.PathNavigation.Tokens
 {
+    using System.ComponentModel;
+    using Helpers;
+
     /// <summary>
     /// A property monitor for CLR based properties.
     /// </summary>
     internal sealed class ClrMemberToken : MemberToken
     {
-        private EventHandler<PropertyChangedEventArgs> _actualHandler;
+        private readonly EventHandler<PropertyChangedEventArgs> _actualHandler;
         private readonly WeakEventReference<PropertyChangedEventArgs> _weakHandler;
         private readonly PropertyChangedEventHandler _weakHandlerWrapper;
         private IPropertyReader<object> _propertyReader;
@@ -30,9 +28,9 @@ namespace Bindable.Linq.Dependencies.PathNavigation.Tokens
         {
             _actualHandler = CurrentTarget_PropertyChanged;
             _weakHandler = new WeakEventReference<PropertyChangedEventArgs>(_actualHandler);
-            _weakHandlerWrapper = new PropertyChangedEventHandler(_weakHandler.WeakEventHandler);
+            _weakHandlerWrapper = _weakHandler.WeakEventHandler;
 
-            this.AcquireTarget(objectToObserve);
+            AcquireTarget(objectToObserve);
         }
 
         /// <summary>
@@ -40,7 +38,7 @@ namespace Bindable.Linq.Dependencies.PathNavigation.Tokens
         /// </summary>
         protected override void DiscardCurrentTargetOverride()
         {
-            INotifyPropertyChanged currentTarget = this.CurrentTarget as INotifyPropertyChanged;
+            var currentTarget = CurrentTarget as INotifyPropertyChanged;
             if (currentTarget != null)
             {
                 currentTarget.PropertyChanged -= _weakHandlerWrapper;
@@ -52,12 +50,12 @@ namespace Bindable.Linq.Dependencies.PathNavigation.Tokens
         /// </summary>
         protected override void MonitorCurrentTargetOverride()
         {
-            INotifyPropertyChanged currentTarget = this.CurrentTarget as INotifyPropertyChanged;
+            var currentTarget = CurrentTarget as INotifyPropertyChanged;
             if (currentTarget != null)
             {
                 currentTarget.PropertyChanged += _weakHandlerWrapper;
             }
-            _propertyReader = PropertyReaderFactory.Create<object>(this.CurrentTarget.GetType(), this.PropertyName);
+            _propertyReader = PropertyReaderFactory.Create<object>(CurrentTarget.GetType(), PropertyName);
         }
 
         /// <summary>
@@ -68,19 +66,19 @@ namespace Bindable.Linq.Dependencies.PathNavigation.Tokens
         {
             if (_propertyReader != null)
             {
-                return _propertyReader.GetValue(this.CurrentTarget);
+                return _propertyReader.GetValue(CurrentTarget);
             }
             return null;
         }
 
         private void CurrentTarget_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == this.PropertyName)
+            if (e.PropertyName == PropertyName)
             {
-                this.HandleCurrentTargetPropertyValueChanged();
+                HandleCurrentTargetPropertyValueChanged();
             }
         }
-        
+
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>

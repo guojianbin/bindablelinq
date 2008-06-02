@@ -1,29 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using Bindable.Linq.Collections;
-using Bindable.Linq.Dependencies.PathNavigation;
-using Bindable.Linq.Dependencies.PathNavigation.Tokens;
-using Bindable.Linq.Helpers;
+using System;
 
 namespace Bindable.Linq.Dependencies.Instances
 {
+    using System.Collections.Generic;
+    using System.ComponentModel;
+    using Bindable.Linq.Dependencies.PathNavigation.Tokens;
+    using Collections;
+    using Helpers;
+    using PathNavigation;
+
     /// <summary>
     /// Represents an property dependency applied over a collection of items.
     /// </summary>
     /// <typeparam name="TElement">The type of the element.</typeparam>
     public sealed class ItemDependency<TElement> : IDependency
     {
-        private readonly LockScope _dependencyLock = new LockScope();
+        private readonly ElementActioner<TElement> _actioner;
+        private readonly object _dependencyLock = new object();
         private readonly IPathNavigator _pathNavigator;
-        private Dictionary<TElement, IToken> _sourceElementObservers;
-        private IBindableCollectionInterceptor<TElement> _sourceElements;
-        private ElementActioner<TElement> _actioner;
+        private readonly string _propertyPath;
+        private readonly Dictionary<TElement, IToken> _sourceElementObservers;
         private Action<object, string> _reevaluateElementCallback;
-        private string _propertyPath;
+        private IBindableCollectionInterceptor<TElement> _sourceElements;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ItemDependency&lt;TElement&gt;"/> class.
@@ -37,20 +35,43 @@ namespace Bindable.Linq.Dependencies.Instances
             _sourceElementObservers = new Dictionary<TElement, IToken>();
             _propertyPath = propertyPath;
             _sourceElements = sourceElements;
-            _actioner = new ElementActioner<TElement>(
-                sourceElements,
-                addedItem => AddItem(addedItem),
-                removedItem => RemoveItem(removedItem));
+            _actioner = new ElementActioner<TElement>(sourceElements, addedItem => AddItem(addedItem), removedItem => RemoveItem(removedItem));
         }
 
         /// <summary>
         /// Gets the dependency lock.
         /// </summary>
         /// <value>The dependency lock.</value>
-        private LockScope DependencyLock
+        private object DependencyLock
         {
             get { return _dependencyLock; }
         }
+
+        #region IDependency Members
+        /// <summary>
+        /// Sets the callback action the dependency should invoke when the dependent object has a property that changes.
+        /// </summary>
+        /// <param name="action">The callback action to invoke.</param>
+        public void SetReevaluateElementCallback(Action<object, string> action)
+        {
+            _reevaluateElementCallback = action;
+        }
+
+        /// <summary>
+        /// Sets the callback action the dependency should invoke when the dependent object changes, signalling the
+        /// whole collection should re-evaluate.
+        /// </summary>
+        /// <param name="action">The callback action to invoke.</param>
+        public void SetReevaluateCallback(Action<object> action) {}
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            _actioner.Dispose();
+        }
+        #endregion
 
         /// <summary>
         /// Adds the item.
@@ -58,7 +79,7 @@ namespace Bindable.Linq.Dependencies.Instances
         /// <param name="addedItem">The added item.</param>
         private void AddItem(TElement addedItem)
         {
-            using (this.DependencyLock.Enter(this))
+            lock (DependencyLock)
             {
                 if (addedItem is INotifyPropertyChanged && !_sourceElementObservers.ContainsKey(addedItem))
                 {
@@ -73,7 +94,7 @@ namespace Bindable.Linq.Dependencies.Instances
         /// <param name="removedItem">The removed item.</param>
         private void RemoveItem(TElement removedItem)
         {
-            using (this.DependencyLock.Enter(this))
+            lock (DependencyLock)
             {
                 if (_sourceElementObservers.ContainsKey(removedItem))
                 {
@@ -99,33 +120,6 @@ namespace Bindable.Linq.Dependencies.Instances
             {
                 action(element, propertyPath);
             }
-        }
-
-        /// <summary>
-        /// Sets the callback action the dependency should invoke when the dependent object has a property that changes.
-        /// </summary>
-        /// <param name="action">The callback action to invoke.</param>
-        public void SetReevaluateElementCallback(Action<object, string> action)
-        {
-            _reevaluateElementCallback = action;
-        }
-
-        /// <summary>
-        /// Sets the callback action the dependency should invoke when the dependent object changes, signalling the
-        /// whole collection should re-evaluate.
-        /// </summary>
-        /// <param name="action">The callback action to invoke.</param>
-        public void SetReevaluateCallback(Action<object> action)
-        {
-
-        }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            _actioner.Dispose();
         }
     }
 }

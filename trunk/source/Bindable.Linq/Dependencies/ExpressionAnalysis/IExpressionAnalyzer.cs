@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
+using System;
 
 namespace Bindable.Linq.Dependencies.ExpressionAnalysis
 {
+    using System.Collections.Generic;
+    using System.Linq.Expressions;
+
     /// <summary>
     /// Implemented by classes that can parse LINQ expression trees and extract dependencies from them.
     /// </summary>

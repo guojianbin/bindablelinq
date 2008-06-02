@@ -1,18 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows;
-using System.Reflection;
-using Bindable.Linq.Dependencies.PathNavigation.Tokens;
+using System;
 
 namespace Bindable.Linq.Dependencies.PathNavigation.TokenFactories
 {
+    using System.Reflection;
+    using System.Windows;
+    using Tokens;
+
     /// <summary>
     /// A property parser for WPF Dependency Properties.
     /// </summary>
     public sealed class WpfMemberTokenFactory : ITokenFactory
     {
+        #region ITokenFactory Members
         /// <summary>
         /// Creates an appropriate property monitor for the remaining property path string on the target object.
         /// </summary>
@@ -39,13 +38,13 @@ namespace Bindable.Linq.Dependencies.PathNavigation.TokenFactories
                 }
 
                 // Look for WPF dependency properties
-                DependencyObject dependencyObject = (DependencyObject)target;
+                var dependencyObject = (DependencyObject) target;
                 if (dependencyObject != null)
                 {
                     FieldInfo field = dependencyObject.GetType().GetField(propertyName + "Property", BindingFlags.Public | BindingFlags.Static);
                     if (field != null)
                     {
-                        DependencyProperty dependencyProperty = (DependencyProperty)field.GetValue(null);
+                        var dependencyProperty = (DependencyProperty) field.GetValue(null);
                         if (dependencyProperty != null)
                         {
                             result = new WpfMemberToken(dependencyObject, dependencyProperty, propertyName, remainingPath, callback, pathNavigator);
@@ -56,5 +55,6 @@ namespace Bindable.Linq.Dependencies.PathNavigation.TokenFactories
 #endif
             return result;
         }
+        #endregion
     }
 }

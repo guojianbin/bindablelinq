@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Linq;
-using System.Text;
-using System.Diagnostics;
-using Bindable.Linq.Collections;
+using System;
 
 namespace Bindable.Linq.Helpers
 {
+    using System.Collections.Specialized;
+    using System.Linq;
+    using Collections;
+
     /// <summary>
     /// Performs actions on the elements of a collection when they are added or removed. Ensures 
     /// the action is always performed at least once. 
@@ -18,16 +16,15 @@ namespace Bindable.Linq.Helpers
     /// unhook the event handler.
     /// </remarks>
     /// <typeparam name="TElement">The type of the element.</typeparam>
-    internal sealed class ElementActioner<TElement> : 
-        IDisposable
+    internal sealed class ElementActioner<TElement> : IDisposable
     {
-        private readonly IBindableCollectionInterceptor<TElement> _collection;
+        private readonly Action<TElement> _addAction;
+        private readonly IBindableCollection<TElement> _collection;
+        private readonly BindableCollection<TElement> _copy;
         private readonly EventHandler<NotifyCollectionChangedEventArgs> _eventHandler;
+        private readonly object _object = new object();
+        private readonly Action<TElement> _removeAction;
         private readonly WeakEventReference<NotifyCollectionChangedEventArgs> _weakEventHandler;
-        private readonly LockScope _lockScope = new LockScope();
-        private Action<TElement> _addAction;
-        private Action<TElement> _removeAction;
-        private BindableCollection<TElement> _copy;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ElementActioner&lt;TElement&gt;"/> class.
@@ -35,23 +32,50 @@ namespace Bindable.Linq.Helpers
         /// <param name="collection">The collection.</param>
         /// <param name="addAction">The add action.</param>
         /// <param name="removeAction">The remove action.</param>
-        public ElementActioner(IBindableCollectionInterceptor<TElement> collection, Action<TElement> addAction, Action<TElement> removeAction)
+        public ElementActioner(IBindableCollection<TElement> collection, Action<TElement> addAction, Action<TElement> removeAction)
         {
             _addAction = addAction;
             _removeAction = removeAction;
             _collection = collection;
-            
+
             _copy = new BindableCollection<TElement>();
             _eventHandler = Collection_CollectionChanged;
             _weakEventHandler = new WeakEventReference<NotifyCollectionChangedEventArgs>(_eventHandler);
             _collection.CollectionChanged += _weakEventHandler.WeakEventHandler;
 
-            _collection.AddPreYieldStep(
-                element => { 
+            var interceptor = collection as IBindableCollectionInterceptor<TElement>;
+            if (interceptor != null)
+            {
+                interceptor.AddPreYieldStep(element =>
+                {
                     HandleElement(NotifyCollectionChangedAction.Add, element);
                     _copy.Add(element);
                 });
+            }
+            else
+            {
+                _collection.ForEach(element =>
+                {
+                    HandleElement(NotifyCollectionChangedAction.Add, element);
+                    _copy.Add(element);
+                });
+            }
         }
+
+        #region IDisposable Members
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            if (_collection != null)
+            {
+                _copy.ForEach(e => HandleElement(NotifyCollectionChangedAction.Remove, e));
+                _collection.CollectionChanged -= _weakEventHandler.WeakEventHandler;
+                _weakEventHandler.Dispose();
+            }
+        }
+        #endregion
 
         private void HandleElement(NotifyCollectionChangedAction action, TElement element)
         {
@@ -102,25 +126,17 @@ namespace Bindable.Linq.Helpers
                     _copy.ReplaceRange(e.OldItems.Cast<TElement>(), e.NewItems.Cast<TElement>());
                     break;
                 case NotifyCollectionChangedAction.Reset:
-                    _copy.ForEach(a => HandleElement(NotifyCollectionChangedAction.Remove, a));
-                    _collection.ForEach(a => HandleElement(NotifyCollectionChangedAction.Add, a));
-                    _copy.Clear();
-                    _copy.AddRange(_collection);
+                    HandleReset();
                     break;
             }
         }
 
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
+        private void HandleReset()
         {
-            if (_collection != null)
-            {
-                _copy.ForEach(e => HandleElement(NotifyCollectionChangedAction.Remove, e));
-                _collection.CollectionChanged -= _weakEventHandler.WeakEventHandler;
-                _weakEventHandler.Dispose();
-            }
+            _copy.ForEach(a => HandleElement(NotifyCollectionChangedAction.Remove, a));
+            _collection.ForEach(a => HandleElement(NotifyCollectionChangedAction.Add, a));
+            _copy.Clear();
+            _copy.AddRange(_collection);
         }
     }
 }

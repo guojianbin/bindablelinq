@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -13,6 +13,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Bindable.Linq.Samples.MessengerClient.MessengerService;
+using Bindable.Linq;
+using Bindable.Linq.Threading;
 
 namespace Bindable.Linq.Samples.MessengerClient
 {
@@ -35,11 +37,12 @@ namespace Bindable.Linq.Samples.MessengerClient
             
             _messengerService.SignIn("paul", "foo");
 
-            _contactsListBox.ItemsSource = _messengerService.Contacts.AsBindable()
-                                           .Where(c =>
-                                               c.Name.ToLower(CultureInfo.CurrentUICulture)
-                                                   .Contains(_filterTextBox.Text.ToLower(CultureInfo.CurrentUICulture)))
-                                           .OrderBy(c => c.Name);
+            _contactsListBox.ItemsSource = (from c in _messengerService.Contacts.AsBindable().Asynchronous()
+                                            where c.Name
+                                                 .ToLower(CultureInfo.CurrentUICulture)
+                                                 .Contains(_filterTextBox.Text.ToLower(CultureInfo.CurrentUICulture))
+                                            orderby c.Name
+                                            select c);
         }
     }
 }

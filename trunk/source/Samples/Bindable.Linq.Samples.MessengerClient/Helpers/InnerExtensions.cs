@@ -1,16 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System;
 
 namespace Bindable.Linq.Samples.MessengerClient.Helpers
 {
+    using System.Collections.Generic;
+    using System.Linq;
+
     /// <summary>
     /// Contains helpful extension methods used internally.
     /// </summary>
     internal static class InnerExtensions
     {
-        private static Random _random = new Random();
+        private static readonly Random _random = new Random();
 
         /// <summary>
         /// Selects a random element from a list of elements.

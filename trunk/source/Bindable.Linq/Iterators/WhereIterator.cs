@@ -1,20 +1,15 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Linq;
-using System.Text;
-using Bindable.Linq.Dependencies;
-using Bindable.Linq;
 
 namespace Bindable.Linq.Iterators
 {
+    using System.Collections.Generic;
+    using System.Linq;
+
     /// <summary>
     /// The Iterator created when a Where operation is performed.
     /// </summary>
     /// <typeparam name="TElement">The type of source item being filtered.</typeparam>
-    internal sealed class WhereIterator<TElement> : 
-        Iterator<TElement, TElement>
+    internal sealed class WhereIterator<TElement> : Iterator<TElement, TElement>
         where TElement : class
     {
         private readonly Func<TElement, bool> _predicate;
@@ -24,8 +19,8 @@ namespace Bindable.Linq.Iterators
         /// </summary>
         /// <param name="sourceCollection">The source collection.</param>
         /// <param name="predicate">The predicate.</param>
-        public WhereIterator(IBindableCollection<TElement> sourceCollection,
-            Func<TElement, bool> predicate) : base(sourceCollection)
+        public WhereIterator(IBindableCollection<TElement> sourceCollection, Func<TElement, bool> predicate)
+            : base(sourceCollection)
         {
             _predicate = predicate;
         }
@@ -35,7 +30,7 @@ namespace Bindable.Linq.Iterators
         /// </summary>
         protected override void LoadSourceCollection()
         {
-            this.ReactToAddRange(0, this.SourceCollection);
+            ReactToAddRange(0, SourceCollection);
         }
 
         /// <summary>
@@ -54,10 +49,9 @@ namespace Bindable.Linq.Iterators
         /// </summary>
         /// <param name="sourceStartingIndex">Index of the source starting.</param>
         /// <param name="addedItems">The added items.</param>
-        protected override void ReactToAddRange(int sourceStartingIndex,
-            IEnumerable<TElement> addedItems)
+        protected override void ReactToAddRange(int sourceStartingIndex, IEnumerable<TElement> addedItems)
         {
-            this.ResultCollection.AddOrInsertRange(sourceStartingIndex, addedItems.Where(this.Filter));
+            ResultCollection.AddOrInsertRange(sourceStartingIndex, addedItems.Where(Filter));
         }
 
         /// <summary>
@@ -65,10 +59,9 @@ namespace Bindable.Linq.Iterators
         /// </summary>
         /// <param name="sourceStartingIndex">Index of the source starting.</param>
         /// <param name="movedItems">The moved items.</param>
-        protected override void ReactToMoveRange(int sourceStartingIndex,
-            IEnumerable<TElement> movedItems)
+        protected override void ReactToMoveRange(int sourceStartingIndex, IEnumerable<TElement> movedItems)
         {
-            this.ResultCollection.MoveRange(sourceStartingIndex, movedItems.Where(this.Filter));
+            ResultCollection.MoveRange(sourceStartingIndex, movedItems.Where(Filter));
         }
 
         /// <summary>
@@ -77,7 +70,7 @@ namespace Bindable.Linq.Iterators
         /// <param name="removedItems">The removed items.</param>
         protected override void ReactToRemoveRange(IEnumerable<TElement> removedItems)
         {
-            this.ResultCollection.RemoveRange(removedItems);
+            ResultCollection.RemoveRange(removedItems);
         }
 
         /// <summary>
@@ -85,22 +78,21 @@ namespace Bindable.Linq.Iterators
         /// </summary>
         /// <param name="oldItems">The old items.</param>
         /// <param name="newItems">The new items.</param>
-        protected override void ReactToReplaceRange(IEnumerable<TElement> oldItems,
-            IEnumerable<TElement> newItems)
+        protected override void ReactToReplaceRange(IEnumerable<TElement> oldItems, IEnumerable<TElement> newItems)
         {
-            List<int> indexesToSkip = new List<int>();
+            var indexesToSkip = new List<int>();
 
             int relativeIndex = 0;
             foreach (TElement element in newItems)
             {
-                if (!this.Filter(element))
+                if (!Filter(element))
                 {
                     indexesToSkip.Add(relativeIndex);
                 }
                 relativeIndex++;
             }
 
-            this.ResultCollection.ReplaceRange(oldItems, newItems, indexesToSkip);
+            ResultCollection.ReplaceRange(oldItems, newItems, indexesToSkip);
         }
 
         /// <summary>
@@ -110,18 +102,18 @@ namespace Bindable.Linq.Iterators
         /// <param name="propertyName">Name of the property.</param>
         protected override void ReactToItemPropertyChanged(TElement item, string propertyName)
         {
-            if (!this.Filter(item))
+            if (!Filter(item))
             {
-                if (this.ResultCollection.Contains(item))
+                if (ResultCollection.Contains(item))
                 {
-                    this.ResultCollection.Remove(item);
+                    ResultCollection.Remove(item);
                 }
             }
             else
             {
-                if (!this.ResultCollection.Contains(item))
+                if (!ResultCollection.Contains(item))
                 {
-                    this.ResultCollection.Add(item);
+                    ResultCollection.Add(item);
                 }
             }
         }

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System;
 
 namespace Bindable.Linq.Helpers
 {
@@ -14,26 +11,21 @@ namespace Bindable.Linq.Helpers
         /// <summary>
         /// Initializes a new instance of the <see cref="LockAttemptTimeoutException"/> class.
         /// </summary>
-        public LockAttemptTimeoutException()
-        {
-        }
+        public LockAttemptTimeoutException() {}
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LockAttemptTimeoutException"/> class.
         /// </summary>
         /// <param name="message">The message.</param>
-        public LockAttemptTimeoutException(string message) : base(message)
-        {
-        }
+        public LockAttemptTimeoutException(string message)
+            : base(message) {}
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LockAttemptTimeoutException"/> class.
         /// </summary>
         /// <param name="message">The message.</param>
         /// <param name="inner">The inner.</param>
-        public LockAttemptTimeoutException(string message,
-            Exception inner) : base(message, inner)
-        {
-        }
+        public LockAttemptTimeoutException(string message, Exception inner)
+            : base(message, inner) {}
     }
 }
