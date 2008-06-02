@@ -1,5 +1,3 @@
-using System;
-
 namespace Bindable.Linq.Dependencies.ExpressionAnalysis.Extractors
 {
     using System.Collections.Generic;
@@ -24,13 +22,13 @@ namespace Bindable.Linq.Dependencies.ExpressionAnalysis.Extractors
 
             // Find the root member access expressions
             var analyser = new ExpressionFlattener(expression, ExpressionType.MemberAccess);
-            IEnumerable<Expression> memberExpressions = analyser.Expressions;
+            var memberExpressions = analyser.Expressions;
 
             // Turn each one into the appropriate dependency
-            foreach (Expression childExpression in analyser.Expressions)
+            foreach (var childExpression in analyser.Expressions)
             {
-                bool traverse = false;
-                Expression currentExpression = childExpression;
+                var traverse = false;
+                var currentExpression = childExpression;
                 string propertyPath = null;
 
                 if (childExpression is MemberExpression)
@@ -57,7 +55,7 @@ namespace Bindable.Linq.Dependencies.ExpressionAnalysis.Extractors
 
                 if (currentExpression != null)
                 {
-                    IDependencyDefinition dependency = ExtractFromRoot(currentExpression, propertyPath);
+                    var dependency = ExtractFromRoot(currentExpression, propertyPath);
                     if (dependency != null)
                     {
                         results.Add(dependency);

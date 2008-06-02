@@ -1,12 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Bindable.Linq.Aggregators.Numerics;
-using Bindable.Linq;
-
 namespace Bindable.Linq.Aggregators
 {
+    using Numerics;
+
     /// <summary>
     /// Aggregates a collection of numeric values into a bindable result, which will be updated when the source
     /// collection changes.
@@ -22,8 +17,8 @@ namespace Bindable.Linq.Aggregators
         /// </summary>
         /// <param name="sourceCollection">The source collection.</param>
         /// <param name="numericHelper">A numeric helper.</param>
-        public MinAggregator(IBindableCollection<TValue> sourceCollection,
-            INumeric<TValue, TAverageResult> numericHelper) : base(sourceCollection)
+        public MinAggregator(IBindableCollection<TValue> sourceCollection, INumeric<TValue, TAverageResult> numericHelper)
+            : base(sourceCollection)
         {
             _numericHelper = numericHelper;
         }
@@ -34,7 +29,7 @@ namespace Bindable.Linq.Aggregators
         /// </summary>
         protected override void AggregateOverride()
         {
-            this.Current = _numericHelper.Min(this.SourceCollection);
+            Current = _numericHelper.Min(SourceCollection);
         }
     }
 }

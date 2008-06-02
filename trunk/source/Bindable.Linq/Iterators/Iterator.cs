@@ -128,7 +128,7 @@ namespace Bindable.Linq.Iterators
             _sourceCollectionChangedObserver.Dispose();
             lock (IteratorLock)
             {
-                foreach (IDependency dependency in _dependencies)
+                foreach (var dependency in _dependencies)
                 {
                     dependency.Dispose();
                 }
@@ -144,7 +144,7 @@ namespace Bindable.Linq.Iterators
         {
             get
             {
-                bool loading = IsLoadingState.IsWithin;
+                var loading = IsLoadingState.IsWithin;
                 if (!loading)
                 {
                     var loadable = SourceCollection as ILoadable;
@@ -201,7 +201,7 @@ namespace Bindable.Linq.Iterators
         {
             get
             {
-                IBindingConfiguration result = BindingConfigurations.Default;
+                var result = BindingConfigurations.Default;
                 if (SourceCollection is IConfigurable)
                 {
                     result = ((IConfigurable) SourceCollection).Configuration;
@@ -228,11 +228,11 @@ namespace Bindable.Linq.Iterators
         public void Refresh()
         {
             // First, find out whether or not the source collection we have can be refreshed.
-            bool isRefreshable = true;
-            bool alreadyLoaded = false;
+            var isRefreshable = true;
+            var alreadyLoaded = false;
             lock (IteratorLock)
             {
-                LoadState loadState = SourceCollectionState;
+                var loadState = SourceCollectionState;
                 if (loadState == LoadState.EvenIfLoaded)
                 {
                     alreadyLoaded = true;
@@ -283,7 +283,7 @@ namespace Bindable.Linq.Iterators
             {
                 return;
             }
-            IDependency dependency = definition.ConstructForCollection(SourceCollection, Configuration.CreatePathNavigator());
+            var dependency = definition.ConstructForCollection(SourceCollection, Configuration.CreatePathNavigator());
             dependency.SetReevaluateElementCallback(((element, propertyName) => ReactToItemPropertyChanged((TSource) element, propertyName)));
             dependency.SetReevaluateCallback(((element) => Reset()));
 
@@ -502,7 +502,7 @@ namespace Bindable.Linq.Iterators
         {
             using (CollectionChangedSuspendedState.Enter())
             {
-                bool performLoad = false;
+                var performLoad = false;
                 lock (IteratorLock)
                 {
                     if (loadState == null || loadState == SourceCollectionState)
@@ -582,7 +582,7 @@ namespace Bindable.Linq.Iterators
         {
             // We do not handle CollectionChanged events from sources that are not loaded yet. 
             // Check whether this is a valid source collection.
-            LoadState currentState = SourceCollectionState;
+            var currentState = SourceCollectionState;
             if (sender != SourceCollection || currentState == LoadState.IfNotAlreadyLoaded)
             {
                 return;
@@ -652,7 +652,7 @@ namespace Bindable.Linq.Iterators
             // when resetting the collection.
             if (!CollectionChangedSuspendedState.IsWithin)
             {
-                NotifyCollectionChangedEventHandler handler = CollectionChanged;
+                var handler = CollectionChanged;
                 if (handler != null)
                 {
                     handler(this, e);
@@ -668,7 +668,7 @@ namespace Bindable.Linq.Iterators
         /// <remarks>Warning: No locks should be held when invoking this method.</remarks>
         protected virtual void OnPropertyChanged(PropertyChangedEventArgs e)
         {
-            PropertyChangedEventHandler handler = PropertyChanged;
+            var handler = PropertyChanged;
             if (handler != null)
             {
                 handler(this, e);

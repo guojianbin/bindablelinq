@@ -1,7 +1,6 @@
-using System;
-
 namespace Bindable.Linq.Dependencies.PathNavigation.Tokens
 {
+    using System;
     using System.Reflection;
     using System.Windows;
 
@@ -45,10 +44,10 @@ namespace Bindable.Linq.Dependencies.PathNavigation.Tokens
                 //    dpd.RemoveValueChanged(currentTarget, CurrentTarget_PropertyChanged);
                 //}
 
-                EventInfo eventInfo = CurrentTarget.GetType().GetEvent(PropertyName + "Changed");
+                var eventInfo = CurrentTarget.GetType().GetEvent(PropertyName + "Changed");
                 if (eventInfo != null)
                 {
-                    MethodInfo removeMethod = eventInfo.GetRemoveMethod();
+                    var removeMethod = eventInfo.GetRemoveMethod();
                     if (removeMethod != null)
                     {
                         removeMethod.Invoke(CurrentTarget, new object[] {_actualHandler});
@@ -71,15 +70,15 @@ namespace Bindable.Linq.Dependencies.PathNavigation.Tokens
                 //    dpd.AddValueChanged(currentTarget, CurrentTarget_PropertyChanged);
                 //}
 
-                EventInfo eventInfo = CurrentTarget.GetType().GetEvent(PropertyName + "Changed");
+                var eventInfo = CurrentTarget.GetType().GetEvent(PropertyName + "Changed");
                 if (eventInfo != null)
                 {
-                    MethodInfo addMethod = eventInfo.GetAddMethod();
+                    var addMethod = eventInfo.GetAddMethod();
                     if (addMethod != null)
                     {
-                        ParameterInfo pi = addMethod.GetParameters()[0];
+                        var pi = addMethod.GetParameters()[0];
 
-                        Delegate d = Delegate.CreateDelegate(pi.ParameterType, this, GetType().GetMethod("CurrentTarget_PropertyChanged", BindingFlags.Public | BindingFlags.Instance));
+                        var d = Delegate.CreateDelegate(pi.ParameterType, this, GetType().GetMethod("CurrentTarget_PropertyChanged", BindingFlags.Public | BindingFlags.Instance));
                         addMethod.Invoke(CurrentTarget, new object[] {d});
                     }
                 }

@@ -1,7 +1,7 @@
-using System;
-
 namespace Bindable.Linq.Threading
 {
+    using System;
+
     /// <summary>
     /// Provides a wrapper around the process of dispatching actions onto 
     /// different threads, primarily for unit testing.

@@ -1,16 +1,12 @@
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-
 namespace Bindable.Linq.Samples.PizzaHaven.Domain
 {
+    using System.Collections.Generic;
+
     public class Pizza
     {
-        private string _name;
-        private decimal _basePrice;
-        private List<Topping> _availableToppings;
+        private readonly List<Topping> _availableToppings;
+        private readonly decimal _basePrice;
+        private readonly string _name;
 
         public Pizza(string name, decimal basePrice, params Topping[] availableToppings)
         {

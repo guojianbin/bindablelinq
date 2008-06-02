@@ -1,13 +1,12 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using Bindable.Linq.Dependencies.Definitions;
-
 namespace Bindable.Linq.Dependencies.ExpressionAnalysis.Extractors
 {
+    using System.ComponentModel;
+    using System.Linq.Expressions;
+    using Definitions;
+
+    /// <summary>
+    /// A dependency extractor that finds dependencies on external resources. 
+    /// </summary>
     internal sealed class ExternalDependencyExtractor : DependencyExtractor
     {
         /// <summary>
@@ -21,7 +20,7 @@ namespace Bindable.Linq.Dependencies.ExpressionAnalysis.Extractors
             IDependencyDefinition result = null;
             if (rootExpression is ConstantExpression)
             {
-                ConstantExpression constantExpression = (ConstantExpression) rootExpression;
+                var constantExpression = (ConstantExpression) rootExpression;
                 if (propertyPath != null || (propertyPath == null && constantExpression.Value is INotifyPropertyChanged))
                 {
                     result = new ExternalDependencyDefinition(propertyPath, constantExpression.Value);

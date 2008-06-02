@@ -1,11 +1,10 @@
-using System;
-using System.Linq;
-using NUnit.Framework;
-using Bindable.Linq.Tests.TestHelpers;
-using Bindable.Linq.Tests.TestObjectModel;
-
 namespace Bindable.Linq.Tests.Behaviour.Iterators
 {
+    using System.Linq;
+    using Bindable.Linq;
+    using NUnit.Framework;
+    using TestHelpers;
+    using TestObjectModel;
 
     [TestFixture]
     public class SelectBehaviour : TestFixture
@@ -13,13 +12,7 @@ namespace Bindable.Linq.Tests.Behaviour.Iterators
         [Test]
         public void SelectIteratorAddMultipleItemsAnonymousProjectionAfterInitialize()
         {
-            Given.Collection(Mike, Tom, Jack)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new {Summary = c.Name}))
-                .AndLinqEquivalent(inputs => inputs.Select(c => new {Summary = c.Name}))
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WhenLoaded()
-                .ThenAdd(John, Mick, Simon).ExpectEvent(Add.WithNewItemCount(3).WithNewIndex(3))
-                .AndExpectFinalCountOf(6);
+            Given.Collection(Mike, Tom, Jack).WithSyncLinqQuery(inputs => inputs.AsBindable().Select(c => new {Summary = c.Name})).AndLinqEquivalent(inputs => inputs.Select(c => new {Summary = c.Name})).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WhenLoaded().ThenAdd(John, Mick, Simon).ExpectEvent(Add.WithNewItemCount(3).WithNewIndex(3)).AndExpectFinalCountOf(6);
         }
 
         [Test]

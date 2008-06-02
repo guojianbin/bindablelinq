@@ -1,25 +1,25 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.ComponentModel;
-using System.Linq.Expressions;
-using System.Windows;
-using System.Windows.Threading;
-using Bindable.Linq.Adapters;
-using Bindable.Linq.Aggregators;
-using Bindable.Linq.Aggregators.Numerics;
-using Bindable.Linq.Collections;
-using Bindable.Linq.Configuration;
-using Bindable.Linq.Dependencies;
-using Bindable.Linq.Dependencies.Definitions;
-using Bindable.Linq.Helpers;
-using Bindable.Linq.Iterators;
-using Bindable.Linq.Operators;
-using Bindable.Linq.Threading;
-
 namespace Bindable.Linq
 {
+    using System;
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.Collections.Specialized;
+    using System.ComponentModel;
+    using System.Linq.Expressions;
+    using System.Windows;
+    using System.Windows.Threading;
+    using Adapters;
+    using Aggregators;
+    using Bindable.Linq.Aggregators.Numerics;
+    using Bindable.Linq.Dependencies.Definitions;
+    using Collections;
+    using Configuration;
+    using Dependencies;
+    using Helpers;
+    using Iterators;
+    using Operators;
+    using Threading;
+
     /// <summary>
     /// This class contains all of the extension method implementations provided by Bindable LINQ. 
     /// </summary>
@@ -77,7 +77,7 @@ namespace Bindable.Linq
         /// <exception cref="T:ArgumentNullException"><paramref name="source"/> or <paramref name="selector"/> is null.</exception>
         public static IBindableCollection<TSource> AsBindable<TSource>(this IEnumerable<TSource> source, IBindingConfiguration bindingConfiguration) where TSource : class
         {
-            return ((IEnumerable) source).AsBindable<TSource>(bindingConfiguration);
+            return ((IEnumerable)source).AsBindable<TSource>(bindingConfiguration);
         }
 
         /// <summary>
@@ -91,7 +91,7 @@ namespace Bindable.Linq
         /// <exception cref="T:ArgumentNullException"><paramref name="source"/> or <paramref name="selector"/> is null.</exception>
         public static IBindableCollection<TSource> AsBindable<TSource>(this IEnumerable<TSource> source) where TSource : class
         {
-            return ((IEnumerable) source).AsBindable<TSource>();
+            return ((IEnumerable)source).AsBindable<TSource>();
         }
 
         /// <summary>
@@ -104,10 +104,12 @@ namespace Bindable.Linq
         /// An <see cref="T:ISyncLinqCollection`1"/> containing the items.
         /// </returns>
         /// <exception cref="T:ArgumentNullException"><paramref name="source"/> or <paramref name="selector"/> is null.</exception>
-        public static IBindableQuery<TResult> AsBindable<TSource, TResult>(this IEnumerable<TSource> source) where TResult : TSource where TSource : class
+        public static IBindableQuery<TResult> AsBindable<TSource, TResult>(this IEnumerable<TSource> source)
+            where TResult : TSource
+            where TSource : class
         {
             source.ShouldNotBeNull("source");
-            return new SelectIterator<TSource, TResult>(source.AsBindable(), i => (TResult) i);
+            return new SelectIterator<TSource, TResult>(source.AsBindable(), i => (TResult)i);
         }
         #endregion
 
@@ -298,7 +300,9 @@ namespace Bindable.Linq
         /// <typeparam name="TElement">The type of the elements in the <see cref="T:System.Linq.IGrouping`2" />.</typeparam>
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="source" /> or <paramref name="keySelector" /> or <paramref name="elementSelector" /> is null.</exception>
-        public static IBindableQuery<IBindableGrouping<TKey, TElement>> GroupBy<TSource, TKey, TElement>(this IBindableCollection<TSource> source, Expression<Func<TSource, TKey>> keySelector, Expression<Func<TSource, TElement>> elementSelector) where TSource : class where TElement : class
+        public static IBindableQuery<IBindableGrouping<TKey, TElement>> GroupBy<TSource, TKey, TElement>(this IBindableCollection<TSource> source, Expression<Func<TSource, TKey>> keySelector, Expression<Func<TSource, TElement>> elementSelector)
+            where TSource : class
+            where TElement : class
         {
             return source.GroupBy(keySelector, elementSelector, null);
         }
@@ -311,7 +315,9 @@ namespace Bindable.Linq
         /// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
         /// <typeparam name="TKey">The type of the key returned by <paramref name="keySelector" />.</typeparam>
         /// <typeparam name="TResult">The type of the result value returned by <paramref name="resultSelector" />.</typeparam>
-        public static IBindableQuery<TResult> GroupBy<TSource, TKey, TResult>(this IBindableCollection<TSource> source, Expression<Func<TSource, TKey>> keySelector, Expression<Func<TKey, IBindableCollection<TSource>, TResult>> resultSelector) where TSource : class where TResult : class
+        public static IBindableQuery<TResult> GroupBy<TSource, TKey, TResult>(this IBindableCollection<TSource> source, Expression<Func<TSource, TKey>> keySelector, Expression<Func<TKey, IBindableCollection<TSource>, TResult>> resultSelector)
+            where TSource : class
+            where TResult : class
         {
             return source.GroupBy(keySelector, s => s, new DefaultComparer<TKey>()).Into(resultSelector);
         }
@@ -327,7 +333,9 @@ namespace Bindable.Linq
         /// <typeparam name="TElement">The type of the elements in the <see cref="T:System.Linq.IGrouping`2" />.</typeparam>
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="source" /> or <paramref name="keySelector" /> or <paramref name="elementSelector" /> is null.</exception>
-        public static IBindableQuery<IBindableGrouping<TKey, TElement>> GroupBy<TSource, TKey, TElement>(this IBindableCollection<TSource> source, Expression<Func<TSource, TKey>> keySelector, Expression<Func<TSource, TElement>> elementSelector, IEqualityComparer<TKey> comparer) where TSource : class where TElement : class
+        public static IBindableQuery<IBindableGrouping<TKey, TElement>> GroupBy<TSource, TKey, TElement>(this IBindableCollection<TSource> source, Expression<Func<TSource, TKey>> keySelector, Expression<Func<TSource, TElement>> elementSelector, IEqualityComparer<TKey> comparer)
+            where TSource : class
+            where TElement : class
         {
             source.ShouldNotBeNull("source");
             keySelector.ShouldNotBeNull("keySelector");
@@ -345,7 +353,10 @@ namespace Bindable.Linq
         /// <typeparam name="TKey">The type of the key returned by <paramref name="keySelector" />.</typeparam>
         /// <typeparam name="TElement">The type of the elements in each <see cref="T:System.Linq.IGrouping`2" />.</typeparam>
         /// <typeparam name="TResult">The type of the result value returned by <paramref name="resultSelector" />.</typeparam>
-        public static IBindableQuery<TResult> GroupBy<TSource, TKey, TElement, TResult>(this IBindableCollection<TSource> source, Expression<Func<TSource, TKey>> keySelector, Expression<Func<TSource, TElement>> elementSelector, Expression<Func<TKey, IBindableCollection<TElement>, TResult>> resultSelector) where TSource : class where TElement : class where TResult : class
+        public static IBindableQuery<TResult> GroupBy<TSource, TKey, TElement, TResult>(this IBindableCollection<TSource> source, Expression<Func<TSource, TKey>> keySelector, Expression<Func<TSource, TElement>> elementSelector, Expression<Func<TKey, IBindableCollection<TElement>, TResult>> resultSelector)
+            where TSource : class
+            where TElement : class
+            where TResult : class
         {
             return source.GroupBy(keySelector, elementSelector, null).Into(resultSelector);
         }
@@ -359,7 +370,9 @@ namespace Bindable.Linq
         /// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
         /// <typeparam name="TKey">The type of the key returned by <paramref name="keySelector" />.</typeparam>
         /// <typeparam name="TResult">The type of the result value returned by <paramref name="resultSelector" />.</typeparam>
-        public static IBindableQuery<TResult> GroupBy<TSource, TKey, TResult>(this IBindableCollection<TSource> source, Expression<Func<TSource, TKey>> keySelector, Expression<Func<TKey, IBindableCollection<TSource>, TResult>> resultSelector, IEqualityComparer<TKey> comparer) where TSource : class where TResult : class
+        public static IBindableQuery<TResult> GroupBy<TSource, TKey, TResult>(this IBindableCollection<TSource> source, Expression<Func<TSource, TKey>> keySelector, Expression<Func<TKey, IBindableCollection<TSource>, TResult>> resultSelector, IEqualityComparer<TKey> comparer)
+            where TSource : class
+            where TResult : class
         {
             return source.GroupBy(keySelector, s => s, comparer).Into(resultSelector);
         }
@@ -379,7 +392,10 @@ namespace Bindable.Linq
         /// <returns>
         /// A collection of elements of type <paramref name="TResult"/> where each element represents a projection over a group and its key.
         /// </returns>
-        public static IBindableQuery<TResult> GroupBy<TSource, TKey, TElement, TResult>(this IBindableCollection<TSource> source, Expression<Func<TSource, TKey>> keySelector, Expression<Func<TSource, TElement>> elementSelector, Expression<Func<TKey, IBindableCollection<TElement>, TResult>> resultSelector, IEqualityComparer<TKey> comparer) where TSource : class where TElement : class where TResult : class
+        public static IBindableQuery<TResult> GroupBy<TSource, TKey, TElement, TResult>(this IBindableCollection<TSource> source, Expression<Func<TSource, TKey>> keySelector, Expression<Func<TSource, TElement>> elementSelector, Expression<Func<TKey, IBindableCollection<TElement>, TResult>> resultSelector, IEqualityComparer<TKey> comparer)
+            where TSource : class
+            where TElement : class
+            where TResult : class
         {
             return source.GroupBy(keySelector, elementSelector, comparer).Into(resultSelector);
         }
@@ -397,7 +413,9 @@ namespace Bindable.Linq
         /// <returns>
         /// A collection of elements of type <paramref name="TResult"/> where each element represents a projection over a group and its key.
         /// </returns>
-        public static IBindableQuery<TResult> Into<TKey, TElement, TResult>(this IBindableQuery<IBindableGrouping<TKey, TElement>> source, Expression<Func<TKey, IBindableCollection<TElement>, TResult>> resultSelector) where TElement : class where TResult : class
+        public static IBindableQuery<TResult> Into<TKey, TElement, TResult>(this IBindableQuery<IBindableGrouping<TKey, TElement>> source, Expression<Func<TKey, IBindableCollection<TElement>, TResult>> resultSelector)
+            where TElement : class
+            where TResult : class
         {
             var func = resultSelector.Compile();
             return source.Select(g => func(g.Key, g));
@@ -418,7 +436,10 @@ namespace Bindable.Linq
         /// <typeparam name="TResult">The type of the result elements.</typeparam>
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="outer" /> or <paramref name="inner" /> or <paramref name="outerKeySelector" /> or <paramref name="innerKeySelector" /> or <paramref name="resultSelector" /> is null.</exception>
-        public static IBindableQuery<TResult> GroupJoin<TOuter, TInner, TKey, TResult>(this IBindableCollection<TOuter> outer, IEnumerable<TInner> inner, Expression<Func<TOuter, TKey>> outerKeySelector, Expression<Func<TInner, TKey>> innerKeySelector, Expression<Func<TOuter, IEnumerable<TInner>, TResult>> resultSelector) where TOuter : class where TInner : class where TResult : class
+        public static IBindableQuery<TResult> GroupJoin<TOuter, TInner, TKey, TResult>(this IBindableCollection<TOuter> outer, IEnumerable<TInner> inner, Expression<Func<TOuter, TKey>> outerKeySelector, Expression<Func<TInner, TKey>> innerKeySelector, Expression<Func<TOuter, IEnumerable<TInner>, TResult>> resultSelector)
+            where TOuter : class
+            where TInner : class
+            where TResult : class
         {
             throw new NotImplementedException();
         }
@@ -437,7 +458,10 @@ namespace Bindable.Linq
         /// <typeparam name="TResult">The type of the result elements.</typeparam>
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="outer" /> or <paramref name="inner" /> or <paramref name="outerKeySelector" /> or <paramref name="innerKeySelector" /> or <paramref name="resultSelector" /> is null.</exception>
-        public static IBindableQuery<TResult> GroupJoin<TOuter, TInner, TKey, TResult>(this IBindableCollection<TOuter> outer, IEnumerable<TInner> inner, Expression<Func<TOuter, TKey>> outerKeySelector, Expression<Func<TInner, TKey>> innerKeySelector, Expression<Func<TOuter, IEnumerable<TInner>, TResult>> resultSelector, IEqualityComparer<TKey> comparer) where TOuter : class where TInner : class where TResult : class
+        public static IBindableQuery<TResult> GroupJoin<TOuter, TInner, TKey, TResult>(this IBindableCollection<TOuter> outer, IEnumerable<TInner> inner, Expression<Func<TOuter, TKey>> outerKeySelector, Expression<Func<TInner, TKey>> innerKeySelector, Expression<Func<TOuter, IEnumerable<TInner>, TResult>> resultSelector, IEqualityComparer<TKey> comparer)
+            where TOuter : class
+            where TInner : class
+            where TResult : class
         {
             throw new NotImplementedException();
         }
@@ -484,7 +508,10 @@ namespace Bindable.Linq
         /// <typeparam name="TResult">The type of the result elements.</typeparam>
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="outer" /> or <paramref name="inner" /> or <paramref name="outerKeySelector" /> or <paramref name="innerKeySelector" /> or <paramref name="resultSelector" /> is null.</exception>
-        public static IBindableCollection<TResult> Join<TOuter, TInner, TKey, TResult>(this IBindableCollection<TOuter> outer, IEnumerable<TInner> inner, Expression<Func<TOuter, TKey>> outerKeySelector, Expression<Func<TInner, TKey>> innerKeySelector, Expression<Func<TOuter, TInner, TResult>> resultSelector) where TOuter : class where TInner : class where TResult : class
+        public static IBindableCollection<TResult> Join<TOuter, TInner, TKey, TResult>(this IBindableCollection<TOuter> outer, IEnumerable<TInner> inner, Expression<Func<TOuter, TKey>> outerKeySelector, Expression<Func<TInner, TKey>> innerKeySelector, Expression<Func<TOuter, TInner, TResult>> resultSelector)
+            where TOuter : class
+            where TInner : class
+            where TResult : class
         {
             throw new NotImplementedException();
         }
@@ -503,7 +530,10 @@ namespace Bindable.Linq
         /// <typeparam name="TResult">The type of the result elements.</typeparam>
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="outer" /> or <paramref name="inner" /> or <paramref name="outerKeySelector" /> or <paramref name="innerKeySelector" /> or <paramref name="resultSelector" /> is null.</exception>
-        public static IBindableCollection<TResult> Join<TOuter, TInner, TKey, TResult>(this IBindableCollection<TOuter> outer, IEnumerable<TInner> inner, Expression<Func<TOuter, TKey>> outerKeySelector, Expression<Func<TInner, TKey>> innerKeySelector, Expression<Func<TOuter, TInner, TResult>> resultSelector, IEqualityComparer<TKey> comparer) where TOuter : class where TInner : class where TResult : class
+        public static IBindableCollection<TResult> Join<TOuter, TInner, TKey, TResult>(this IBindableCollection<TOuter> outer, IEnumerable<TInner> inner, Expression<Func<TOuter, TKey>> outerKeySelector, Expression<Func<TInner, TKey>> innerKeySelector, Expression<Func<TOuter, TInner, TResult>> resultSelector, IEqualityComparer<TKey> comparer)
+            where TOuter : class
+            where TInner : class
+            where TResult : class
         {
             throw new NotImplementedException();
         }
@@ -522,7 +552,7 @@ namespace Bindable.Linq
             var configuration = BindingConfigurations.Default;
             if (source is IConfigurable)
             {
-                configuration = ((IConfigurable) source).Configuration;
+                configuration = ((IConfigurable)source).Configuration;
             }
 
             return new BindableCollectionAdapter<TResult>(source, false, configuration);
@@ -683,7 +713,9 @@ namespace Bindable.Linq
         /// <typeparam name="TResult">The type of the elements of the sequence returned by <paramref name="selector" />.</typeparam>
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="source" /> or <paramref name="selector" /> is null.</exception>
-        public static IBindableQuery<TResult> SelectMany<TSource, TResult>(this IBindableCollection<TSource> source, Expression<Func<TSource, IBindableCollection<TResult>>> selector) where TSource : class where TResult : class
+        public static IBindableQuery<TResult> SelectMany<TSource, TResult>(this IBindableCollection<TSource> source, Expression<Func<TSource, IBindableCollection<TResult>>> selector)
+            where TSource : class
+            where TResult : class
         {
             source.ShouldNotBeNull("source");
             return source.Select(selector).UnionAll();
@@ -843,7 +875,7 @@ namespace Bindable.Linq
         /// <param name="func">An accumulator function to be invoked on each element.</param>
         /// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
         /// <returns>The final accumulator value.</returns>
-        public static IBindable<TSource> Aggregate<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, TSource, TSource>> func) 
+        public static IBindable<TSource> Aggregate<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, TSource, TSource>> func)
         {
             source.ShouldNotBeNull("source");
             func.ShouldNotBeNull("func");

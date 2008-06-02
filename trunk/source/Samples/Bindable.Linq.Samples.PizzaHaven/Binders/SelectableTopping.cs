@@ -1,23 +1,17 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.ComponentModel;
-using Bindable.Linq.Samples.PizzaHaven.Domain;
-
 namespace Bindable.Linq.Samples.PizzaHaven.Binders
 {
+    using System.ComponentModel;
+    using Domain;
+
     public class SelectableTopping : INotifyPropertyChanged
     {
-        private Topping _topping;
+        private readonly Topping _topping;
         private bool _isSelected;
 
         public SelectableTopping(Topping topping)
         {
             _topping = topping;
         }
-
-        public event PropertyChangedEventHandler PropertyChanged;
 
         public Topping Topping
         {
@@ -34,9 +28,13 @@ namespace Bindable.Linq.Samples.PizzaHaven.Binders
             }
         }
 
+        #region INotifyPropertyChanged Members
+        public event PropertyChangedEventHandler PropertyChanged;
+        #endregion
+
         private void OnPropertyChanged(PropertyChangedEventArgs e)
         {
-            PropertyChangedEventHandler handler = PropertyChanged;
+            var handler = PropertyChanged;
             if (handler != null)
             {
                 handler(this, e);

@@ -1,8 +1,7 @@
-using System;
-using Bindable.Linq.Dependencies.PathNavigation.Tokens;
-
 namespace Bindable.Linq.Dependencies.PathNavigation.TokenFactories
 {
+    using System;
+    using Tokens;
 
     /// <summary>
     /// A property parser for properties on a Windows Forms control.
@@ -26,9 +25,9 @@ namespace Bindable.Linq.Dependencies.PathNavigation.TokenFactories
 #if !SILVERLIGHT
             if (target is System.Windows.Forms.Control)
             {
-                string propertyName = propertyPath;
+                var propertyName = propertyPath;
                 string remainingPath = null;
-                int dotIndex = propertyPath.IndexOf('.');
+                var dotIndex = propertyPath.IndexOf('.');
                 if (dotIndex >= 0)
                 {
                     propertyName = propertyPath.Substring(0, dotIndex);

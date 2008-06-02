@@ -1,37 +1,35 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.ComponentModel;
-using System.Linq.Expressions;
-using Bindable.Linq.Collections;
-using Bindable.Linq.Dependencies;
-using Bindable.Linq.Helpers;
-
 namespace Bindable.Linq.Adapters
 {
+    using System;
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.Collections.Specialized;
+    using System.ComponentModel;
+    using System.Linq.Expressions;
+    using Collections;
+    using Dependencies;
+    using Helpers;
+
 #if !SILVERLIGHT
     // Silverlight does not provide an IBindingList interface. This class is unnecessary.
     /// <summary>
     /// Converts Bindable LINQ bindable collection result sets into IBindingList implementations compatible with 
     /// Windows Forms.
     /// </summary>
-    internal sealed class BindingListAdapter<TElement> : 
-        IBindingList,
-        IDisposable
+    internal sealed class BindingListAdapter<TElement> : IBindingList, IDisposable
         where TElement : class
     {
-        private readonly IBindableCollection<TElement> _originalSource;
-        private IBindableCollection<TElement> _sortedSource;
         private readonly EventHandler<NotifyCollectionChangedEventArgs> _eventHandler;
+        private readonly IBindableCollection<TElement> _originalSource;
         private readonly Dictionary<string, PropertyDescriptor> _propertyDescriptors;
-        private IBindableCollectionInterceptor<TElement> _source;
         private readonly WeakEventReference<NotifyCollectionChangedEventArgs> _weakHandler;
-        private PropertyChangeObserver _propertyChangeObserver;
         private ElementActioner<TElement> _addActioner;
+        private PropertyChangeObserver _propertyChangeObserver;
 
         private ListSortDirection _sortDirection;
+        private IBindableCollection<TElement> _sortedSource;
         private PropertyDescriptor _sortProperty;
+        private IBindableCollectionInterceptor<TElement> _source;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BindingListAdapter&lt;TElement&gt;"/> class.
@@ -50,7 +48,7 @@ namespace Bindable.Linq.Adapters
             WireInterceptor(_originalSource);
 
             _propertyDescriptors = new Dictionary<string, PropertyDescriptor>();
-            PropertyDescriptorCollection properties = TypeDescriptor.GetProperties(typeof (TElement));
+            var properties = TypeDescriptor.GetProperties(typeof (TElement));
             foreach (PropertyDescriptor descriptor in properties)
             {
                 if (descriptor != null && descriptor.Name != null)
@@ -60,27 +58,7 @@ namespace Bindable.Linq.Adapters
             }
         }
 
-        private void WireInterceptor(IBindableCollection<TElement> source)
-        {
-            _source = new BindableCollectionInterceptor<TElement>(source);
-            _source.CollectionChanged += _weakHandler.WeakEventHandler;
-
-            _propertyChangeObserver = new PropertyChangeObserver(Element_PropertyChanged);
-            _addActioner = new ElementActioner<TElement>(_source,
-                element => _propertyChangeObserver.Attach(element),
-                element => _propertyChangeObserver.Detach(element));
-        }
-
-        private void UnwireInterceptor()
-        {
-            _addActioner.Dispose();
-            _propertyChangeObserver.Dispose();
-            _source.CollectionChanged -= _weakHandler.WeakEventHandler;
-            _source.Dispose();
-        }
-
         #region IBindingList Members
-
         /// <summary>
         /// Occurs when the list changes or an item in the list changes.
         /// </summary>
@@ -90,9 +68,7 @@ namespace Bindable.Linq.Adapters
         /// Adds the <see cref="T:System.ComponentModel.PropertyDescriptor"/> to the indexes used for searching.
         /// </summary>
         /// <param name="property">The <see cref="T:System.ComponentModel.PropertyDescriptor"/> to add to the indexes used for searching.</param>
-        public void AddIndex(PropertyDescriptor property)
-        {
-        }
+        public void AddIndex(PropertyDescriptor property) {}
 
         /// <summary>
         /// Adds a new item to the list.
@@ -144,7 +120,7 @@ namespace Bindable.Linq.Adapters
         /// 	<see cref="P:System.ComponentModel.IBindingList.SupportsSorting"/> is false. </exception>
         public void ApplySort(PropertyDescriptor property, ListSortDirection direction)
         {
-            if (IsSorted )
+            if (IsSorted)
             {
                 UnwireInterceptor();
                 _sortedSource.Dispose();
@@ -155,21 +131,13 @@ namespace Bindable.Linq.Adapters
 
             Expression<Func<TElement, object>> selector = item => KeySelector(item);
 
-            var q = ListSortDirection.Ascending == _sortDirection
-                ? _originalSource.OrderBy(selector)
-                : _originalSource.OrderByDescending(selector);
+            var q = ListSortDirection.Ascending == _sortDirection ? _originalSource.OrderBy(selector) : _originalSource.OrderByDescending(selector);
 
             _sortedSource = q.WithDependency(_sortProperty.Name);
 
             WireInterceptor(_sortedSource);
 
             OnListChanged(new ListChangedEventArgs(ListChangedType.Reset, -1));
-        }
-
-        private object KeySelector(TElement item)
-        {
-            if (null == item || null == _sortProperty) return null;
-            return _sortProperty.GetValue(item);
         }
 
         /// <summary>
@@ -203,9 +171,7 @@ namespace Bindable.Linq.Adapters
         /// Removes the <see cref="T:System.ComponentModel.PropertyDescriptor"/> from the indexes used for searching.
         /// </summary>
         /// <param name="property">The <see cref="T:System.ComponentModel.PropertyDescriptor"/> to remove from the indexes used for searching.</param>
-        public void RemoveIndex(PropertyDescriptor property)
-        {
-        }
+        public void RemoveIndex(PropertyDescriptor property) {}
 
         /// <summary>
         /// Removes any sort applied using <see cref="M:System.ComponentModel.IBindingList.ApplySort(System.ComponentModel.PropertyDescriptor,System.ComponentModel.ListSortDirection)"/>.
@@ -283,10 +249,6 @@ namespace Bindable.Linq.Adapters
             get { return true; }
         }
 
-        #endregion
-
-        #region IList Members
-
         /// <summary>
         /// Adds an item to the <see cref="T:System.Collections.IList"/>.
         /// </summary>
@@ -330,7 +292,7 @@ namespace Bindable.Linq.Adapters
         /// </returns>
         public int IndexOf(object value)
         {
-            int result = -1;
+            var result = -1;
             if (_source is IList)
             {
                 result = ((IList) _source).IndexOf(value);
@@ -405,26 +367,19 @@ namespace Bindable.Linq.Adapters
             {
                 if (_source is IList)
                 {
-                    return ((IList)_source)[index];
+                    return ((IList) _source)[index];
                 }
                 else if (_source is IBindableQuery<TElement>)
                 {
-                    return ((IBindableQuery<TElement>)_source)[index];
+                    return ((IBindableQuery<TElement>) _source)[index];
                 }
                 else
                 {
                     throw new NotSupportedException();
                 }
             }
-            set
-            {
-                throw new NotSupportedException();
-            }
+            set { throw new NotSupportedException(); }
         }
-
-        #endregion
-
-        #region ICollection Members
 
         /// <summary>
         /// Copies the elements of the <see cref="T:System.Collections.ICollection"/> to an <see cref="T:System.Array"/>, starting at a particular <see cref="T:System.Array"/> index.
@@ -440,7 +395,7 @@ namespace Bindable.Linq.Adapters
         /// <exception cref="T:System.ArgumentException">The type of the source <see cref="T:System.Collections.ICollection"/> cannot be cast automatically to the type of the destination <paramref name="array"/>. </exception>
         public void CopyTo(Array array, int index)
         {
-            foreach (TElement element in _source)
+            foreach (var element in _source)
             {
                 if (index < array.Length)
                 {
@@ -484,10 +439,6 @@ namespace Bindable.Linq.Adapters
             get { return new object(); }
         }
 
-        #endregion
-
-        #region IEnumerable Members
-
         /// <summary>
         /// Returns an enumerator that iterates through a collection.
         /// </summary>
@@ -498,16 +449,53 @@ namespace Bindable.Linq.Adapters
         {
             return _source.GetEnumerator();
         }
-
         #endregion
+
+        #region IDisposable Members
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            _addActioner.Dispose();
+            _propertyChangeObserver.Dispose();
+            _weakHandler.Dispose();
+        }
+        #endregion
+
+        private void WireInterceptor(IBindableCollection<TElement> source)
+        {
+            _source = new BindableCollectionInterceptor<TElement>(source);
+            _source.CollectionChanged += _weakHandler.WeakEventHandler;
+
+            _propertyChangeObserver = new PropertyChangeObserver(Element_PropertyChanged);
+            _addActioner = new ElementActioner<TElement>(_source, element => _propertyChangeObserver.Attach(element), element => _propertyChangeObserver.Detach(element));
+        }
+
+        private void UnwireInterceptor()
+        {
+            _addActioner.Dispose();
+            _propertyChangeObserver.Dispose();
+            _source.CollectionChanged -= _weakHandler.WeakEventHandler;
+            _source.Dispose();
+        }
+
+        private object KeySelector(TElement item)
+        {
+            if (null == item || null == _sortProperty)
+            {
+                return null;
+            }
+            return _sortProperty.GetValue(item);
+        }
 
         private void Element_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (_propertyDescriptors.ContainsKey(e.PropertyName))
             {
-                PropertyDescriptor descriptor = _propertyDescriptors[e.PropertyName];
-                int index = this.IndexOf(sender);
-                this.OnListChanged(new ListChangedEventArgs(ListChangedType.ItemChanged, index, descriptor));
+                var descriptor = _propertyDescriptors[e.PropertyName];
+                var index = IndexOf(sender);
+                OnListChanged(new ListChangedEventArgs(ListChangedType.ItemChanged, index, descriptor));
             }
         }
 
@@ -516,54 +504,54 @@ namespace Bindable.Linq.Adapters
             switch (e.Action)
             {
                 case NotifyCollectionChangedAction.Add:
+                {
+                    var index = e.NewStartingIndex;
+                    foreach (var item in e.NewItems)
                     {
-                        int index = e.NewStartingIndex;
-                        foreach (object item in e.NewItems)
-                        {
-                            ListChangedEventArgs listEvent = new ListChangedEventArgs(ListChangedType.ItemAdded, index);
-                            this.OnListChanged(listEvent);
-                            index++;
-                        }
+                        var listEvent = new ListChangedEventArgs(ListChangedType.ItemAdded, index);
+                        OnListChanged(listEvent);
+                        index++;
                     }
+                }
                     break;
                 case NotifyCollectionChangedAction.Move:
+                {
+                    var newIndex = e.NewStartingIndex;
+                    var oldIndex = e.OldStartingIndex;
+                    foreach (var item in e.NewItems)
                     {
-                        int newIndex = e.NewStartingIndex;
-                        int oldIndex = e.OldStartingIndex;
-                        foreach (object item in e.NewItems)
-                        {
-                            ListChangedEventArgs listEvent = new ListChangedEventArgs(ListChangedType.ItemMoved, newIndex, oldIndex);
-                            this.OnListChanged(listEvent);
-                        }
+                        var listEvent = new ListChangedEventArgs(ListChangedType.ItemMoved, newIndex, oldIndex);
+                        OnListChanged(listEvent);
                     }
+                }
                     break;
                 case NotifyCollectionChangedAction.Remove:
+                {
+                    var index = e.OldStartingIndex;
+                    foreach (var item in e.OldItems)
                     {
-                        int index = e.OldStartingIndex;
-                        foreach (object item in e.OldItems)
-                        {
-                            ListChangedEventArgs listEvent = new ListChangedEventArgs(ListChangedType.ItemDeleted, index);
-                            this.OnListChanged(listEvent);
-                            index++;
-                        }
+                        var listEvent = new ListChangedEventArgs(ListChangedType.ItemDeleted, index);
+                        OnListChanged(listEvent);
+                        index++;
                     }
+                }
                     break;
                 case NotifyCollectionChangedAction.Replace:
+                {
+                    var index = e.NewStartingIndex;
+                    foreach (var item in e.NewItems)
                     {
-                        int index = e.NewStartingIndex;
-                        foreach (object item in e.NewItems)
-                        {
-                            ListChangedEventArgs listEvent = new ListChangedEventArgs(ListChangedType.ItemChanged, index);
-                            this.OnListChanged(listEvent);
-                            index++;
-                        }
+                        var listEvent = new ListChangedEventArgs(ListChangedType.ItemChanged, index);
+                        OnListChanged(listEvent);
+                        index++;
                     }
+                }
                     break;
                 case NotifyCollectionChangedAction.Reset:
-                    {
-                        ListChangedEventArgs listEvent = new ListChangedEventArgs(ListChangedType.Reset, -1);
-                        this.OnListChanged(listEvent);
-                    }
+                {
+                    var listEvent = new ListChangedEventArgs(ListChangedType.Reset, -1);
+                    OnListChanged(listEvent);
+                }
                     break;
                 default:
                     break;
@@ -576,21 +564,11 @@ namespace Bindable.Linq.Adapters
         /// <param name="e">The <see cref="System.ComponentModel.ListChangedEventArgs"/> instance containing the event data.</param>
         private void OnListChanged(ListChangedEventArgs e)
         {
-            ListChangedEventHandler handler = this.ListChanged;
+            var handler = ListChanged;
             if (handler != null)
             {
                 handler(this, e);
             }
-        }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            _addActioner.Dispose();
-            _propertyChangeObserver.Dispose();
-            _weakHandler.Dispose();
         }
     }
 #endif

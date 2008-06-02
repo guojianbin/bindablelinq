@@ -1,32 +1,21 @@
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using Bindable.Linq;
-
 namespace Bindable.Linq.SampleApplication.Samples
 {
+    using System.Collections.ObjectModel;
+    using System.Linq;
+    using System.Windows;
+    using System.Windows.Input;
+
     public partial class StandardLinqWindow : Window
     {
-        private ObservableCollection<Contact> _contacts = new ObservableCollection<Contact>();
+        private readonly ObservableCollection<Contact> _contacts = new ObservableCollection<Contact>();
 
         public StandardLinqWindow()
         {
             InitializeComponent();
 
-            for (int i = 0; i < 5; i++)
+            for (var i = 0; i < 5; i++)
             {
-                _contacts.Add(new Contact() { Name = "Person", Company = "ppppp" + i.ToString() + "Readify" });
+                _contacts.Add(new Contact() {Name = "Person", Company = "ppppp" + i.ToString() + "Readify"});
             }
 
             LoadData();
@@ -34,23 +23,12 @@ namespace Bindable.Linq.SampleApplication.Samples
 
         private void LoadData()
         {
-            this.DataContext = _contacts
-                                .Where(c => c.Name.ToLower().Contains("p"))
-                                .OrderBy(c => c.Name)
-                                .Select(c => new
-                                {
-                                    Name = c.Name.ToLower(),
-                                    Company = c.Company,
-                                    Original = c
-                                });
+            DataContext = _contacts.Where(c => c.Name.ToLower().Contains("p")).OrderBy(c => c.Name).Select(c => new {Name = c.Name.ToLower(), Company = c.Company, Original = c});
         }
 
         private void AddCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            _contacts.Add(new Contact() { 
-                Name = "Pttttt", 
-                Company = "pttttt" + _contacts.Count + "Readify", 
-                PhoneNumber = "0410 209 290" });
+            _contacts.Add(new Contact() {Name = "Pttttt", Company = "pttttt" + _contacts.Count + "Readify", PhoneNumber = "0410 209 290"});
         }
 
         private void RefreshCommand_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -60,7 +38,7 @@ namespace Bindable.Linq.SampleApplication.Samples
 
         private void DeleteCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            Contact parameter = e.Parameter as Contact;
+            var parameter = e.Parameter as Contact;
             if (parameter != null)
             {
                 _contacts.Remove(parameter);

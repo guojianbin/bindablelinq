@@ -113,7 +113,7 @@ namespace Bindable.Linq.Collections
         /// <param name="range">The items to add.</param>
         public void AddRange(IEnumerable<TElement> range)
         {
-            using (ITransaction transaction = BeginTransaction())
+            using (var transaction = BeginTransaction())
             {
                 AddRange(range, transaction);
             }
@@ -126,13 +126,13 @@ namespace Bindable.Linq.Collections
         /// <param name="transaction">The transaction.</param>
         public void AddRange(IEnumerable<TElement> range, ITransaction transaction)
         {
-            List<TElement> itemsToAdd = range.EnumerateSafely();
+            var itemsToAdd = range.EnumerateSafely();
 
             lock (BindableCollectionLock)
             {
-                foreach (TElement item in itemsToAdd)
+                foreach (var item in itemsToAdd)
                 {
-                    int index = ((IList) InnerList).Add(item);
+                    var index = ((IList) InnerList).Add(item);
                     _snapshotManager.Invalidate();
                     transaction.LogAddEvent(item, index);
                 }
@@ -187,7 +187,7 @@ namespace Bindable.Linq.Collections
         /// <param name="range">The items to insert into the <see cref="T:BindableCollection`1"/>.</param>
         public void InsertRange(int index, IEnumerable<TElement> range)
         {
-            using (ITransaction transaction = BeginTransaction())
+            using (var transaction = BeginTransaction())
             {
                 InsertRange(index, range, transaction);
             }
@@ -207,7 +207,7 @@ namespace Bindable.Linq.Collections
                 return;
             }
 
-            List<TElement> itemsToInsert = range.EnumerateSafely();
+            var itemsToInsert = range.EnumerateSafely();
 
             lock (BindableCollectionLock)
             {
@@ -216,9 +216,9 @@ namespace Bindable.Linq.Collections
                     index = InnerList.Count;
                 }
 
-                for (int ixCurrentItem = 0; ixCurrentItem < itemsToInsert.Count; ixCurrentItem++)
+                for (var ixCurrentItem = 0; ixCurrentItem < itemsToInsert.Count; ixCurrentItem++)
                 {
-                    int insertionIndex = index + ixCurrentItem;
+                    var insertionIndex = index + ixCurrentItem;
 
                     InnerList.Insert(insertionIndex, itemsToInsert[ixCurrentItem]);
                     _snapshotManager.Invalidate();
@@ -235,7 +235,7 @@ namespace Bindable.Linq.Collections
         /// <param name="comparer">The comparer.</param>
         public void InsertRangeOrder(IEnumerable<TElement> range, Comparison<TElement> comparer)
         {
-            using (ITransaction transaction = BeginTransaction())
+            using (var transaction = BeginTransaction())
             {
                 InsertRangeOrder(range, comparer, transaction);
             }
@@ -249,16 +249,16 @@ namespace Bindable.Linq.Collections
         /// <param name="transaction">The transaction.</param>
         public void InsertRangeOrder(IEnumerable<TElement> range, Comparison<TElement> comparer, ITransaction transaction)
         {
-            List<TElement> itemsToInsert = range.EnumerateSafely();
+            var itemsToInsert = range.EnumerateSafely();
 
             lock (BindableCollectionLock)
             {
-                foreach (TElement element in itemsToInsert)
+                foreach (var element in itemsToInsert)
                 {
-                    bool inserted = false;
-                    for (int i = 0; i < InnerList.Count; i++)
+                    var inserted = false;
+                    for (var i = 0; i < InnerList.Count; i++)
                     {
-                        int result = comparer(element, InnerList[i]);
+                        var result = comparer(element, InnerList[i]);
                         if (result <= 0)
                         {
                             Insert(i, element, transaction);
@@ -305,7 +305,7 @@ namespace Bindable.Linq.Collections
         /// <param name="newIndex">The new index to move the items to.</param>
         public void MoveRange(int newIndex, IEnumerable<TElement> range)
         {
-            using (ITransaction transaction = BeginTransaction())
+            using (var transaction = BeginTransaction())
             {
                 MoveRange(newIndex, range, transaction);
             }
@@ -334,18 +334,18 @@ namespace Bindable.Linq.Collections
         /// </remarks>
         public void MoveRange(int newIndex, IEnumerable<TElement> range, ITransaction transaction)
         {
-            List<TElement> itemsToMove = range.EnumerateSafely();
+            var itemsToMove = range.EnumerateSafely();
 
             lock (BindableCollectionLock)
             {
-                for (int ixCurrentItem = 0; ixCurrentItem < itemsToMove.Count; ixCurrentItem++)
+                for (var ixCurrentItem = 0; ixCurrentItem < itemsToMove.Count; ixCurrentItem++)
                 {
-                    TElement element = itemsToMove[ixCurrentItem];
-                    int originalIndex = IndexOf(element);
-                    int desiredIndex = newIndex + ixCurrentItem;
+                    var element = itemsToMove[ixCurrentItem];
+                    var originalIndex = IndexOf(element);
+                    var desiredIndex = newIndex + ixCurrentItem;
 
                     // Remove it temporarily
-                    bool removed = false;
+                    var removed = false;
                     if (originalIndex >= 0)
                     {
                         InnerList.Remove(element);
@@ -383,7 +383,7 @@ namespace Bindable.Linq.Collections
         /// <param name="comparer">The comparer.</param>
         public void MoveItemOrdered(TElement item, Comparison<TElement> comparer)
         {
-            using (ITransaction transaction = BeginTransaction())
+            using (var transaction = BeginTransaction())
             {
                 MoveOrdered(item, comparer, transaction);
             }
@@ -399,16 +399,16 @@ namespace Bindable.Linq.Collections
         {
             lock (BindableCollectionLock)
             {
-                int originalIndex = IndexOf(element);
+                var originalIndex = IndexOf(element);
                 if (originalIndex >= 0)
                 {
-                    for (int i = 0; i < InnerList.Count; i++)
+                    for (var i = 0; i < InnerList.Count; i++)
                     {
-                        int result = comparer(element, InnerList[i]);
+                        var result = comparer(element, InnerList[i]);
                         if (result <= 0)
                         {
-                            bool itemAlreadyInOrder = true;
-                            for (int j = i; j < originalIndex && j < InnerList.Count; j++)
+                            var itemAlreadyInOrder = true;
+                            for (var j = i; j < originalIndex && j < InnerList.Count; j++)
                             {
                                 if (comparer(element, InnerList[j]) > 0)
                                 {
@@ -475,7 +475,7 @@ namespace Bindable.Linq.Collections
         /// </remarks>
         public void ReplaceRange(IEnumerable<TElement> oldItemsRange, IEnumerable<TElement> newItemsRange, List<int> newItemsToSkip)
         {
-            using (ITransaction transaction = BeginTransaction())
+            using (var transaction = BeginTransaction())
             {
                 ReplaceRange(oldItemsRange, newItemsRange, newItemsToSkip, transaction);
             }
@@ -493,8 +493,8 @@ namespace Bindable.Linq.Collections
         /// </remarks>
         public void ReplaceRange(IEnumerable<TElement> oldItemsRange, IEnumerable<TElement> newItemsRange, List<int> newItemsToSkip, ITransaction transaction)
         {
-            List<TElement> oldItems = oldItemsRange.EnumerateSafely();
-            List<TElement> newItems = newItemsRange.EnumerateSafely();
+            var oldItems = oldItemsRange.EnumerateSafely();
+            var newItems = newItemsRange.EnumerateSafely();
 
             if (oldItems.Count == 0 && newItems.Count == 0)
             {
@@ -505,16 +505,16 @@ namespace Bindable.Linq.Collections
             // touching the source collection nor raising any events (yet).
             lock (BindableCollectionLock)
             {
-                for (int relativeIndex = 0; relativeIndex < oldItems.Count || relativeIndex < newItems.Count; relativeIndex++)
+                for (var relativeIndex = 0; relativeIndex < oldItems.Count || relativeIndex < newItems.Count; relativeIndex++)
                 {
-                    object oldItem = (relativeIndex < oldItems.Count) ? (object) oldItems[relativeIndex] : null;
-                    object newItem = (relativeIndex < newItems.Count && !newItemsToSkip.Contains(relativeIndex)) ? (object) newItems[relativeIndex] : null;
-                    TElement oldElement = (oldItem != null) ? (TElement) oldItem : default(TElement);
-                    TElement newElement = (newItem != null) ? (TElement) newItem : default(TElement);
+                    var oldItem = (relativeIndex < oldItems.Count) ? (object) oldItems[relativeIndex] : null;
+                    var newItem = (relativeIndex < newItems.Count && !newItemsToSkip.Contains(relativeIndex)) ? (object) newItems[relativeIndex] : null;
+                    var oldElement = (oldItem != null) ? (TElement) oldItem : default(TElement);
+                    var newElement = (newItem != null) ? (TElement) newItem : default(TElement);
 
                     if (oldItem != null && newItem != null)
                     {
-                        int oldItemIndex = IndexOf(oldElement);
+                        var oldItemIndex = IndexOf(oldElement);
                         if (oldItemIndex >= 0)
                         {
                             InnerList[oldItemIndex] = newElement;
@@ -559,9 +559,9 @@ namespace Bindable.Linq.Collections
         /// <param name="index">The zero-based index of the item to remove.</param>
         public void RemoveAt(int index)
         {
-            using (ITransaction transaction = BeginTransaction())
+            using (var transaction = BeginTransaction())
             {
-                TElement item = default(TElement);
+                var item = default(TElement);
                 lock (BindableCollectionLock)
                 {
                     item = InnerList[index];
@@ -589,7 +589,7 @@ namespace Bindable.Linq.Collections
         /// <param name="range">The items to remove.</param>
         public bool RemoveRange(IEnumerable<TElement> range)
         {
-            using (ITransaction transaction = BeginTransaction())
+            using (var transaction = BeginTransaction())
             {
                 return RemoveRange(range, transaction);
             }
@@ -603,14 +603,14 @@ namespace Bindable.Linq.Collections
         /// <returns></returns>
         public bool RemoveRange(IEnumerable<TElement> range, ITransaction transaction)
         {
-            bool result = false;
-            List<TElement> itemsToRemove = range.EnumerateSafely();
+            var result = false;
+            var itemsToRemove = range.EnumerateSafely();
 
             lock (BindableCollectionLock)
             {
-                foreach (TElement element in itemsToRemove)
+                foreach (var element in itemsToRemove)
                 {
-                    int index = IndexOf(element);
+                    var index = IndexOf(element);
                     if (index >= 0)
                     {
                         InnerList.RemoveAt(index);
@@ -630,7 +630,7 @@ namespace Bindable.Linq.Collections
         /// </summary>
         public void Clear()
         {
-            using (ITransaction transaction = BeginTransaction())
+            using (var transaction = BeginTransaction())
             {
                 Clear(transaction);
             }
@@ -733,7 +733,7 @@ namespace Bindable.Linq.Collections
         /// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.IList"/> is read-only.-or- The <see cref="T:System.Collections.IList"/> has a fixed size. </exception>
         public int Add(object value)
         {
-            using (ITransaction transaction = BeginTransaction())
+            using (var transaction = BeginTransaction())
             {
                 lock (BindableCollectionLock)
                 {
@@ -899,8 +899,8 @@ namespace Bindable.Linq.Collections
             {
                 // List<T>.IndexOf(item) underneath uses object.Equals(). We want to use object.ReferenceEquals() so that 
                 // overloaded Equals operations do not have an effect. 
-                int index = -1;
-                for (int i = 0; i < InnerList.Count; i++)
+                var index = -1;
+                for (var i = 0; i < InnerList.Count; i++)
                 {
                     if (_comparer.Equals(item, InnerList[i]))
                     {
@@ -955,7 +955,7 @@ namespace Bindable.Linq.Collections
         private void CommitTransaction(TransactionLog transactionLog)
         {
             Monitor.Exit(BindableCollectionLock);
-            foreach (NotifyCollectionChangedEventArgs eventToRaise in transactionLog.Events)
+            foreach (var eventToRaise in transactionLog.Events)
             {
                 OnCollectionChanged(eventToRaise);
             }
@@ -978,7 +978,7 @@ namespace Bindable.Linq.Collections
         /// <param name="e">The <see cref="System.ComponentModel.PropertyChangedEventArgs"/> instance containing the event data.</param>
         protected virtual void OnPropertyChanged(PropertyChangedEventArgs e)
         {
-            PropertyChangedEventHandler handler = PropertyChanged;
+            var handler = PropertyChanged;
             if (handler != null)
             {
                 handler(this, e);
@@ -991,7 +991,7 @@ namespace Bindable.Linq.Collections
         /// <param name="e">The <see cref="System.Collections.Specialized.NotifyCollectionChangedEventArgs"/> instance containing the event data.</param>
         protected virtual void OnCollectionChanged(NotifyCollectionChangedEventArgs e)
         {
-            NotifyCollectionChangedEventHandler handler = CollectionChanged;
+            var handler = CollectionChanged;
             if (handler != null)
             {
                 handler(this, e);

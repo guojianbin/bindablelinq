@@ -1,11 +1,10 @@
-using System;
-using System.Collections.Generic;
-using Bindable.Linq.Helpers;
-using Bindable.Linq.Threading;
-using Bindable.Linq.Transactions;
-
 namespace Bindable.Linq.Iterators
 {
+    using System;
+    using System.Collections.Generic;
+    using Helpers;
+    using Threading;
+
     /// <summary>
     /// An Iterator that reads items from the source collection directly into the results collection, 
     /// and then continues to poll the source collection for changes at a given interval.
@@ -57,25 +56,25 @@ namespace Bindable.Linq.Iterators
             var allSourceItems = new List<TElement>();
             using (IsLoadingState.Enter())
             {
-                foreach (TElement item in SourceCollection)
+                foreach (var item in SourceCollection)
                 {
                     allSourceItems.Add(item);
                 }
             }
 
             // Now it is safe to acquire a lock and to decide whether to add/remove the items
-            using (ITransaction transaction = ResultCollection.BeginTransaction())
+            using (var transaction = ResultCollection.BeginTransaction())
             {
                 lock (IteratorLock)
                 {
-                    foreach (TElement item in allSourceItems)
+                    foreach (var item in allSourceItems)
                     {
                         if (!ResultCollection.Contains(item))
                         {
                             ResultCollection.Add(item, transaction);
                         }
                     }
-                    foreach (TElement item in ResultCollection)
+                    foreach (var item in ResultCollection)
                     {
                         if (!allSourceItems.Contains(item))
                         {

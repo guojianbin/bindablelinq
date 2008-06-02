@@ -1,7 +1,6 @@
-using System;
-
 namespace Bindable.Linq.Operators
 {
+    using System;
     using System.Collections.Generic;
     using System.ComponentModel;
     using Configuration;
@@ -66,7 +65,7 @@ namespace Bindable.Linq.Operators
         {
             if (definition.AppliesToSingleElement())
             {
-                IDependency dependency = definition.ConstructForElement(_source, Configuration.CreatePathNavigator());
+                var dependency = definition.ConstructForElement(_source, Configuration.CreatePathNavigator());
                 dependency.SetReevaluateCallback(o => Refresh());
                 _dependencies.Add(dependency);
             }
@@ -113,7 +112,7 @@ namespace Bindable.Linq.Operators
         public void Dispose()
         {
             _sourcePropertyChangeObserver.Dispose();
-            foreach (IDependency dependency in _dependencies)
+            foreach (var dependency in _dependencies)
             {
                 dependency.Dispose();
             }
@@ -128,7 +127,7 @@ namespace Bindable.Linq.Operators
         {
             get
             {
-                IBindingConfiguration result = BindingConfigurations.Default;
+                var result = BindingConfigurations.Default;
                 if (Source is IConfigurable)
                 {
                     result = ((IConfigurable) Source).Configuration;
@@ -140,7 +139,7 @@ namespace Bindable.Linq.Operators
 
         private void EnsureLoaded()
         {
-            bool refreshNeeded = false;
+            var refreshNeeded = false;
 
             lock (OperatorLock)
             {
@@ -170,10 +169,10 @@ namespace Bindable.Linq.Operators
         /// <summary>
         /// Raises the <see cref="E:PropertyChanged"/> event.
         /// </summary>
-        /// <param name="e">The <see cref="System.ComponentModel.PropertyChangingEventArgs"/> instance containing the event data.</param>
+        /// <param name="e">The <see cref="System.ComponentModel.PropertyChangedEventArgs"/> instance containing the event data.</param>
         protected virtual void OnPropertyChanged(PropertyChangedEventArgs e)
         {
-            PropertyChangedEventHandler handler = PropertyChanged;
+            var handler = PropertyChanged;
             if (handler != null)
             {
                 handler(this, e);

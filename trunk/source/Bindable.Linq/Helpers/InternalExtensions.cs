@@ -1,7 +1,6 @@
-using System;
-
 namespace Bindable.Linq.Helpers
 {
+    using System;
     using System.Collections;
     using System.Collections.Generic;
     using System.Text;
@@ -58,7 +57,7 @@ namespace Bindable.Linq.Helpers
         /// <returns></returns>
         public static List<TElement> EnumerateSafely<TElement>(this IEnumerable<TElement> elements)
         {
-            Type elementsType = elements.GetType();
+            var elementsType = elements.GetType();
             if (elementsType == typeof (List<TElement>))
             {
                 return (List<TElement>) elements;
@@ -91,7 +90,7 @@ namespace Bindable.Linq.Helpers
                 {
                     if (enumerable != null)
                     {
-                        foreach (TElement item in enumerable)
+                        foreach (var item in enumerable)
                         {
                             yield return item;
                         }
@@ -109,8 +108,8 @@ namespace Bindable.Linq.Helpers
         public static string ConcatStrings(this IEnumerable<string> strings, string separator)
         {
             var result = new StringBuilder();
-            IEnumerator<string> stringEnumerator = strings.GetEnumerator();
-            bool hasNext = stringEnumerator.MoveNext();
+            var stringEnumerator = strings.GetEnumerator();
+            var hasNext = stringEnumerator.MoveNext();
             while (hasNext)
             {
                 result.Append(stringEnumerator.Current);
@@ -130,7 +129,7 @@ namespace Bindable.Linq.Helpers
         {
             if (collection != null)
             {
-                foreach (TElement element in collection)
+                foreach (var element in collection)
                 {
                     if (element != null)
                     {

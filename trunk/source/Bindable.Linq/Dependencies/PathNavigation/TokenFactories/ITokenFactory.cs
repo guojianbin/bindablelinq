@@ -1,7 +1,6 @@
-using System;
-
 namespace Bindable.Linq.Dependencies.PathNavigation.TokenFactories
 {
+    using System;
     using Tokens;
 
     /// <summary>

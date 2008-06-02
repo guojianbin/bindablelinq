@@ -1,5 +1,3 @@
-using System;
-
 namespace Bindable.Linq.Tests.Behaviour.Aggregators
 {
     using Collections;
@@ -19,7 +17,7 @@ namespace Bindable.Linq.Tests.Behaviour.Aggregators
         public void CustomAggregatorAccumulateTypeCalculate()
         {
             var names = new[] {"Paul", "Jackie", "Tom"};
-            IBindable<int> aggregator = names.AsBindable().Aggregate(0, (i, name) => i + name.Length);
+            var aggregator = names.AsBindable().Aggregate(0, (i, name) => i + name.Length);
             var eventCatcher = new PropertyEventCatcher(aggregator);
             Assert.AreEqual(4 + 6 + 3, aggregator.Current);
             Assert.AreEqual(1, eventCatcher.Count);
@@ -32,7 +30,7 @@ namespace Bindable.Linq.Tests.Behaviour.Aggregators
         public void CustomAggregatorCalculate()
         {
             var numbers = new object[] {1, 2, 4};
-            IBindable<int> aggregator = numbers.AsBindable<object, int>().Aggregate((i, result) => result + i);
+            var aggregator = numbers.AsBindable<object, int>().Aggregate((i, result) => result + i);
             var eventCatcher = new PropertyEventCatcher(aggregator);
             Assert.AreEqual(1 + 2 + 4, aggregator.Current);
             Assert.AreEqual(1, eventCatcher.Count);
@@ -46,7 +44,7 @@ namespace Bindable.Linq.Tests.Behaviour.Aggregators
         {
             var numbers = new BindableCollection<object>();
             numbers.AddRange(1, 2, 4);
-            IBindable<int> aggregator = numbers.AsBindable<object, int>().Aggregate((i, result) => result + i);
+            var aggregator = numbers.AsBindable<object, int>().Aggregate((i, result) => result + i);
             var eventCatcher = new PropertyEventCatcher(aggregator);
             Assert.AreEqual(1 + 2 + 4, aggregator.Current);
             Assert.AreEqual(1, eventCatcher.Count);

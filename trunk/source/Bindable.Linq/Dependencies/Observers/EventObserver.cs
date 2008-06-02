@@ -1,7 +1,6 @@
-using System;
-
 namespace Bindable.Linq.Dependencies
 {
+    using System;
     using System.Collections;
     using System.Collections.Generic;
 
@@ -58,7 +57,7 @@ namespace Bindable.Linq.Dependencies
         /// <param name="range">The range of objects.</param>
         public void AttachRange(IEnumerable range)
         {
-            foreach (object publisher in range)
+            foreach (var publisher in range)
             {
                 Attach(publisher);
             }
@@ -90,7 +89,7 @@ namespace Bindable.Linq.Dependencies
         /// <param name="range">The range of objects.</param>
         public void DetachRange(IEnumerable range)
         {
-            foreach (object publisher in range)
+            foreach (var publisher in range)
             {
                 Detach(publisher);
             }
@@ -117,7 +116,7 @@ namespace Bindable.Linq.Dependencies
                 var publisher = (TPublisher) objectThatWasObserved;
                 lock (_observablesLock)
                 {
-                    WeakReference existingReference = Find(publisher);
+                    var existingReference = Find(publisher);
                     if (existingReference != null)
                     {
                         DetachOverride(publisher);
@@ -145,9 +144,9 @@ namespace Bindable.Linq.Dependencies
             {
                 lock (_observablesLock)
                 {
-                    foreach (WeakReference observable in _observables.Values)
+                    foreach (var observable in _observables.Values)
                     {
-                        object reference = observable.Target;
+                        var reference = observable.Target;
                         if (reference is TPublisher)
                         {
                             var publisher = (TPublisher) reference;
@@ -165,7 +164,7 @@ namespace Bindable.Linq.Dependencies
             {
                 lock (_observablesLock)
                 {
-                    int hashcode = target.GetHashCode();
+                    var hashcode = target.GetHashCode();
                     if (_observables.ContainsKey(hashcode))
                     {
                         result = _observables[hashcode];

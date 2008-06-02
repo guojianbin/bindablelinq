@@ -1,5 +1,3 @@
-using System;
-
 namespace Bindable.Linq.Tests.Behaviour.Aggregators
 {
     using Collections;
@@ -19,7 +17,7 @@ namespace Bindable.Linq.Tests.Behaviour.Aggregators
         public void MaxAggregatorCalculate()
         {
             var numbers = new object[] {1, 2, 4};
-            IBindable<int> aggregator = numbers.AsBindable<object, int>().Max();
+            var aggregator = numbers.AsBindable<object, int>().Max();
             var eventCatcher = new PropertyEventCatcher(aggregator);
             Assert.AreEqual(4, aggregator.Current);
             Assert.AreEqual(1, eventCatcher.Count);
@@ -33,7 +31,7 @@ namespace Bindable.Linq.Tests.Behaviour.Aggregators
         {
             var numbers = new BindableCollection<object>();
             numbers.AddRange(1, 2, 4);
-            IBindable<int> aggregator = numbers.AsBindable<object, int>().Max();
+            var aggregator = numbers.AsBindable<object, int>().Max();
             var eventCatcher = new PropertyEventCatcher(aggregator);
             Assert.AreEqual(4, aggregator.Current);
             Assert.AreEqual(1, eventCatcher.Count);

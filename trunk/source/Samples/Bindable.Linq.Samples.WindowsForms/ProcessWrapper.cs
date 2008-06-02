@@ -1,16 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Diagnostics;
-using System.ComponentModel;
-
 namespace Bindable.Linq.Samples.WindowsForms
 {
+    using System.ComponentModel;
+
     public class ProcessWrapper : INotifyPropertyChanged
     {
-        private string _processName;
         private int _id;
+        private string _processName;
         private string _title;
 
         public string ProcessName
@@ -43,11 +38,13 @@ namespace Bindable.Linq.Samples.WindowsForms
             }
         }
 
+        #region INotifyPropertyChanged Members
         public event PropertyChangedEventHandler PropertyChanged;
+        #endregion
 
         private void OnPropertyChanged(PropertyChangedEventArgs e)
         {
-            PropertyChangedEventHandler handler = PropertyChanged;
+            var handler = PropertyChanged;
             if (handler != null)
             {
                 handler(this, e);

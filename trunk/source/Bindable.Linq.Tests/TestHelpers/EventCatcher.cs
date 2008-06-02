@@ -1,7 +1,6 @@
-using System;
-
 namespace Bindable.Linq.Tests.TestHelpers
 {
+    using System;
     using System.Collections.Generic;
 
     /// <summary>
@@ -45,7 +44,7 @@ namespace Bindable.Linq.Tests.TestHelpers
         #region IDisposable Members
         public void Dispose()
         {
-            foreach (TPublisher publisher in _events.Keys)
+            foreach (var publisher in _events.Keys)
             {
                 Unsubscribe(publisher);
             }
@@ -77,7 +76,7 @@ namespace Bindable.Linq.Tests.TestHelpers
 
         public TEventArgs DequeueNextEvent(TPublisher publisher)
         {
-            TEventArgs result = default(TEventArgs);
+            var result = default(TEventArgs);
             if (_events[publisher].Count > 0)
             {
                 result = _events[publisher][0];

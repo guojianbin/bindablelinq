@@ -1,7 +1,6 @@
-using System;
-
 namespace Bindable.Linq.Dependencies
 {
+    using System;
     using System.ComponentModel;
     using Helpers;
 

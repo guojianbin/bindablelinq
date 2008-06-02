@@ -1,20 +1,18 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows.Threading;
-using Bindable.Linq.Samples.MessengerClient.Domain;
-
 namespace Bindable.Linq.Samples.MessengerClient.MessengerService.Simulator.Behaviors
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Windows.Threading;
+    using Domain;
+
     /// <summary>
     /// A base class for contact behaviors.
     /// </summary>
     internal abstract class TimerBehavior : IBehavior
     {
         private readonly List<Contact> _contactsToVisit = new List<Contact>();
-        private readonly DispatcherTimer _timer;
         private readonly Random _random = new Random();
+        private readonly DispatcherTimer _timer;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Behavior"/> class.
@@ -33,10 +31,7 @@ namespace Bindable.Linq.Samples.MessengerClient.MessengerService.Simulator.Behav
         /// </summary>
         protected IEnumerable<Contact> ContactsToVisit
         {
-            get
-            {
-                return _contactsToVisit;
-            }
+            get { return _contactsToVisit; }
         }
 
         /// <summary>
@@ -44,14 +39,10 @@ namespace Bindable.Linq.Samples.MessengerClient.MessengerService.Simulator.Behav
         /// </summary>
         protected Random Random
         {
-            get
-            {
-                return _random;
-            }
+            get { return _random; }
         }
 
-        protected abstract void Trigger(Contact contact);
-
+        #region IBehavior Members
         /// <summary>
         /// Applies the behavior to a contact.
         /// </summary>
@@ -62,20 +53,23 @@ namespace Bindable.Linq.Samples.MessengerClient.MessengerService.Simulator.Behav
             Trigger(contact);
         }
 
-        private void DispatcherTimer_Trigger(object sender, EventArgs e)
-        {
-            foreach (Contact contact in this.ContactsToVisit)
-            {
-                this.Trigger(contact);
-            }
-        }
-
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
         public void Dispose()
         {
             _timer.Stop();
+        }
+        #endregion
+
+        protected abstract void Trigger(Contact contact);
+
+        private void DispatcherTimer_Trigger(object sender, EventArgs e)
+        {
+            foreach (var contact in ContactsToVisit)
+            {
+                Trigger(contact);
+            }
         }
     }
 }

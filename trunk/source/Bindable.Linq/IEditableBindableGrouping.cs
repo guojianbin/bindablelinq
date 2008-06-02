@@ -1,5 +1,3 @@
-using System;
-
 namespace Bindable.Linq
 {
     using System.Collections.Generic;

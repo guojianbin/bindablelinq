@@ -1,7 +1,6 @@
-using System;
-
 namespace Bindable.Linq.Helpers
 {
+    using System;
     using System.Threading;
 
     internal sealed class WeakTimer : IDisposable

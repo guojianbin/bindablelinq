@@ -1,7 +1,6 @@
-using System;
-
 namespace Bindable.Linq.Iterators
 {
+    using System;
     using System.Collections.Generic;
 
     /// <summary>

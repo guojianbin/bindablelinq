@@ -1,7 +1,5 @@
 namespace Bindable.Linq.Iterators
 {
-    using System;
-
     /// <summary>
     /// Represents the different options when an iterator is told to load its source collections.
     /// </summary>

@@ -1,7 +1,7 @@
-using System;
-
 namespace Bindable.Linq.Collections
 {
+    using System;
+
     /// <summary>
     /// Implemented by bindable collections that allow clients to be notified before an item is yielded.
     /// </summary>

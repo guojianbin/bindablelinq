@@ -1,7 +1,7 @@
-using System;
-
 namespace Bindable.Linq.Operators
 {
+    using System;
+
     /// <summary>
     /// Projects one item to another item.
     /// </summary>
@@ -27,7 +27,7 @@ namespace Bindable.Linq.Operators
         /// </summary>
         protected override void RefreshOverride()
         {
-            TSource source = Source.Current;
+            var source = Source.Current;
             if (source != null)
             {
                 Current = _projector(source);

@@ -1,14 +1,13 @@
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using Bindable.Linq.Collections;
-using NUnit.Framework;
-using Bindable.Linq.Tests.TestHelpers;
-using Bindable.Linq.Tests.TestObjectModel;
-
 namespace Bindable.Linq.Tests.Behaviour.Iterators
 {
+    using System.Collections.ObjectModel;
+    using System.Linq;
+    using Bindable.Linq;
+    using Bindable.Linq.Collections;
+    using Bindable.Linq.Tests.TestHelpers;
+    using Bindable.Linq.Tests.TestObjectModel;
+    using NUnit.Framework;
+
     /// <summary>
     /// This class contains tests for the Bindable LINQ UnionIterator class.
     /// </summary>
@@ -22,16 +21,16 @@ namespace Bindable.Linq.Tests.Behaviour.Iterators
         public void UnionIteratorSimpleUnion()
         {
             // Setup the test data
-            BindableCollection<Contact> inputs = new BindableCollection<Contact>();
-            ObservableCollection<Contact> customerSource1 = new ObservableCollection<Contact>();
-            customerSource1.Add(new Contact { Name = "Paul Stovell" });
-            customerSource1.Add(new Contact { Name = "Paul Glavich" });
-            ObservableCollection<Contact> customerSource2 = new ObservableCollection<Contact>();
-            customerSource2.Add(new Contact { Name = "Jennifer Lopez" });
-            customerSource2.Add(new Contact { Name = "Fedde Le Grande" });
+            var inputs = new BindableCollection<Contact>();
+            var customerSource1 = new ObservableCollection<Contact>();
+            customerSource1.Add(new Contact {Name = "Paul Stovell"});
+            customerSource1.Add(new Contact {Name = "Paul Glavich"});
+            var customerSource2 = new ObservableCollection<Contact>();
+            customerSource2.Add(new Contact {Name = "Jennifer Lopez"});
+            customerSource2.Add(new Contact {Name = "Fedde Le Grande"});
 
             // Create the query
-            IBindableQuery<Contact> result = customerSource1.AsBindable().Union(customerSource2.AsBindable());
+            var result = customerSource1.AsBindable().Union(customerSource2.AsBindable());
             var eventCatcher = new CollectionEventCatcher(result);
 
             // Check the results. No collection changed events should have been raised (the items were 

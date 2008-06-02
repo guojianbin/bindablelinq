@@ -1,7 +1,6 @@
-using System;
-
 namespace Bindable.Linq.Iterators
 {
+    using System;
     using System.Collections.Generic;
 
     /// <summary>
@@ -50,7 +49,7 @@ namespace Bindable.Linq.Iterators
         /// <param name="addedItems">The added items.</param>
         protected override void ReactToAddRange(int sourceStartingIndex, IEnumerable<TSource> addedItems)
         {
-            IEnumerable<TResult> projectedItems = ProjectionRegister.CreateOrGetProjections(addedItems);
+            var projectedItems = ProjectionRegister.CreateOrGetProjections(addedItems);
             ResultCollection.AddOrInsertRange(sourceStartingIndex, projectedItems);
         }
 
@@ -61,7 +60,7 @@ namespace Bindable.Linq.Iterators
         /// <param name="movedItems">The moved items.</param>
         protected override void ReactToMoveRange(int sourceStartingIndex, IEnumerable<TSource> movedItems)
         {
-            IEnumerable<TResult> projectedItems = ProjectionRegister.CreateOrGetProjections(movedItems);
+            var projectedItems = ProjectionRegister.CreateOrGetProjections(movedItems);
             ResultCollection.MoveRange(sourceStartingIndex, projectedItems);
         }
 
@@ -71,7 +70,7 @@ namespace Bindable.Linq.Iterators
         /// <param name="removedItems">The removed items.</param>
         protected override void ReactToRemoveRange(IEnumerable<TSource> removedItems)
         {
-            IEnumerable<TResult> projectedItems = ProjectionRegister.GetProjections(removedItems);
+            var projectedItems = ProjectionRegister.GetProjections(removedItems);
             ResultCollection.RemoveRange(projectedItems);
             ProjectionRegister.RemoveRange(removedItems);
         }
@@ -94,7 +93,7 @@ namespace Bindable.Linq.Iterators
         /// <param name="propertyName">Name of the property.</param>
         protected override void ReactToItemPropertyChanged(TSource item, string propertyName)
         {
-            object existing = ProjectionRegister.GetExistingProjection(item);
+            var existing = ProjectionRegister.GetExistingProjection(item);
             if (existing is TResult)
             {
                 ResultCollection.Replace((TResult) existing, ProjectionRegister.ReProject(item));

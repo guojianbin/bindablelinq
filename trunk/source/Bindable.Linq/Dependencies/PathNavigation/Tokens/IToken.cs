@@ -1,7 +1,7 @@
-using System;
-
 namespace Bindable.Linq.Dependencies.PathNavigation.Tokens
 {
+    using System;
+
     /// <summary>
     /// This interface is implemented by objects which can monitor the property of a given object.
     /// </summary>

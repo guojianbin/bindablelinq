@@ -1,7 +1,6 @@
-using System;
-
 namespace Bindable.Linq.Helpers
 {
+    using System;
     using System.Collections.Generic;
 
     /// <summary>
@@ -63,7 +62,7 @@ namespace Bindable.Linq.Helpers
         /// </returns>
         public bool Equals(TCompared x, TCompared y)
         {
-            bool areEqual = (x == null && y == null);
+            var areEqual = (x == null && y == null);
             if (!areEqual)
             {
                 if (x != null && y != null)
@@ -90,7 +89,7 @@ namespace Bindable.Linq.Helpers
         /// <exception cref="T:System.ArgumentNullException">The type of <paramref name="obj"/> is a reference type and <paramref name="obj"/> is null.</exception>
         public int GetHashCode(TCompared obj)
         {
-            int result = 0;
+            var result = 0;
             if (obj != null)
             {
                 result = obj.GetHashCode();

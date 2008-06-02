@@ -1,7 +1,7 @@
-﻿using System;
-
 namespace Bindable.Linq.Aggregators
 {
+    using System;
+
     /// <summary>
     /// Aggregates a source collection using a custom accumulator callback provided by the caller.
     /// </summary>
@@ -28,8 +28,8 @@ namespace Bindable.Linq.Aggregators
         /// </summary>
         protected override void AggregateOverride()
         {
-            TAccumulate result = _seed;
-            foreach (TSource sourceItem in SourceCollection)
+            var result = _seed;
+            foreach (var sourceItem in SourceCollection)
             {
                 result = _aggregator(result, sourceItem);
             }

@@ -1,7 +1,6 @@
-using System;
-
 namespace Bindable.Linq.Dependencies.Instances
 {
+    using System;
     using System.Collections.Generic;
     using System.ComponentModel;
     using Bindable.Linq.Dependencies.PathNavigation.Tokens;
@@ -98,7 +97,7 @@ namespace Bindable.Linq.Dependencies.Instances
             {
                 if (_sourceElementObservers.ContainsKey(removedItem))
                 {
-                    IToken monitor = _sourceElementObservers[removedItem];
+                    var monitor = _sourceElementObservers[removedItem];
                     if (monitor != null)
                     {
                         monitor.Dispose();
@@ -115,7 +114,7 @@ namespace Bindable.Linq.Dependencies.Instances
         /// <param name="propertyPath">The property path.</param>
         private void Element_PropertyChanged(object element, string propertyPath)
         {
-            Action<object, string> action = _reevaluateElementCallback;
+            var action = _reevaluateElementCallback;
             if (action != null)
             {
                 action(element, propertyPath);

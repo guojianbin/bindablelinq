@@ -1,7 +1,6 @@
-using System;
-
 namespace Bindable.Linq.Collections
 {
+    using System;
     using System.Collections;
     using System.Collections.Generic;
     using System.Collections.Specialized;
@@ -77,7 +76,7 @@ namespace Bindable.Linq.Collections
         /// </returns>
         public IEnumerator<TElement> GetEnumerator()
         {
-            foreach (TElement element in _inner)
+            foreach (var element in _inner)
             {
                 foreach (var action in _preYieldSteps)
                 {
@@ -117,7 +116,7 @@ namespace Bindable.Linq.Collections
         {
             get
             {
-                TElement result = default(TElement);
+                var result = default(TElement);
                 var bindable = _inner as IBindableQuery<TElement>;
                 if (bindable != null)
                 {
@@ -131,7 +130,7 @@ namespace Bindable.Linq.Collections
         {
             get
             {
-                int result = 0;
+                var result = 0;
                 var bindable = _inner as IBindableQuery<TElement>;
                 if (bindable != null)
                 {
@@ -152,7 +151,7 @@ namespace Bindable.Linq.Collections
         {
             get
             {
-                IBindingConfiguration result = BindingConfigurations.Default;
+                var result = BindingConfigurations.Default;
                 if (_inner is IConfigurable)
                 {
                     result = ((IConfigurable) _inner).Configuration;
@@ -180,7 +179,7 @@ namespace Bindable.Linq.Collections
         {
             get
             {
-                bool result = false;
+                var result = false;
                 var loadable = _inner as ILoadable;
                 if (loadable != null)
                 {
@@ -216,7 +215,7 @@ namespace Bindable.Linq.Collections
         /// <param name="e">The <see cref="System.Collections.Specialized.NotifyCollectionChangedEventArgs"/> instance containing the event data.</param>
         private void OnCollectionChanged(NotifyCollectionChangedEventArgs e)
         {
-            NotifyCollectionChangedEventHandler handler = CollectionChanged;
+            var handler = CollectionChanged;
             if (handler != null)
             {
                 handler(this, e);
@@ -229,7 +228,7 @@ namespace Bindable.Linq.Collections
         /// <param name="e">The <see cref="System.ComponentModel.PropertyChangedEventArgs"/> instance containing the event data.</param>
         private void OnPropertyChanged(PropertyChangedEventArgs e)
         {
-            PropertyChangedEventHandler handler = PropertyChanged;
+            var handler = PropertyChanged;
             if (handler != null)
             {
                 handler(this, e);

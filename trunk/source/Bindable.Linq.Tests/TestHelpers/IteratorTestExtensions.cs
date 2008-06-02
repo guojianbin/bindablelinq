@@ -1,7 +1,6 @@
-using System;
-
 namespace Bindable.Linq.Tests.TestHelpers
 {
+    using System;
     using System.Collections;
     using System.Collections.Generic;
     using System.Collections.Specialized;
@@ -224,7 +223,7 @@ namespace Bindable.Linq.Tests.TestHelpers
         public static IteratorTestState<TInput, TResult> ExpectThat<TInput, TResult>(this IteratorTestState<TInput, TResult> testState, Func<bool> callback)
         {
             Trace.WriteLine("Executing step: ExpectThat");
-            bool result = callback();
+            var result = callback();
             Assert.IsTrue(result);
             return testState;
         }
@@ -252,7 +251,7 @@ namespace Bindable.Linq.Tests.TestHelpers
             GC.Collect();
             GC.WaitForPendingFinalizers();
             GC.Collect();
-            NotifyCollectionChangedEventArgs e = testState.Events.DequeueNextEvent();
+            var e = testState.Events.DequeueNextEvent();
             if (e != null)
             {
                 Assert.Fail("The query was not supposed to have raised any new events at this point, but raised: {0}", e.Action);
@@ -263,7 +262,7 @@ namespace Bindable.Linq.Tests.TestHelpers
         public static IteratorTestState<TInput, TResult> ExpectEvent<TInput, TResult>(this IteratorTestState<TInput, TResult> testState, CollectionChangeSpecification specification)
         {
             Trace.WriteLine("Executing step: Expect Event: " + specification.Description);
-            NotifyCollectionChangedEventArgs lastEvent = GetLastEvent(specification.GroupIndex, testState);
+            var lastEvent = GetLastEvent(specification.GroupIndex, testState);
             Assert.IsNotNull(lastEvent, "An event was expected at this point: {0}", specification.Description);
             specification.CompareTo(lastEvent);
             return testState;
@@ -272,7 +271,7 @@ namespace Bindable.Linq.Tests.TestHelpers
         public static IteratorTestState<TInput, TResult> ExpectNoEventsOnGroup<TInput, TResult>(this IteratorTestState<TInput, TResult> testState, int childIndex)
         {
             Trace.WriteLine("Executing step: ExpectNoEventsOnGroup: " + childIndex);
-            NotifyCollectionChangedEventArgs lastEvent = GetLastEvent(childIndex, testState);
+            var lastEvent = GetLastEvent(childIndex, testState);
             Assert.IsNull(lastEvent, "No events were expected at this point");
             return testState;
         }
@@ -316,8 +315,8 @@ namespace Bindable.Linq.Tests.TestHelpers
 
         private static int CountAll(IEnumerable e)
         {
-            int i = 0;
-            foreach (object o in e)
+            var i = 0;
+            foreach (var o in e)
             {
                 i++;
             }
@@ -326,7 +325,7 @@ namespace Bindable.Linq.Tests.TestHelpers
 
         private static int GetCurrentCount<TInput, TResult>(IteratorTestState<TInput, TResult> testState)
         {
-            int result = 0;
+            var result = 0;
             if (testState.Results is IBindableQuery)
             {
                 result = ((IBindableQuery) testState.Results).CurrentCount;
@@ -343,7 +342,7 @@ namespace Bindable.Linq.Tests.TestHelpers
             object publisher = testState.SyncLinqQuery;
             if (group != null)
             {
-                int i = 0;
+                var i = 0;
                 foreach (object p in testState.SyncLinqQuery)
                 {
                     if (i == group.Value)

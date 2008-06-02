@@ -1,9 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Bindable.Linq;
-
 namespace Bindable.Linq.Aggregators
 {
     /// <summary>
@@ -12,8 +6,8 @@ namespace Bindable.Linq.Aggregators
     /// <typeparam name="TElement">The type of the element.</typeparam>
     internal sealed class ElementAtAggregator<TElement> : Aggregator<TElement, TElement>
     {
-        private int _index;
-        private TElement _default;
+        private readonly TElement _default;
+        private readonly int _index;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ElementAtAggregator&lt;TElement&gt;"/> class.
@@ -33,10 +27,10 @@ namespace Bindable.Linq.Aggregators
         /// </summary>
         protected override void AggregateOverride()
         {
-            int currentIndex = 0;
-            bool found = false;
-            TElement result = _default;
-            foreach (TElement element in this.SourceCollection)
+            var currentIndex = 0;
+            var found = false;
+            var result = _default;
+            foreach (var element in SourceCollection)
             {
                 result = element;
                 if (currentIndex == _index)
@@ -49,7 +43,7 @@ namespace Bindable.Linq.Aggregators
             {
                 result = _default;
             }
-            this.Current = result;
+            Current = result;
         }
     }
 }

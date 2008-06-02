@@ -1,7 +1,6 @@
-using System;
-
 namespace Bindable.Linq.Tests.Unit.NumericAggregates
 {
+    using System;
     using NUnit.Framework;
 
     /// <summary>

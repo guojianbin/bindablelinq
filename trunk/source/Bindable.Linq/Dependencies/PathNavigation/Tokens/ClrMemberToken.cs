@@ -1,7 +1,6 @@
-using System;
-
 namespace Bindable.Linq.Dependencies.PathNavigation.Tokens
 {
+    using System;
     using System.ComponentModel;
     using Helpers;
 

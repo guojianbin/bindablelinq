@@ -1,7 +1,7 @@
-using System;
-
 namespace Bindable.Linq.Helpers
 {
+    using System;
+
     /// <summary>
     /// An event handler wrapper used to create weak-reference event handlers, so that event subscribers 
     /// can be garbage collected without the event publisher interfering. 

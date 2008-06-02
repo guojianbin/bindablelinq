@@ -1,5 +1,3 @@
-using System;
-
 namespace Bindable.Linq.Collections
 {
     using System.Collections;
@@ -118,7 +116,7 @@ namespace Bindable.Linq.Collections
         /// <param name="e">The <see cref="System.ComponentModel.PropertyChangedEventArgs"/> instance containing the event data.</param>
         private void OnPropertyChanged(PropertyChangedEventArgs e)
         {
-            PropertyChangedEventHandler handler = PropertyChanged;
+            var handler = PropertyChanged;
             if (handler != null)
             {
                 handler(this, e);
@@ -131,7 +129,7 @@ namespace Bindable.Linq.Collections
         /// <param name="e">The <see cref="System.Collections.Specialized.NotifyCollectionChangedEventArgs"/> instance containing the event data.</param>
         private void OnCollectionChanged(NotifyCollectionChangedEventArgs e)
         {
-            NotifyCollectionChangedEventHandler handler = CollectionChanged;
+            var handler = CollectionChanged;
             if (handler != null)
             {
                 handler(this, e);

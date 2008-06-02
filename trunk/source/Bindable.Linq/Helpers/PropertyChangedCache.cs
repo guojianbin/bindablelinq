@@ -1,5 +1,3 @@
-using System;
-
 namespace Bindable.Linq.Helpers
 {
     using System.ComponentModel;

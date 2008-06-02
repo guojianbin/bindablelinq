@@ -1,7 +1,6 @@
-using System;
-
 namespace Bindable.Linq.Iterators
 {
+    using System;
     using System.Collections;
     using System.Collections.Generic;
     using System.Collections.Specialized;
@@ -139,11 +138,11 @@ namespace Bindable.Linq.Iterators
         {
             get
             {
-                bool loading = IsLoadingState.IsWithin;
+                var loading = IsLoadingState.IsWithin;
                 if (!loading)
                 {
                     // Check to see whether any of the source collections are loading.
-                    IEnumerator<IBindableCollection<TElement>> sourceCollections = SourceCollections.GetEnumerator();
+                    var sourceCollections = SourceCollections.GetEnumerator();
                     while (sourceCollections.MoveNext())
                     {
                         var loadable = sourceCollections.Current as ILoadable;
@@ -199,7 +198,7 @@ namespace Bindable.Linq.Iterators
         {
             get
             {
-                IBindingConfiguration result = BindingConfigurations.Default;
+                var result = BindingConfigurations.Default;
                 foreach (var source in SourceCollections)
                 {
                     if (source is IConfigurable)
@@ -240,16 +239,16 @@ namespace Bindable.Linq.Iterators
         /// </summary>
         public void Refresh()
         {
-            IEnumerator<IBindableCollection<TElement>> sourceCollections = SourceCollections.GetEnumerator();
+            var sourceCollections = SourceCollections.GetEnumerator();
 
             // First, find out whether or not ALL of the source collections we have can be refreshed.
-            bool allRefreshable = true;
-            bool nothingLoadedYet = true;
+            var allRefreshable = true;
+            var nothingLoadedYet = true;
             lock (IteratorLock)
             {
                 while (sourceCollections.MoveNext())
                 {
-                    LoadState? loadState = SourceCollectionStates.GetState(sourceCollections.Current);
+                    var loadState = SourceCollectionStates.GetState(sourceCollections.Current);
                     if (loadState == LoadState.EvenIfLoaded)
                     {
                         nothingLoadedYet = false;
@@ -310,7 +309,7 @@ namespace Bindable.Linq.Iterators
         /// be loaded. Otherwise, all collections will be forcibly loaded.</param>
         private void EnsureLoaded(LoadState? loadState)
         {
-            IEnumerator<IBindableCollection<TElement>> sourceCollections = _sourceCollectionStates.GetAllInState(loadState);
+            var sourceCollections = _sourceCollectionStates.GetAllInState(loadState);
             while (sourceCollections.MoveNext())
             {
                 SourceCollectionStates.SetState(sourceCollections.Current, LoadState.EvenIfLoaded);
@@ -416,7 +415,7 @@ namespace Bindable.Linq.Iterators
             // We do not handle CollectionChanged events from sources that are not loaded yet. 
             // Check whether this is a valid source collection.
             var sourceCollection = (IBindableCollection<TElement>) sender;
-            LoadState? currentState = SourceCollectionStates.GetState(sourceCollection);
+            var currentState = SourceCollectionStates.GetState(sourceCollection);
             if (currentState == null || currentState.Value == LoadState.IfNotAlreadyLoaded)
             {
                 return;
@@ -502,7 +501,7 @@ namespace Bindable.Linq.Iterators
             // when resetting the collection.
             if (!CollectionChangedSuspendedState.IsWithin)
             {
-                NotifyCollectionChangedEventHandler handler = CollectionChanged;
+                var handler = CollectionChanged;
                 if (handler != null)
                 {
                     handler(this, e);
@@ -518,7 +517,7 @@ namespace Bindable.Linq.Iterators
         /// <remarks>Warning: No locks should be held when invoking this method.</remarks>
         private void OnPropertyChanged(PropertyChangedEventArgs e)
         {
-            PropertyChangedEventHandler handler = PropertyChanged;
+            var handler = PropertyChanged;
             if (handler != null)
             {
                 handler(this, e);

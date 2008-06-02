@@ -1,5 +1,3 @@
-using System;
-
 namespace Bindable.Linq.Tests.TestHelpers
 {
     using System.Collections;
@@ -23,7 +21,7 @@ namespace Bindable.Linq.Tests.TestHelpers
 
         private void SubscribeChildren(IEnumerable items)
         {
-            foreach (object o in items)
+            foreach (var o in items)
             {
                 if (o is INotifyCollectionChanged)
                 {

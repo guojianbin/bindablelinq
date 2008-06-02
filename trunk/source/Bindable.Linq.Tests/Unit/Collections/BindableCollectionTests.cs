@@ -1,5 +1,3 @@
-using System;
-
 namespace Bindable.Linq.Tests.Unit.Helpers
 {
     using Collections;
@@ -26,8 +24,8 @@ namespace Bindable.Linq.Tests.Unit.Helpers
 
             // Enumerate over the items, and whilst enumerating, add some new items. The new items 
             // should be added and should not effect the items being enumerated.
-            int enumerated = 0;
-            foreach (Contact customer in customers)
+            var enumerated = 0;
+            foreach (var customer in customers)
             {
                 enumerated++;
                 // This would normally raise an InvalidOperationException

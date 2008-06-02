@@ -90,7 +90,7 @@ namespace Bindable.Linq.Iterators
         /// </returns>
         public override int Compare(S left, S right)
         {
-            int result = 0;
+            var result = 0;
             if (_superior != null)
             {
                 result = _superior.Compare(left, right);
@@ -98,8 +98,8 @@ namespace Bindable.Linq.Iterators
             if (result == 0)
             {
                 // Extract the keys
-                K leftKey = _keySelector(left);
-                K rightKey = _keySelector(right);
+                var leftKey = _keySelector(left);
+                var rightKey = _keySelector(right);
 
                 // Compare
                 result = _comparer.Compare(leftKey, rightKey);

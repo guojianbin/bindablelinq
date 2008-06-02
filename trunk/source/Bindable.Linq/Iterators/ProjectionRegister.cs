@@ -1,7 +1,6 @@
-using System;
-
 namespace Bindable.Linq.Iterators
 {
+    using System;
     using System.Collections.Generic;
     using Helpers;
 
@@ -108,7 +107,7 @@ namespace Bindable.Linq.Iterators
         /// <returns></returns>
         public TResult ReProject(TSource source)
         {
-            TResult projected = _projector(source);
+            var projected = _projector(source);
             Store(source, projected);
             return projected;
         }
@@ -120,7 +119,7 @@ namespace Bindable.Linq.Iterators
         /// <returns></returns>
         public TResult Project(TSource source)
         {
-            object result = InnerGetExistingProjection(source);
+            var result = InnerGetExistingProjection(source);
 
             if (result != null)
             {
@@ -128,7 +127,7 @@ namespace Bindable.Linq.Iterators
             }
             else
             {
-                TResult projected = _projector(source);
+                var projected = _projector(source);
                 Store(source, projected);
                 return projected;
             }
@@ -141,7 +140,7 @@ namespace Bindable.Linq.Iterators
         /// <returns></returns>
         public IEnumerable<TResult> CreateOrGetProjections(IEnumerable<TSource> range)
         {
-            foreach (TSource source in range)
+            foreach (var source in range)
             {
                 if (source != null)
                 {
@@ -158,11 +157,11 @@ namespace Bindable.Linq.Iterators
         public IEnumerable<TResult> GetProjections(IEnumerable<TSource> range)
         {
             var results = new List<TResult>();
-            foreach (TSource source in range)
+            foreach (var source in range)
             {
                 if (source != null)
                 {
-                    object existing = InnerGetExistingProjection(source);
+                    var existing = InnerGetExistingProjection(source);
                     if (existing != null)
                     {
                         results.Add((TResult) existing);
@@ -193,7 +192,7 @@ namespace Bindable.Linq.Iterators
         /// <param name="sourceItems">The source items.</param>
         public void RemoveRange(IEnumerable<TSource> sourceItems)
         {
-            foreach (TSource source in sourceItems)
+            foreach (var source in sourceItems)
             {
                 Remove(source);
             }

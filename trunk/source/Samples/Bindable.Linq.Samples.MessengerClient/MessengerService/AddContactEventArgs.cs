@@ -1,18 +1,14 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Bindable.Linq.Samples.MessengerClient.Domain;
-using System.ComponentModel;
-
 namespace Bindable.Linq.Samples.MessengerClient.MessengerService
 {
+    using System.ComponentModel;
+    using Domain;
+
     /// <summary>
     /// Represents the arguments of an event relating to messenger contacts.
     /// </summary>
     public class AddContactEventArgs : CancelEventArgs
     {
-        private Contact _contact;
+        private readonly Contact _contact;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ContactEventArgs"/> class.

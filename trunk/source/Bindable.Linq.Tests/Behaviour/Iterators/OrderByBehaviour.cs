@@ -1,5 +1,3 @@
-using System;
-
 namespace Bindable.Linq.Tests.Behaviour.Iterators
 {
     using Collections;
@@ -26,7 +24,7 @@ namespace Bindable.Linq.Tests.Behaviour.Iterators
             inputs.Add(new Contact {Name = "Paul Stovell", Company = "Raedify"});
 
             // Create the query
-            IOrderedBindableQuery<Contact> result = inputs.AsBindable().OrderBy(c => c.Name).ThenBy(c => c.Company);
+            var result = inputs.AsBindable().OrderBy(c => c.Name).ThenBy(c => c.Company);
             var eventCatcher = new CollectionEventCatcher(result);
 
             // Check that the results are in the correct order 
@@ -64,7 +62,7 @@ namespace Bindable.Linq.Tests.Behaviour.Iterators
             inputs.Add(new Contact {Name = "Mitch Denny"});
 
             // Create the query
-            IOrderedBindableQuery<Contact> result = inputs.AsBindable().OrderBy(c => c.Name);
+            var result = inputs.AsBindable().OrderBy(c => c.Name);
             var eventCatcher = new CollectionEventCatcher(result);
 
             // Ensure the items are all there and in the correct order.

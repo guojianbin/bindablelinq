@@ -1,10 +1,10 @@
-using System.Linq;
-using NUnit.Framework;
-using Bindable.Linq.Tests.TestHelpers;
-using Bindable.Linq.Tests.TestObjectModel;
-
 namespace Bindable.Linq.Tests.Behaviour.Iterators
 {
+    using System.Linq;
+    using Bindable.Linq;
+    using NUnit.Framework;
+    using TestHelpers;
+    using TestObjectModel;
 
     /// <summary>
     /// This class contains tests for the Bindable LINQ WhereIterator class.

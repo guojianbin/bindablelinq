@@ -1,5 +1,3 @@
-using System;
-
 namespace Bindable.Linq.Configuration
 {
     using Bindable.Linq.Dependencies.ExpressionAnalysis;

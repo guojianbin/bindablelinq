@@ -1,5 +1,3 @@
-using System;
-
 namespace Bindable.Linq.Tests.Unit.Helpers
 {
     using Bindable.Linq.Helpers;
@@ -37,7 +35,7 @@ namespace Bindable.Linq.Tests.Unit.Helpers
         [Test]
         public void StateScopeEntranceTriggersCallback()
         {
-            int eventsRaised = 0;
+            var eventsRaised = 0;
             StateScopeChangedCallback callback = delegate { eventsRaised++; };
 
             var scope = new StateScope(callback);

@@ -1,20 +1,14 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.ComponentModel;
-
 namespace Bindable.Linq.SampleApplication
 {
+    using System.ComponentModel;
+
     public class Contact : INotifyPropertyChanged
     {
+        private string _company;
         private string _name;
         private string _phoneNumber;
-        private string _company;
 
-        public Contact()
-        {
-        }
+        public Contact() {}
 
         public string Name
         {
@@ -46,13 +40,15 @@ namespace Bindable.Linq.SampleApplication
             }
         }
 
+        #region INotifyPropertyChanged Members
         public event PropertyChangedEventHandler PropertyChanged;
+        #endregion
 
         protected virtual void OnPropertyChanged(PropertyChangedEventArgs e)
         {
-            if (this.PropertyChanged != null)
+            if (PropertyChanged != null)
             {
-                this.PropertyChanged(this, e);
+                PropertyChanged(this, e);
             }
         }
     }

@@ -1,13 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Linq;
-using System.Windows;
-using Bindable.Linq.SampleApplication.Samples;
-
 namespace Bindable.Linq.SampleApplication
 {
+    using System.Windows;
+    using Samples;
+
     /// <summary>
     /// Interaction logic for App.xaml
     /// </summary>
@@ -16,7 +11,7 @@ namespace Bindable.Linq.SampleApplication
         protected override void OnStartup(StartupEventArgs e)
         {
             Window w = new SyncLinqFilteredWindow();
-            this.MainWindow = w;
+            MainWindow = w;
             w.Show();
         }
     }

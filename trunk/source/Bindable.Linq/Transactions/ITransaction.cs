@@ -1,7 +1,7 @@
-using System;
-
 namespace Bindable.Linq.Transactions
 {
+    using System;
+
     /// <summary>
     /// An interface implemented by classes that record collection changed events and package them up, before they are 
     /// raised. When one class is recording a transaction, others will wait before beginning 

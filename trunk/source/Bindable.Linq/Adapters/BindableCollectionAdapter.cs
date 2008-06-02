@@ -1,13 +1,13 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.ComponentModel;
-using Bindable.Linq.Configuration;
-using Bindable.Linq.Helpers;
-
 namespace Bindable.Linq.Adapters
 {
+    using System;
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.Collections.Specialized;
+    using System.ComponentModel;
+    using Configuration;
+    using Helpers;
+
     /// <summary>
     /// Turns any kind of collection into a bindable collection.
     /// </summary>

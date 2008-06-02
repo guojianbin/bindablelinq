@@ -1,40 +1,26 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Windows.Forms;
-using System.Diagnostics;
-using System.Threading;
-using Bindable.Linq.Threading;
-
 namespace Bindable.Linq.Samples.WindowsForms
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics;
+    using System.Windows.Forms;
+    using Threading;
+
     public partial class MainForm : Form
     {
-        private static Dictionary<int, ProcessWrapper> _cachedProcesses = 
-            new Dictionary<int, ProcessWrapper>();
+        private static readonly Dictionary<int, ProcessWrapper> _cachedProcesses = new Dictionary<int, ProcessWrapper>();
 
         public MainForm()
         {
             InitializeComponent();
 
-            _processWrapperBindingSource.DataSource =
-                GetAllProcesses()
-                .AsBindable()
-                .Polling(new WpfDispatcher(), TimeSpan.FromMilliseconds(300))
-                .OrderBy(p => p.ProcessName)
-                .Where(p => p.ProcessName.ToLower()
-                    .Contains(_filterTextBox.Text.ToLower()))
-                .ToBindingList();
+            _processWrapperBindingSource.DataSource = GetAllProcesses().AsBindable().Polling(new WpfDispatcher(), TimeSpan.FromMilliseconds(300)).OrderBy(p => p.ProcessName).Where(p => p.ProcessName.ToLower().Contains(_filterTextBox.Text.ToLower())).ToBindingList();
         }
 
         private IEnumerable<ProcessWrapper> GetAllProcesses()
         {
-            List<ProcessWrapper> wrappers = new List<ProcessWrapper>();
-            foreach (Process process in Process.GetProcesses())
+            var wrappers = new List<ProcessWrapper>();
+            foreach (var process in Process.GetProcesses())
             {
                 if (!_cachedProcesses.ContainsKey(process.Id))
                 {

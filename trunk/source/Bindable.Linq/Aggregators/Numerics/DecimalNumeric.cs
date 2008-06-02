@@ -1,11 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Bindable.Linq.Aggregators.Numerics;
-
 namespace Bindable.Linq.Aggregators.Numerics
 {
+    using System.Collections.Generic;
+
     /// <summary>
     /// Provides a numeric operations wrapper for decimal types.
     /// </summary>
@@ -19,10 +15,10 @@ namespace Bindable.Linq.Aggregators.Numerics
         /// <returns></returns>
         public decimal Sum(IEnumerable<decimal> sourceCollection)
         {
-            decimal result = default(decimal);
+            var result = default(decimal);
             if (sourceCollection != null)
             {
-                foreach (decimal item in sourceCollection)
+                foreach (var item in sourceCollection)
                 {
                     result += item;
                 }
@@ -37,12 +33,12 @@ namespace Bindable.Linq.Aggregators.Numerics
         /// <returns></returns>
         public decimal Average(IEnumerable<decimal> sourceCollection)
         {
-            decimal result = default(decimal);
+            var result = default(decimal);
 
-            int count = 0;
+            var count = 0;
             if (sourceCollection != null)
             {
-                foreach (decimal item in sourceCollection)
+                foreach (var item in sourceCollection)
                 {
                     result += item;
                     count++;
@@ -66,12 +62,12 @@ namespace Bindable.Linq.Aggregators.Numerics
         /// <returns></returns>
         public decimal Min(IEnumerable<decimal> sourceCollection)
         {
-            decimal result = default(decimal);
+            var result = default(decimal);
 
-            bool firstItem = true;
+            var firstItem = true;
             if (sourceCollection != null)
             {
-                foreach (decimal item in sourceCollection)
+                foreach (var item in sourceCollection)
                 {
                     if (firstItem || item < result)
                     {
@@ -91,12 +87,12 @@ namespace Bindable.Linq.Aggregators.Numerics
         /// <returns></returns>
         public decimal Max(IEnumerable<decimal> sourceCollection)
         {
-            decimal result = default(decimal);
+            var result = default(decimal);
 
-            bool firstItem = true;
+            var firstItem = true;
             if (sourceCollection != null)
             {
-                foreach (decimal item in sourceCollection)
+                foreach (var item in sourceCollection)
                 {
                     if (firstItem || item > result)
                     {
@@ -118,18 +114,17 @@ namespace Bindable.Linq.Aggregators.Numerics
         /// <returns></returns>
         public decimal? Sum(IEnumerable<decimal?> sourceCollection)
         {
-            decimal result = 0.00M;
+            var result = 0.00M;
 
             if (sourceCollection != null)
             {
-                foreach (decimal? item in sourceCollection)
+                foreach (var item in sourceCollection)
                 {
                     if (item != null)
                     {
                         result += item.Value;
                     }
                 }
-
             }
 
             return result;
@@ -142,12 +137,12 @@ namespace Bindable.Linq.Aggregators.Numerics
         /// <returns></returns>
         public decimal? Average(IEnumerable<decimal?> sourceCollection)
         {
-            decimal result = default(decimal);
+            var result = default(decimal);
 
-            int count = 0;
+            var count = 0;
             if (sourceCollection != null)
             {
-                foreach (decimal? item in sourceCollection)
+                foreach (var item in sourceCollection)
                 {
                     if (item != null)
                     {
@@ -174,12 +169,12 @@ namespace Bindable.Linq.Aggregators.Numerics
         /// <returns></returns>
         public decimal? Min(IEnumerable<decimal?> sourceCollection)
         {
-            decimal result = default(decimal);
+            var result = default(decimal);
 
-            bool firstItem = true;
+            var firstItem = true;
             if (sourceCollection != null)
             {
-                foreach (decimal? item in sourceCollection)
+                foreach (var item in sourceCollection)
                 {
                     if (item != null)
                     {
@@ -209,12 +204,12 @@ namespace Bindable.Linq.Aggregators.Numerics
         /// <returns></returns>
         public decimal? Max(IEnumerable<decimal?> sourceCollection)
         {
-            decimal result = default(decimal);
+            var result = default(decimal);
 
-            bool firstItem = true;
+            var firstItem = true;
             if (sourceCollection != null)
             {
-                foreach (decimal? item in sourceCollection)
+                foreach (var item in sourceCollection)
                 {
                     if (item != null)
                     {

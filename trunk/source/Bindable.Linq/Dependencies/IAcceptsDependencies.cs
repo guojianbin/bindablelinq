@@ -1,5 +1,3 @@
-using System;
-
 namespace Bindable.Linq.Dependencies
 {
     /// <summary>

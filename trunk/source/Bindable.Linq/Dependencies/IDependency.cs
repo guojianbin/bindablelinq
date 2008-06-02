@@ -1,7 +1,7 @@
-using System;
-
 namespace Bindable.Linq.Dependencies
 {
+    using System;
+
     /// <summary>
     /// An interface implemented by all dependencies. 
     /// </summary>

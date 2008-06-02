@@ -1,7 +1,6 @@
-using System;
-
 namespace Bindable.Linq.Tests.Unit.Helpers
 {
+    using System;
     using Bindable.Linq.Helpers;
     using NUnit.Framework;
 
@@ -105,7 +104,7 @@ namespace Bindable.Linq.Tests.Unit.Helpers
             // so the only other GC reference will be the publisher - this is what introduces
             // memory issues in binding and WPF applications.
             var publisher = new EventPublisher();
-            WeakReference subscriberReference = CreateEventSubscriber(publisher);
+            var subscriberReference = CreateEventSubscriber(publisher);
             GC.Collect();
             GC.WaitForPendingFinalizers();
 
@@ -129,7 +128,7 @@ namespace Bindable.Linq.Tests.Unit.Helpers
             // reference from the publisher to the subscriber, the subscriber should be 
             // marked for collection and finalized.
             var publisher = new EventPublisher();
-            WeakReference subscriberReference = CreateWeakEventSubscriber(publisher);
+            var subscriberReference = CreateWeakEventSubscriber(publisher);
             GC.Collect();
             GC.WaitForPendingFinalizers();
 

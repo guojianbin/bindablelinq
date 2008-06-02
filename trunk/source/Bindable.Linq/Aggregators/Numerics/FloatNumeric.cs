@@ -1,11 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Bindable.Linq.Aggregators.Numerics;
-
 namespace Bindable.Linq.Aggregators.Numerics
 {
+    using System.Collections.Generic;
+
     /// <summary>
     /// Provides a numeric operations wrapper for float types.
     /// </summary>
@@ -19,10 +15,10 @@ namespace Bindable.Linq.Aggregators.Numerics
         /// <returns></returns>
         public float Sum(IEnumerable<float> sourceCollection)
         {
-            float result = default(float);
+            var result = default(float);
             if (sourceCollection != null)
             {
-                foreach (float item in sourceCollection)
+                foreach (var item in sourceCollection)
                 {
                     result += item;
                 }
@@ -37,12 +33,12 @@ namespace Bindable.Linq.Aggregators.Numerics
         /// <returns></returns>
         public float Average(IEnumerable<float> sourceCollection)
         {
-            float result = default(float);
+            var result = default(float);
 
-            int count = 0;
+            var count = 0;
             if (sourceCollection != null)
             {
-                foreach (float item in sourceCollection)
+                foreach (var item in sourceCollection)
                 {
                     result += item;
                     count++;
@@ -66,19 +62,18 @@ namespace Bindable.Linq.Aggregators.Numerics
         /// <returns></returns>
         public float Min(IEnumerable<float> sourceCollection)
         {
-            float result = default(float);
+            var result = default(float);
 
-            bool firstItem = true;
+            var firstItem = true;
             if (sourceCollection != null)
             {
-                foreach (float item in sourceCollection)
+                foreach (var item in sourceCollection)
                 {
                     if (firstItem || item < result)
                     {
                         result = item;
                         firstItem = false;
                     }
-
                 }
             }
 
@@ -92,12 +87,12 @@ namespace Bindable.Linq.Aggregators.Numerics
         /// <returns></returns>
         public float Max(IEnumerable<float> sourceCollection)
         {
-            float result = default(float);
+            var result = default(float);
 
-            bool firstItem = true;
+            var firstItem = true;
             if (sourceCollection != null)
             {
-                foreach (float item in sourceCollection)
+                foreach (var item in sourceCollection)
                 {
                     if (firstItem || item > result)
                     {
@@ -119,11 +114,11 @@ namespace Bindable.Linq.Aggregators.Numerics
         /// <returns></returns>
         public float? Sum(IEnumerable<float?> sourceCollection)
         {
-            float result = default(float);
+            var result = default(float);
 
             if (sourceCollection != null)
             {
-                foreach (float? item in sourceCollection)
+                foreach (var item in sourceCollection)
                 {
                     if (item != null)
                     {
@@ -142,12 +137,12 @@ namespace Bindable.Linq.Aggregators.Numerics
         /// <returns></returns>
         public float? Average(IEnumerable<float?> sourceCollection)
         {
-            float result = default(float);
+            var result = default(float);
 
-            int count = 0;
+            var count = 0;
             if (sourceCollection != null)
             {
-                foreach (float? item in sourceCollection)
+                foreach (var item in sourceCollection)
                 {
                     if (item != null)
                     {
@@ -174,12 +169,12 @@ namespace Bindable.Linq.Aggregators.Numerics
         /// <returns></returns>
         public float? Min(IEnumerable<float?> sourceCollection)
         {
-            float result = default(float);
+            var result = default(float);
 
-            bool firstItem = true;
+            var firstItem = true;
             if (sourceCollection != null)
             {
-                foreach (float? item in sourceCollection)
+                foreach (var item in sourceCollection)
                 {
                     if (item != null)
                     {
@@ -209,12 +204,12 @@ namespace Bindable.Linq.Aggregators.Numerics
         /// <returns></returns>
         public float? Max(IEnumerable<float?> sourceCollection)
         {
-            float result = default(float);
+            var result = default(float);
 
-            bool firstItem = true;
+            var firstItem = true;
             if (sourceCollection != null)
             {
-                foreach (float? item in sourceCollection)
+                foreach (var item in sourceCollection)
                 {
                     if (item != null)
                     {

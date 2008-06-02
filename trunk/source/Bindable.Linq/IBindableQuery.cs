@@ -1,7 +1,6 @@
-using System;
-
 namespace Bindable.Linq
 {
+    using System;
     using System.Collections.Generic;
     using Configuration;
     using Dependencies;

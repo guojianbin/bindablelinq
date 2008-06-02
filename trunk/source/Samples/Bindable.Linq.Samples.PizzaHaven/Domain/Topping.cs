@@ -1,14 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
 namespace Bindable.Linq.Samples.PizzaHaven.Domain
 {
     public class Topping
     {
-        private string _name;
-        private decimal _price;
+        private readonly string _name;
+        private readonly decimal _price;
 
         public Topping(string name, decimal price)
         {

@@ -56,6 +56,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\SolutionInfo.cs">
+      <Link>Properties\SolutionInfo.cs</Link>
+    </Compile>
     <Compile Include="Behaviour\Aggregators\AverageAggregatorTests.cs" />
     <Compile Include="Behaviour\Aggregators\CustomAggregatorTests.cs" />
     <Compile Include="Behaviour\Aggregators\MaxAggregatorTests.cs" />
@@ -106,7 +109,6 @@
     <Compile Include="Behaviour\Iterators\WhereBehaviour.cs" />
     <Compile Include="Unit\Helpers\WeakTimerTests.cs" />
     <Compile Include="Unit\Aggregators\Numerics\NumericTests.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Unit\Iterators\AsynchronousIteratorTests.cs" />
     <Compile Include="Unit\Iterators\GroupByIteratorTests.cs" />
     <Compile Include="Unit\Iterators\IteratorTests.cs" />
@@ -123,7 +125,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Bindable.Linq\Bindable.Linq.csproj">
       <Project>{1BD32C0F-5FDE-4913-AEED-13840ACBF4E0}</Project>
-      <Name>BindingOriented.SyncLinq</Name>
+      <Name>Bindable.Linq</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

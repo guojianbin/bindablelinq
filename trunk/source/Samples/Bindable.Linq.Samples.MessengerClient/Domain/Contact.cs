@@ -1,29 +1,22 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.ComponentModel;
-
 namespace Bindable.Linq.Samples.MessengerClient.Domain
 {
+    using System.ComponentModel;
+
     /// <summary>
     /// Represents a contact.
     /// </summary>
     public sealed class Contact : INotifyPropertyChanged
     {
-        private string _name;
         private string _emailAddress;
-        private string _tagLine;
+        private string _name;
         private byte[] _photo;
         private ContactStatus _status;
+        private string _tagLine;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Contact"/> class.
         /// </summary>
-        public Contact()
-        {
-
-        }
+        public Contact() {}
 
         /// <summary>
         /// Gets or sets the name.
@@ -95,10 +88,12 @@ namespace Bindable.Linq.Samples.MessengerClient.Domain
             }
         }
 
+        #region INotifyPropertyChanged Members
         /// <summary>
         /// Occurs when a property value changes.
         /// </summary>
         public event PropertyChangedEventHandler PropertyChanged;
+        #endregion
 
         /// <summary>
         /// Raises the <see cref="E:PropertyChanged"/> event.
@@ -106,7 +101,7 @@ namespace Bindable.Linq.Samples.MessengerClient.Domain
         /// <param name="e">The <see cref="System.ComponentModel.PropertyChangedEventArgs"/> instance containing the event data.</param>
         private void OnPropertyChanged(PropertyChangedEventArgs e)
         {
-            PropertyChangedEventHandler handler = this.PropertyChanged;
+            var handler = PropertyChanged;
             if (handler != null)
             {
                 handler(this, e);

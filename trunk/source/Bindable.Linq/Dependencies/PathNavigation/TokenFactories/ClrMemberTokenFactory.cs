@@ -1,7 +1,6 @@
-using System;
-
 namespace Bindable.Linq.Dependencies.PathNavigation.TokenFactories
 {
+    using System;
     using Tokens;
 
     /// <summary>
@@ -25,9 +24,9 @@ namespace Bindable.Linq.Dependencies.PathNavigation.TokenFactories
             IToken result = null;
             if (target != null)
             {
-                string propertyName = propertyPath;
+                var propertyName = propertyPath;
                 string remainingPath = null;
-                int dotIndex = propertyPath.IndexOf('.');
+                var dotIndex = propertyPath.IndexOf('.');
                 if (dotIndex >= 0)
                 {
                     propertyName = propertyPath.Substring(0, dotIndex);

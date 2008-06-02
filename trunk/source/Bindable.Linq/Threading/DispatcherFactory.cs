@@ -1,5 +1,3 @@
-using System;
-
 namespace Bindable.Linq.Threading
 {
     using System.Windows.Threading;

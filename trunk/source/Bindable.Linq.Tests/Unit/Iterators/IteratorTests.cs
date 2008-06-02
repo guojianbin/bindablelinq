@@ -1,7 +1,6 @@
-using System;
-
 namespace Bindable.Linq.Tests.Unit.Iterators
 {
+    using System;
     using System.Collections;
     using System.Collections.Generic;
     using System.Threading;
@@ -77,7 +76,7 @@ namespace Bindable.Linq.Tests.Unit.Iterators
 
         private static void IsNotSupported(Action action)
         {
-            bool threw = false;
+            var threw = false;
             try
             {
                 action();
@@ -129,7 +128,7 @@ namespace Bindable.Linq.Tests.Unit.Iterators
 
             private void EnsureLockIsNotHeld()
             {
-                bool isHeld = true;
+                var isHeld = true;
                 var are = new AutoResetEvent(false);
                 ThreadPool.QueueUserWorkItem(delegate
                 {
@@ -204,7 +203,7 @@ namespace Bindable.Linq.Tests.Unit.Iterators
         [Test]
         public void IteratorUnsubscribesFromItemWhenRemoved()
         {
-            BindableCollection<Contact> sourceCollection = Given.Collection(Mike, Tom, Jack);
+            var sourceCollection = Given.Collection(Mike, Tom, Jack);
 
             var contactIterator = new SimpleIterator<Contact>(sourceCollection);
             Assert.IsFalse(Mike.HasPropertyChangedSubscribers);
@@ -214,7 +213,7 @@ namespace Bindable.Linq.Tests.Unit.Iterators
             Assert.IsTrue(sourceCollection.HasCollectionChangedSubscribers);
 
             contactIterator.AcceptDependency(new ItemDependencyDefinition("Name"));
-            foreach (Contact c in contactIterator) {}
+            foreach (var c in contactIterator) {}
 
             Assert.IsTrue(Mike.HasPropertyChangedSubscribers);
             Assert.IsTrue(Tom.HasPropertyChangedSubscribers);
@@ -242,7 +241,7 @@ namespace Bindable.Linq.Tests.Unit.Iterators
         [Test]
         public void IteratorWithDependenciesUnsubscribesFromAllSourceEventsWhenDisposed()
         {
-            BindableCollection<Contact> sourceCollection = Given.Collection(Mike, Tom, Jack);
+            var sourceCollection = Given.Collection(Mike, Tom, Jack);
 
             var contactIterator = new SimpleIterator<Contact>(sourceCollection);
             Assert.IsFalse(Mike.HasPropertyChangedSubscribers);
@@ -259,7 +258,7 @@ namespace Bindable.Linq.Tests.Unit.Iterators
             Assert.IsTrue(sourceCollection.HasPropertyChangedSubscribers);
             Assert.IsTrue(sourceCollection.HasCollectionChangedSubscribers);
 
-            foreach (Contact c in contactIterator) {}
+            foreach (var c in contactIterator) {}
 
             Assert.IsTrue(Mike.HasPropertyChangedSubscribers);
             Assert.IsTrue(Tom.HasPropertyChangedSubscribers);
@@ -288,7 +287,7 @@ namespace Bindable.Linq.Tests.Unit.Iterators
             contactIterator.AcceptDependency(new ItemDependencyDefinition("Name"));
             Assert.AreEqual(0, sourceCollection.GetEnumeratorCalls);
 
-            foreach (Contact c in contactIterator) {}
+            foreach (var c in contactIterator) {}
             Assert.AreEqual(1, sourceCollection.GetEnumeratorCalls);
 
             contactIterator.Dispose();
@@ -298,7 +297,7 @@ namespace Bindable.Linq.Tests.Unit.Iterators
         [Test]
         public void IteratorWithoutDependenciesUnsubscribesFromAllSourceEventsWhenDisposed()
         {
-            BindableCollection<Contact> sourceCollection = Given.Collection(Mike, Tom, Jack);
+            var sourceCollection = Given.Collection(Mike, Tom, Jack);
 
             var contactIterator = new SimpleIterator<Contact>(sourceCollection);
             Assert.IsFalse(Mike.HasPropertyChangedSubscribers);
@@ -327,7 +326,7 @@ namespace Bindable.Linq.Tests.Unit.Iterators
         [Test]
         public void IteratorWriteMethodsThrowExceptions()
         {
-            BindableCollection<Contact> sourceCollection = Given.Collection(Mike, Tom, Jack);
+            var sourceCollection = Given.Collection(Mike, Tom, Jack);
             var contactIterator = new SimpleIterator<Contact>(sourceCollection);
 
             IsNotSupported(() => contactIterator.Add(new object()));

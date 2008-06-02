@@ -1,7 +1,6 @@
-using System;
-
 namespace Bindable.Linq.Dependencies.PathNavigation.TokenFactories
 {
+    using System;
     using System.Reflection;
     using System.Windows;
     using Tokens;
@@ -28,9 +27,9 @@ namespace Bindable.Linq.Dependencies.PathNavigation.TokenFactories
 #if !SILVERLIGHT
             if (target is DependencyObject)
             {
-                string propertyName = propertyPath;
+                var propertyName = propertyPath;
                 string remainingPath = null;
-                int dotIndex = propertyPath.IndexOf('.');
+                var dotIndex = propertyPath.IndexOf('.');
                 if (dotIndex >= 0)
                 {
                     propertyName = propertyPath.Substring(0, dotIndex);
@@ -41,7 +40,7 @@ namespace Bindable.Linq.Dependencies.PathNavigation.TokenFactories
                 var dependencyObject = (DependencyObject) target;
                 if (dependencyObject != null)
                 {
-                    FieldInfo field = dependencyObject.GetType().GetField(propertyName + "Property", BindingFlags.Public | BindingFlags.Static);
+                    var field = dependencyObject.GetType().GetField(propertyName + "Property", BindingFlags.Public | BindingFlags.Static);
                     if (field != null)
                     {
                         var dependencyProperty = (DependencyProperty) field.GetValue(null);

@@ -1,5 +1,3 @@
-using System;
-
 namespace Bindable.Linq.Tests.Behaviour.Iterators
 {
     using System.Collections;

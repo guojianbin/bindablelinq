@@ -1,7 +1,6 @@
-using System;
-
 namespace Bindable.Linq.Tests.Unit.Dependencies.ExpressionAnalysis
 {
+    using System;
     using System.Linq;
     using System.Linq.Expressions;
     using Bindable.Linq.Dependencies.ExpressionAnalysis;
@@ -23,14 +22,14 @@ namespace Bindable.Linq.Tests.Unit.Dependencies.ExpressionAnalysis
         {
             var flattener = new ExpressionFlattener(expression.Body, ExpressionType.Constant, ExpressionType.Parameter, ExpressionType.MemberAccess);
 
-            bool failed = false;
+            var failed = false;
             if (expectedExpressionTypes.Length != flattener.Expressions.Count())
             {
                 failed = true;
             }
             else
             {
-                for (int i = 0; i < expectedExpressionTypes.Length; i++)
+                for (var i = 0; i < expectedExpressionTypes.Length; i++)
                 {
                     if (!flattener.Expressions.Select(x => x.NodeType).Contains(expectedExpressionTypes[i]))
                     {

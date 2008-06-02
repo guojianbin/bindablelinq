@@ -1,7 +1,7 @@
-using System;
-
 namespace Bindable.Linq.Operators
 {
+    using System;
+
     /// <summary>
     /// Performs a check against the item, returning the result type depending on whether the item is true or false.
     /// </summary>
@@ -36,7 +36,7 @@ namespace Bindable.Linq.Operators
         /// </summary>
         protected override void RefreshOverride()
         {
-            TSource source = Source.Current;
+            var source = Source.Current;
             if (source != null)
             {
                 if (_condition(source))

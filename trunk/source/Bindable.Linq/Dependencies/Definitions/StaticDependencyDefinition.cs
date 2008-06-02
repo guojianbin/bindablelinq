@@ -1,22 +1,15 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using Bindable.Linq;
-using Bindable.Linq.Collections;
-using Bindable.Linq.Dependencies.PathNavigation;
-
 namespace Bindable.Linq.Dependencies.Definitions
 {
+    using System;
+    using System.Reflection;
+    using Collections;
+    using PathNavigation;
+
     /// <summary>
     /// Defines a dependency on a static property or member.
     /// </summary>
     public sealed class StaticDependencyDefinition : IDependencyDefinition
     {
-        private MemberInfo _member;
-        private string _propertyPath;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="StaticDependencyDefinition"/> class.
         /// </summary>
@@ -24,30 +17,23 @@ namespace Bindable.Linq.Dependencies.Definitions
         /// <param name="member">The member.</param>
         public StaticDependencyDefinition(string propertyPath, MemberInfo member)
         {
-            _member = member;
-            _propertyPath = propertyPath;
+            Member = member;
+            PropertyPath = propertyPath;
         }
 
         /// <summary>
         /// Gets or sets the member.
         /// </summary>
         /// <value>The member.</value>
-        public MemberInfo Member
-        {
-            get { return _member; }
-            set { _member = value; }
-        }
+        public MemberInfo Member { get; set; }
 
         /// <summary>
         /// Gets or sets the property path.
         /// </summary>
         /// <value>The property path.</value>
-        public string PropertyPath
-        {
-            get { return _propertyPath; }
-            set { _propertyPath = value; }
-        }
+        public string PropertyPath { get; set; }
 
+        #region IDependencyDefinition Members
         /// <summary>
         /// Determines whether this instance can construct dependencies for a collection.
         /// </summary>
@@ -89,6 +75,7 @@ namespace Bindable.Linq.Dependencies.Definitions
         {
             throw new NotImplementedException();
         }
+        #endregion
 
         /// <summary>
         /// Returns a <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
@@ -98,7 +85,7 @@ namespace Bindable.Linq.Dependencies.Definitions
         /// </returns>
         public override string ToString()
         {
-            return string.Format("{0}: '{1}' on '{2}'", this.GetType().Name, this.PropertyPath, this.Member.DeclaringType.Name);
+            return string.Format("{0}: '{1}' on '{2}'", GetType().Name, PropertyPath, Member.DeclaringType.Name);
         }
     }
 }

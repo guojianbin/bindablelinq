@@ -1,7 +1,7 @@
-using System;
-
 namespace Bindable.Linq.Helpers
 {
+    using System;
+
     /// <summary>
     /// Empty delegate used when a StateScope has been entered or left. 
     /// </summary>
@@ -70,10 +70,10 @@ namespace Bindable.Linq.Helpers
         /// </summary>
         public StateScope Enter()
         {
-            bool raiseCallback = false;
+            var raiseCallback = false;
             lock (_stateScopeLock)
             {
-                bool wasWithin = IsWithin;
+                var wasWithin = IsWithin;
                 _childrenCount++;
                 if (wasWithin != IsWithin && _callback != null)
                 {
@@ -92,12 +92,12 @@ namespace Bindable.Linq.Helpers
         /// </summary>
         public void Leave()
         {
-            bool raiseCallback = false;
+            var raiseCallback = false;
             lock (_stateScopeLock)
             {
                 if (_childrenCount > 0)
                 {
-                    bool wasWithin = IsWithin;
+                    var wasWithin = IsWithin;
                     _childrenCount--;
                     if (wasWithin != IsWithin && _callback != null)
                     {

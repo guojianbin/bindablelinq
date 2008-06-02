@@ -1,7 +1,7 @@
-using System;
-
 namespace Bindable.Linq.Helpers
 {
+    using System;
+
     /// <summary>
     /// Represents an exception thrown when a Bindable LINQ object attempts to acquire a <see cref="System.Threading.Monitor"/> lock
     /// but a timeout occurs.

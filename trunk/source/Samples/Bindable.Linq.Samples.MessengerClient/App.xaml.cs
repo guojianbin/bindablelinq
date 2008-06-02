@@ -1,14 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Linq;
-using System.Windows;
-using Bindable.Linq.Samples.MessengerClient.MessengerService;
-using Bindable.Linq.Samples.MessengerClient.MessengerService.Simulator;
-
 namespace Bindable.Linq.Samples.MessengerClient
 {
+    using System.Windows;
+    using Bindable.Linq.Samples.MessengerClient.MessengerService.Simulator;
+    using MessengerService;
+
     /// <summary>
     /// Interaction logic for App.xaml
     /// </summary>
@@ -23,8 +18,8 @@ namespace Bindable.Linq.Samples.MessengerClient
             base.OnStartup(e);
 
             IMessengerService service = new SimulationMessengerService();
-            MessengerWindow window = new MessengerWindow(service);
-            this.MainWindow = window;
+            var window = new MessengerWindow(service);
+            MainWindow = window;
             window.Show();
         }
     }

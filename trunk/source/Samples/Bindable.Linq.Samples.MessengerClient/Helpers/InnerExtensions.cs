@@ -1,7 +1,6 @@
-using System;
-
 namespace Bindable.Linq.Samples.MessengerClient.Helpers
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
 
@@ -17,7 +16,7 @@ namespace Bindable.Linq.Samples.MessengerClient.Helpers
         /// </summary>
         public static TElement SelectRandom<TElement>(this IEnumerable<TElement> elements)
         {
-            int index = _random.Next(0, elements.Count());
+            var index = _random.Next(0, elements.Count());
             return elements.ElementAt(index);
         }
     }

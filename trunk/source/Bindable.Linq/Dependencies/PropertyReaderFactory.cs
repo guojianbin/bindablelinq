@@ -1,7 +1,6 @@
-using System;
-
 namespace Bindable.Linq.Helpers
 {
+    using System;
     using System.Collections.Generic;
     using System.Reflection;
 
@@ -21,7 +20,7 @@ namespace Bindable.Linq.Helpers
         /// <returns>A strongly typed property reader that will read the property value without reflection.</returns>
         public static IPropertyReader<TCast> Create<TCast>(Type objectType, string propertyName)
         {
-            string key = objectType.AssemblyQualifiedName + "-" + propertyName;
+            var key = objectType.AssemblyQualifiedName + "-" + propertyName;
             IPropertyReader<TCast> result = null;
             if (_readers.ContainsKey(key))
             {
@@ -29,26 +28,26 @@ namespace Bindable.Linq.Helpers
             }
             if (result == null)
             {
-                PropertyInfo propertyInfo = objectType.GetProperty(propertyName);
+                var propertyInfo = objectType.GetProperty(propertyName);
                 if (propertyInfo != null)
                 {
                     if (typeof (TCast).IsAssignableFrom(propertyInfo.PropertyType))
                     {
-                        Type delegateReaderType = typeof (Func<,>).MakeGenericType(propertyInfo.DeclaringType, propertyInfo.PropertyType);
-                        Type readerType = typeof (DelegatePropertyReader<,,>).MakeGenericType(propertyInfo.DeclaringType, propertyInfo.PropertyType, typeof (TCast));
-                        MethodInfo propertyGetterMethodInfo = propertyInfo.GetGetMethod();
+                        var delegateReaderType = typeof (Func<,>).MakeGenericType(propertyInfo.DeclaringType, propertyInfo.PropertyType);
+                        var readerType = typeof (DelegatePropertyReader<,,>).MakeGenericType(propertyInfo.DeclaringType, propertyInfo.PropertyType, typeof (TCast));
+                        var propertyGetterMethodInfo = propertyInfo.GetGetMethod();
                         if (propertyGetterMethodInfo == null)
                         {
                             throw new ArgumentException("The property '{0}' on type '{1}' does not contain a getter which could be accessed by the SyncLINQ binding infrastructure.".FormatWith(propertyName, propertyInfo.DeclaringType));
                         }
-                        Delegate propertyGetterDelegate = Delegate.CreateDelegate(delegateReaderType, propertyGetterMethodInfo);
+                        var propertyGetterDelegate = Delegate.CreateDelegate(delegateReaderType, propertyGetterMethodInfo);
                         result = (IPropertyReader<TCast>) Activator.CreateInstance(readerType, propertyGetterDelegate);
                         _readers[key] = result;
                     }
                 }
                 else
                 {
-                    FieldInfo fieldInfo = objectType.GetField(propertyName, BindingFlags.Instance | BindingFlags.NonPublic);
+                    var fieldInfo = objectType.GetField(propertyName, BindingFlags.Instance | BindingFlags.NonPublic);
                     if (fieldInfo != null)
                     {
                         if (typeof (TCast).IsAssignableFrom(fieldInfo.FieldType))

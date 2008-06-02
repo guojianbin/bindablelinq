@@ -1,7 +1,7 @@
-using System;
-
 namespace Bindable.Linq.Dependencies.PathNavigation.Tokens
 {
+    using System;
+
     /// <summary>
     /// A base class for objects that monitor a property.
     /// </summary>
@@ -147,7 +147,7 @@ namespace Bindable.Linq.Dependencies.PathNavigation.Tokens
         {
             lock (PropertyMonitorLock)
             {
-                object newValue = ReadCurrentPropertyValueOverride();
+                var newValue = ReadCurrentPropertyValueOverride();
                 NextToken = PathNavigator.TraverseNext(newValue, _remainingPath, NextMonitor_ChangeDetected);
             }
             ChangeDetected(_propertyName);

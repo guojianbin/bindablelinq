@@ -1,10 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
 namespace Bindable.Linq.Aggregators.Numerics
 {
+    using System.Collections.Generic;
+
     /// <summary>
     /// Implementers of this interface provide a helpful wrapper around numeric functions.
     /// Numeric types (integers, doubles, etc.) don't implement a common interface for numeric operations

@@ -1,20 +1,17 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Bindable.Linq.Helpers;
-
 namespace Bindable.Linq.Collections
 {
+    using System;
+    using System.Collections.Generic;
+
     /// <summary>
     /// Manages the snapshots of a collection.
     /// </summary>
     /// <typeparam name="TElement">The type of the element.</typeparam>
     internal sealed class SnapshotManager<TElement>
     {
+        private readonly Func<List<TElement>> _rebuildCallback;
         private readonly object _snapshotManagerLock = new object();
         private List<TElement> _latestSnapshot;
-        private Func<List<TElement>> _rebuildCallback;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SnapshotManager&lt;TElement&gt;"/> class.

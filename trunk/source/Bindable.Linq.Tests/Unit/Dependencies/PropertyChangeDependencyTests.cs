@@ -1,10 +1,8 @@
-using System;
-
 namespace Bindable.Linq.Tests.Unit.Dependencies
 {
+    using System;
     using System.Collections.Generic;
     using System.ComponentModel;
-    using Bindable.Linq.Dependencies.PathNavigation.Tokens;
     using Configuration;
     using NUnit.Framework;
     using TestHelpers;
@@ -132,13 +130,13 @@ namespace Bindable.Linq.Tests.Unit.Dependencies
                 events.Push(propertyPath);
                 Assert.AreEqual(customer, changedObject);
             };
-            IToken dependency = BindingConfigurations.Default.CreatePathNavigator().TraverseNext(customer, "Addresses.Home.Line1", callback);
+            var dependency = BindingConfigurations.Default.CreatePathNavigator().TraverseNext(customer, "Addresses.Home.Line1", callback);
 
             customer.Addresses.Home.Line1 = "799 McBryde";
             Assert.AreEqual(1, events.Count);
             Assert.AreEqual("Addresses.Home.Line1", events.Pop());
 
-            Address oldHomeAddres = customer.Addresses.Home;
+            var oldHomeAddres = customer.Addresses.Home;
 
             customer.Addresses.Home = new Address();
             Assert.AreEqual(1, events.Count);
@@ -164,7 +162,7 @@ namespace Bindable.Linq.Tests.Unit.Dependencies
                 events.Push(propertyPath);
                 Assert.AreEqual(customer, changedObject);
             };
-            IToken dependency = BindingConfigurations.Default.CreatePathNavigator().TraverseNext(customer, "Addresses.Home.Line1", callback);
+            var dependency = BindingConfigurations.Default.CreatePathNavigator().TraverseNext(customer, "Addresses.Home.Line1", callback);
 
             customer.Name = "Paul";
             Assert.AreEqual(0, events.Count);
@@ -204,7 +202,7 @@ namespace Bindable.Linq.Tests.Unit.Dependencies
                 events.Push(propertyPath);
                 Assert.AreEqual(customer, changedObject);
             };
-            IToken dependency = BindingConfigurations.Default.CreatePathNavigator().TraverseNext(customer, "Addresses.Home.Line1", callback);
+            var dependency = BindingConfigurations.Default.CreatePathNavigator().TraverseNext(customer, "Addresses.Home.Line1", callback);
 
             GC.Collect();
             GC.WaitForPendingFinalizers();

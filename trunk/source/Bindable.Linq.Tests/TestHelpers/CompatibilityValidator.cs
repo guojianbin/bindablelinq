@@ -1,9 +1,6 @@
-using System;
-
 namespace Bindable.Linq.Tests.TestHelpers
 {
     using System.Collections;
-    using System.Reflection;
     using NUnit.Framework;
 
     /// <summary>
@@ -54,9 +51,9 @@ namespace Bindable.Linq.Tests.TestHelpers
 
         private static void CompareOrdered(IEnumerable left, IEnumerable right)
         {
-            IEnumerator leftEnumerator = left.GetEnumerator();
-            IEnumerator rightEnumerator = right.GetEnumerator();
-            int index = 0;
+            var leftEnumerator = left.GetEnumerator();
+            var rightEnumerator = right.GetEnumerator();
+            var index = 0;
             while (leftEnumerator.MoveNext() | rightEnumerator.MoveNext())
             {
                 if (leftEnumerator.Current is IEnumerable)
@@ -78,14 +75,14 @@ namespace Bindable.Linq.Tests.TestHelpers
 
         private static bool CompareUnordered(IEnumerable left, IEnumerable right)
         {
-            bool equal = false;
+            var equal = false;
             var leftList = new ArrayList();
             var rightList = new ArrayList();
-            foreach (object o in left)
+            foreach (var o in left)
             {
                 leftList.Add(o);
             }
-            foreach (object o in right)
+            foreach (var o in right)
             {
                 rightList.Add(o);
             }
@@ -93,12 +90,12 @@ namespace Bindable.Linq.Tests.TestHelpers
             if (leftList.Count == rightList.Count)
             {
                 equal = true;
-                foreach (object leftItem in leftList)
+                foreach (var leftItem in leftList)
                 {
-                    bool leftItemFound = false;
+                    var leftItemFound = false;
                     if (leftItem is IEnumerable)
                     {
-                        foreach (object rightItem in rightList)
+                        foreach (var rightItem in rightList)
                         {
                             if (CompareUnordered(leftItem as IEnumerable, rightItem as IEnumerable))
                             {
@@ -109,7 +106,7 @@ namespace Bindable.Linq.Tests.TestHelpers
                     }
                     else
                     {
-                        object rightItem = FindEqual(leftItem, rightList);
+                        var rightItem = FindEqual(leftItem, rightList);
                         if (rightItem != null && ContainsEqual(leftItem, rightList))
                         {
                             leftItemFound = true;
@@ -128,7 +125,7 @@ namespace Bindable.Linq.Tests.TestHelpers
         private static object FindEqual(object find, IEnumerable list)
         {
             object result = null;
-            foreach (object item in list)
+            foreach (var item in list)
             {
                 if (CompareObject(find, item))
                 {
@@ -146,13 +143,13 @@ namespace Bindable.Linq.Tests.TestHelpers
 
         private static bool CompareObject(object left, object right)
         {
-            bool equal = true;
+            var equal = true;
             if (left != right)
             {
-                foreach (PropertyInfo leftProperty in left.GetType().GetProperties())
+                foreach (var leftProperty in left.GetType().GetProperties())
                 {
-                    object leftValue = leftProperty.GetValue(left, null);
-                    object rightValue = right.GetType().GetProperty(leftProperty.Name).GetValue(right, null);
+                    var leftValue = leftProperty.GetValue(left, null);
+                    var rightValue = right.GetType().GetProperty(leftProperty.Name).GetValue(right, null);
                     if (!((leftValue == null && rightValue == null) || leftValue.Equals(rightValue)))
                     {
                         equal = false;

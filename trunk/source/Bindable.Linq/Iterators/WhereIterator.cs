@@ -1,7 +1,6 @@
-using System;
-
 namespace Bindable.Linq.Iterators
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
 
@@ -82,8 +81,8 @@ namespace Bindable.Linq.Iterators
         {
             var indexesToSkip = new List<int>();
 
-            int relativeIndex = 0;
-            foreach (TElement element in newItems)
+            var relativeIndex = 0;
+            foreach (var element in newItems)
             {
                 if (!Filter(element))
                 {

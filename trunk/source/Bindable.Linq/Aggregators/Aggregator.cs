@@ -1,13 +1,13 @@
-﻿using System;
-using System.Collections.Specialized;
-using System.ComponentModel;
-using Bindable.Linq.Configuration;
-using Bindable.Linq.Dependencies;
-using Bindable.Linq.Helpers;
-using Bindable.Linq.Iterators;
-
 namespace Bindable.Linq.Aggregators
 {
+    using System;
+    using System.Collections.Specialized;
+    using System.ComponentModel;
+    using Configuration;
+    using Dependencies;
+    using Helpers;
+    using Iterators;
+
     /// <summary>
     /// Serves as a base class for all aggregate functions. From Bindable LINQ's perspective,
     /// an <see cref="Aggregator{TSource,TResult}"/> is a LINQ operation which tranforms a collection of items
@@ -84,7 +84,7 @@ namespace Bindable.Linq.Aggregators
             }
             protected set
             {
-                bool valueChanged = false;
+                var valueChanged = false;
                 lock (AggregateLock)
                 {
                     if (!Equals(_value, value))
@@ -126,10 +126,10 @@ namespace Bindable.Linq.Aggregators
         {
             get
             {
-                IBindingConfiguration result = BindingConfigurations.Default;
+                var result = BindingConfigurations.Default;
                 if (SourceCollection is IConfigurable)
                 {
-                    result = ((IConfigurable)SourceCollection).Configuration;
+                    result = ((IConfigurable) SourceCollection).Configuration;
                 }
                 return result;
             }
@@ -152,7 +152,7 @@ namespace Bindable.Linq.Aggregators
 
         private void EnsureLoaded()
         {
-            bool calculationNeeded = false;
+            var calculationNeeded = false;
 
             lock (AggregateLock)
             {

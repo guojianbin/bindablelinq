@@ -1,7 +1,6 @@
-using System;
-
 namespace Bindable.Linq.Dependencies.Definitions
 {
+    using System;
     using Collections;
     using Instances;
     using PathNavigation;

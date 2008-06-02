@@ -1,7 +1,6 @@
-using System;
-
 namespace Bindable.Linq.Dependencies.PathNavigation
 {
+    using System;
     using TokenFactories;
     using Tokens;
 
@@ -35,7 +34,7 @@ namespace Bindable.Linq.Dependencies.PathNavigation
         {
             propertyPath = propertyPath ?? string.Empty;
             IToken result = null;
-            foreach (ITokenFactory traverser in _traversers)
+            foreach (var traverser in _traversers)
             {
                 result = traverser.ParseNext(target, propertyPath, callback, this);
                 if (result != null)

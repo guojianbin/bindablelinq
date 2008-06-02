@@ -1,12 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using Bindable.Linq.Helpers;
-using Bindable.Linq.Threading;
-using Bindable.Linq.Transactions;
-
 namespace Bindable.Linq.Iterators
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Threading;
+    using Helpers;
+    using Threading;
+
     /// <summary>
     /// An Iterator that reads the the enumerator of the source collection on a background thread, 
     /// using the advantages of data binding and <see cref="T:INotifyCollectionChanged"/>.
@@ -40,7 +39,7 @@ namespace Bindable.Linq.Iterators
                 _loadingState.Leave();
             }
 
-            _loadingState = this.IsLoadingState.Enter();
+            _loadingState = IsLoadingState.Enter();
             lock (IteratorLock)
             {
                 if (_iteratorThread != null)
@@ -50,11 +49,11 @@ namespace Bindable.Linq.Iterators
                 _iteratorThread = new IteratorThread();
             }
             _iteratorThread.SourceCollection = SourceCollection;
-            _iteratorThread.YieldCallback = delegate(TElement element) { 
-                _dispatcher.Invoke(() => ReactToAddRange(0, new TElement[] {element})); 
-            };
-            _iteratorThread.CompletedCallback = delegate { 
-                _dispatcher.Invoke(() => {
+            _iteratorThread.YieldCallback = delegate(TElement element) { _dispatcher.Invoke(() => ReactToAddRange(0, new TElement[] {element})); };
+            _iteratorThread.CompletedCallback = delegate
+            {
+                _dispatcher.Invoke(() =>
+                {
                     if (_loadingState != null)
                     {
                         _loadingState.Leave();
@@ -73,12 +72,12 @@ namespace Bindable.Linq.Iterators
         /// <param name="addedItems">The added items.</param>
         protected override void ReactToAddRange(int sourceStartingIndex, IEnumerable<TElement> addedItems)
         {
-            List<TElement> elementsToAdd = addedItems.EnumerateSafely();
-            using (ITransaction transaction = ResultCollection.BeginTransaction())
+            var elementsToAdd = addedItems.EnumerateSafely();
+            using (var transaction = ResultCollection.BeginTransaction())
             {
                 lock (IteratorLock)
                 {
-                    foreach (TElement element in elementsToAdd)
+                    foreach (var element in elementsToAdd)
                     {
                         if (!ResultCollection.Contains(element))
                         {
@@ -102,8 +101,8 @@ namespace Bindable.Linq.Iterators
         /// <param name="removedItems">The removed items.</param>
         protected override void ReactToRemoveRange(IEnumerable<TElement> removedItems)
         {
-            List<TElement> elementsToRemove = removedItems.EnumerateSafely();
-            using (ITransaction transaction = ResultCollection.BeginTransaction())
+            var elementsToRemove = removedItems.EnumerateSafely();
+            using (var transaction = ResultCollection.BeginTransaction())
             {
                 lock (IteratorLock)
                 {
@@ -119,9 +118,9 @@ namespace Bindable.Linq.Iterators
         /// <param name="newItems">The new items.</param>
         protected override void ReactToReplaceRange(IEnumerable<TElement> oldItems, IEnumerable<TElement> newItems)
         {
-            List<TElement> oldElements = oldItems.EnumerateSafely();
-            List<TElement> newElements = newItems.EnumerateSafely();
-            using (ITransaction transaction = ResultCollection.BeginTransaction())
+            var oldElements = oldItems.EnumerateSafely();
+            var newElements = newItems.EnumerateSafely();
+            using (var transaction = ResultCollection.BeginTransaction())
             {
                 lock (IteratorLock)
                 {
@@ -152,10 +151,10 @@ namespace Bindable.Linq.Iterators
 
             public void Iterate(object state)
             {
-                IEnumerator<TElement> enumerator = SourceCollection.GetEnumerator();
+                var enumerator = SourceCollection.GetEnumerator();
                 while (enumerator.MoveNext())
                 {
-                    TElement current = enumerator.Current;
+                    var current = enumerator.Current;
                     if (Cancel)
                     {
                         break;

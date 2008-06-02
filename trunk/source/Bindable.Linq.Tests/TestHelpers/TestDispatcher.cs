@@ -1,7 +1,6 @@
-using System;
-
 namespace Bindable.Linq.Tests.TestHelpers
 {
+    using System;
     using System.Threading;
     using Threading;
 

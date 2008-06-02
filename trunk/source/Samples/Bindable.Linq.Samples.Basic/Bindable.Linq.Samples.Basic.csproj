@@ -214,7 +214,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Bindable.Linq\Bindable.Linq.csproj">
       <Project>{1BD32C0F-5FDE-4913-AEED-13840ACBF4E0}</Project>
-      <Name>BindingOriented.SyncLinq</Name>
+      <Name>Bindable.Linq</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

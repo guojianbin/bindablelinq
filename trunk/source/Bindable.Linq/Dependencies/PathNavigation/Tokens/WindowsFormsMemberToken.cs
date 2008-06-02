@@ -1,8 +1,6 @@
-using System;
-
 namespace Bindable.Linq.Dependencies.PathNavigation.Tokens
 {
-    using System.Reflection;
+    using System;
     using Helpers;
 
     /// <summary>
@@ -36,10 +34,10 @@ namespace Bindable.Linq.Dependencies.PathNavigation.Tokens
         {
             if (CurrentTarget != null)
             {
-                EventInfo eventInfo = CurrentTarget.GetType().GetEvent(PropertyName + "Changed");
+                var eventInfo = CurrentTarget.GetType().GetEvent(PropertyName + "Changed");
                 if (eventInfo != null)
                 {
-                    MethodInfo removeMethod = eventInfo.GetRemoveMethod();
+                    var removeMethod = eventInfo.GetRemoveMethod();
                     if (removeMethod != null)
                     {
                         removeMethod.Invoke(CurrentTarget, new object[] {_actualHandler});
@@ -55,10 +53,10 @@ namespace Bindable.Linq.Dependencies.PathNavigation.Tokens
         {
             if (CurrentTarget != null)
             {
-                EventInfo eventInfo = CurrentTarget.GetType().GetEvent(PropertyName + "Changed");
+                var eventInfo = CurrentTarget.GetType().GetEvent(PropertyName + "Changed");
                 if (eventInfo != null)
                 {
-                    MethodInfo addMethod = eventInfo.GetAddMethod();
+                    var addMethod = eventInfo.GetAddMethod();
                     if (addMethod != null)
                     {
                         addMethod.Invoke(CurrentTarget, new object[] {_actualHandler});

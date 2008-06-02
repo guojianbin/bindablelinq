@@ -1,30 +1,21 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Bindable.Linq.Dependencies.ExpressionAnalysis;
-using Bindable.Linq.Dependencies.ExpressionAnalysis.Extractors;
-using Bindable.Linq.Dependencies.PathNavigation;
-using Bindable.Linq.Dependencies.PathNavigation.TokenFactories;
-
 namespace Bindable.Linq.Configuration
 {
+    using Bindable.Linq.Dependencies.ExpressionAnalysis;
+    using Bindable.Linq.Dependencies.PathNavigation;
+    using Bindable.Linq.Dependencies.PathNavigation.TokenFactories;
+
     internal sealed class ExplicitBindingConfiguration : IBindingConfiguration
     {
-        private IExpressionAnalyzer _expressionAnalyzer;
-        private IPathNavigator _pathNavigator;
+        private readonly IExpressionAnalyzer _expressionAnalyzer;
+        private readonly IPathNavigator _pathNavigator;
 
         public ExplicitBindingConfiguration()
         {
             _expressionAnalyzer = new ExpressionAnalyzer();
-            _pathNavigator = new PathNavigator(
-                new WpfMemberTokenFactory(),
-                new SilverlightMemberTokenFactory(),
-                new WindowsFormsMemberTokenFactory(),
-                new ClrMemberTokenFactory()
-                );
+            _pathNavigator = new PathNavigator(new WpfMemberTokenFactory(), new SilverlightMemberTokenFactory(), new WindowsFormsMemberTokenFactory(), new ClrMemberTokenFactory());
         }
 
+        #region IBindingConfiguration Members
         public IExpressionAnalyzer CreateExpressionAnalyzer()
         {
             return _expressionAnalyzer;
@@ -34,5 +25,6 @@ namespace Bindable.Linq.Configuration
         {
             return _pathNavigator;
         }
+        #endregion
     }
 }

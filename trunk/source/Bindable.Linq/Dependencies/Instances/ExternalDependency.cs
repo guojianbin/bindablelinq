@@ -1,7 +1,6 @@
-using System;
-
 namespace Bindable.Linq.Dependencies.Instances
 {
+    using System;
     using Bindable.Linq.Dependencies.PathNavigation.Tokens;
     using PathNavigation;
 
@@ -59,7 +58,7 @@ namespace Bindable.Linq.Dependencies.Instances
         /// <param name="propertyPath">The property path.</param>
         private void Element_PropertyChanged(object element, string propertyPath)
         {
-            Action<object> action = _elementChangedCallback;
+            var action = _elementChangedCallback;
             if (action != null)
             {
                 action(element);

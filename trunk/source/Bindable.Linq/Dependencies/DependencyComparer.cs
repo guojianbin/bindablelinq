@@ -1,10 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
 namespace Bindable.Linq.Dependencies
 {
+    using System.Collections.Generic;
+
     /// <summary>
     /// Compares dependencies.
     /// </summary>
@@ -15,10 +12,7 @@ namespace Bindable.Linq.Dependencies
         /// <summary>
         /// Initializes a new instance of the <see cref="DependencyComparer"/> class.
         /// </summary>
-        private DependencyComparer()
-        {
-
-        }
+        private DependencyComparer() {}
 
         /// <summary>
         /// Gets the instance.
@@ -28,6 +22,7 @@ namespace Bindable.Linq.Dependencies
             get { return _instance; }
         }
 
+        #region IEqualityComparer<IDependencyDefinition> Members
         /// <summary>
         /// Determines whether the specified objects are equal.
         /// </summary>
@@ -51,5 +46,6 @@ namespace Bindable.Linq.Dependencies
         {
             return obj.ToString().GetHashCode();
         }
+        #endregion
     }
 }

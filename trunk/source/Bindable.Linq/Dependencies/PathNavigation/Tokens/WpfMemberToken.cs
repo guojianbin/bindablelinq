@@ -1,7 +1,6 @@
-using System;
-
 namespace Bindable.Linq.Dependencies.PathNavigation.Tokens
 {
+    using System;
     using System.ComponentModel;
     using System.Windows;
 
@@ -38,7 +37,7 @@ namespace Bindable.Linq.Dependencies.PathNavigation.Tokens
             var currentTarget = CurrentTarget as DependencyObject;
             if (currentTarget != null)
             {
-                DependencyPropertyDescriptor dpd = DependencyPropertyDescriptor.FromProperty(_dependencyProperty, currentTarget.GetType());
+                var dpd = DependencyPropertyDescriptor.FromProperty(_dependencyProperty, currentTarget.GetType());
                 if (dpd != null)
                 {
                     dpd.RemoveValueChanged(currentTarget, CurrentTarget_PropertyChanged);
@@ -54,7 +53,7 @@ namespace Bindable.Linq.Dependencies.PathNavigation.Tokens
             var currentTarget = CurrentTarget as DependencyObject;
             if (currentTarget != null)
             {
-                DependencyPropertyDescriptor dpd = DependencyPropertyDescriptor.FromProperty(_dependencyProperty, currentTarget.GetType());
+                var dpd = DependencyPropertyDescriptor.FromProperty(_dependencyProperty, currentTarget.GetType());
                 if (dpd != null)
                 {
                     dpd.AddValueChanged(currentTarget, CurrentTarget_PropertyChanged);

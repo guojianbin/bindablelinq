@@ -1,9 +1,10 @@
-using System.Linq;
-using Bindable.Linq.Tests.TestHelpers;
-using NUnit.Framework;
-
 namespace Bindable.Linq.Tests.Behaviour.Iterators
 {
+    using System.Linq;
+    using Bindable.Linq;
+    using Bindable.Linq.Tests.TestHelpers;
+    using NUnit.Framework;
+
     /// <summary>
     /// Contains unit tests for the <see cref="T:AsynchronousIterator`1"/> class.
     /// </summary>
@@ -37,12 +38,7 @@ namespace Bindable.Linq.Tests.Behaviour.Iterators
         [Test]
         public void GroupByIteratorAddSingleItemToExistingGroupAfterInitialize()
         {
-            Given.Collection(Tom, Tim, Sally)
-                .WithSyncLinqQuery(inputs => inputs.AsBindable().GroupBy(c => c.Name[0]))
-                .AndLinqEquivalent(inputs => inputs.GroupBy(c => c.Name[0]))
-                .ExpectingTheyAre(CompatibilityExpectation.FullyCompatible)
-                .WhenLoaded().ExpectNoEvents()
-                .ThenAdd(Sam).ExpectNoEvents().ExpectEvent(Add.OnGroup(1).WithNewItems(Sam).WithNewIndex(1)).AndExpectFinalCountOf(2);
+            Given.Collection(Tom, Tim, Sally).WithSyncLinqQuery(inputs => inputs.AsBindable().GroupBy(c => c.Name[0])).AndLinqEquivalent(inputs => inputs.GroupBy(c => c.Name[0])).ExpectingTheyAre(CompatibilityExpectation.FullyCompatible).WhenLoaded().ExpectNoEvents().ThenAdd(Sam).ExpectNoEvents().ExpectEvent(Add.OnGroup(1).WithNewItems(Sam).WithNewIndex(1)).AndExpectFinalCountOf(2);
         }
 
         [Test]

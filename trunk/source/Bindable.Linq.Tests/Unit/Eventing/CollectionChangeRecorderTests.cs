@@ -1,5 +1,3 @@
-using System;
-
 namespace Bindable.Linq.Tests.Unit.Eventing
 {
     using System.Collections.Generic;
@@ -22,7 +20,7 @@ namespace Bindable.Linq.Tests.Unit.Eventing
 
             public void CommitCallback(TransactionLog transactionLog)
             {
-                foreach (NotifyCollectionChangedEventArgs eventToRaise in transactionLog.Events)
+                foreach (var eventToRaise in transactionLog.Events)
                 {
                     _arguments.Enqueue(eventToRaise);
                 }
@@ -32,7 +30,7 @@ namespace Bindable.Linq.Tests.Unit.Eventing
             {
                 if (_arguments.Count > 0)
                 {
-                    NotifyCollectionChangedEventArgs lastEvent = _arguments.Dequeue();
+                    var lastEvent = _arguments.Dequeue();
                     if (lastEvent != null)
                     {
                         specification.CompareTo(lastEvent);

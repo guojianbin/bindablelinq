@@ -1,5 +1,3 @@
-using System;
-
 namespace Bindable.Linq.Tests.TestHelpers
 {
     using System.Collections;
@@ -33,7 +31,7 @@ namespace Bindable.Linq.Tests.TestHelpers
         {
             get
             {
-                string result = Action.ToString();
+                var result = Action.ToString();
                 if (GroupIndex != null)
                 {
                     result += " on group " + GroupIndex.Value;
@@ -62,16 +60,16 @@ namespace Bindable.Linq.Tests.TestHelpers
 
         private static bool CompareItems(IEnumerable actualItems, IEnumerable expectedItems)
         {
-            IEnumerable lhs = actualItems ?? new object[0];
-            IEnumerable rhs = expectedItems ?? new object[0];
+            var lhs = actualItems ?? new object[0];
+            var rhs = expectedItems ?? new object[0];
 
-            IEnumerator lhsEnumerator = lhs.GetEnumerator();
-            IEnumerator rhsEnumerator = rhs.GetEnumerator();
+            var lhsEnumerator = lhs.GetEnumerator();
+            var rhsEnumerator = rhs.GetEnumerator();
 
             while (true)
             {
-                bool lhsHasNext = lhsEnumerator.MoveNext();
-                bool rhsHasNext = rhsEnumerator.MoveNext();
+                var lhsHasNext = lhsEnumerator.MoveNext();
+                var rhsHasNext = rhsEnumerator.MoveNext();
 
                 if (lhsHasNext == false && rhsHasNext == false)
                 {
@@ -94,7 +92,7 @@ namespace Bindable.Linq.Tests.TestHelpers
             if (items != null)
             {
                 builder.Append("{ ");
-                foreach (object item in items)
+                foreach (var item in items)
                 {
                     if (item != null)
                     {

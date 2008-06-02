@@ -1,7 +1,6 @@
-using System;
-
 namespace Bindable.Linq.Transactions
 {
+    using System;
     using System.Collections.Generic;
     using System.Collections.Specialized;
     using System.Diagnostics;
@@ -138,18 +137,18 @@ namespace Bindable.Linq.Transactions
             Debug.Assert((eventToAppend.NewItems == null || eventToAppend.NewItems.Count == 1) || (eventToAppend.OldItems == null || eventToAppend.OldItems.Count == 1));
             lock (_transactionLock)
             {
-                bool appended = false;
+                var appended = false;
 #if !SILVERLIGHT
                 // In Silverlight 2.0 beta 1, events cannot be raised with multiple objects.
                 if (eventToAppend.Action != NotifyCollectionChangedAction.Reset && eventToAppend.Action != NotifyCollectionChangedAction.Move)
                 {
-                    for (int ixEvent = 0; ixEvent < _recorded.Count; ixEvent++)
+                    for (var ixEvent = 0; ixEvent < _recorded.Count; ixEvent++)
                     {
-                        NotifyCollectionChangedEventArgs existingEvent = _recorded[ixEvent];
+                        var existingEvent = _recorded[ixEvent];
                         if (existingEvent.Action == eventToAppend.Action)
                         {
-                            int lastIndexOfExistingEvent = -1;
-                            int indexOfEventToAppend = -1;
+                            var lastIndexOfExistingEvent = -1;
+                            var indexOfEventToAppend = -1;
                             if (existingEvent.Action == NotifyCollectionChangedAction.Remove)
                             {
                                 lastIndexOfExistingEvent = existingEvent.OldStartingIndex + existingEvent.OldItems.Count - 1;
@@ -168,8 +167,8 @@ namespace Bindable.Linq.Transactions
 
                             if (indexOfEventToAppend == lastIndexOfExistingEvent)
                             {
-                                int oldStartingIndex = existingEvent.OldStartingIndex;
-                                int newStartingIndex = existingEvent.NewStartingIndex;
+                                var oldStartingIndex = existingEvent.OldStartingIndex;
+                                var newStartingIndex = existingEvent.NewStartingIndex;
                                 var oldItems = new List<object>();
                                 var newItems = new List<object>();
                                 if (existingEvent.OldItems != null)

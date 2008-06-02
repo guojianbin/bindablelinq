@@ -1,12 +1,10 @@
-using System;
-
 namespace Bindable.Linq.Iterators
 {
+    using System;
     using System.Collections.Generic;
     using System.Collections.Specialized;
     using System.Linq.Expressions;
     using Collections;
-    using Transactions;
 
     /// <summary>
     /// An Iterator that reads items from the source collection and groups them by a common key. 
@@ -79,17 +77,17 @@ namespace Bindable.Linq.Iterators
         private void EnsureGroupsExists(IEnumerable<TSource> range)
         {
             var itemsToCreateGroupsFor = new List<TSource>();
-            foreach (TSource element in range)
+            foreach (var element in range)
             {
                 itemsToCreateGroupsFor.Add(element);
             }
 
-            using (ITransaction transaction = ResultCollection.BeginTransaction())
+            using (var transaction = ResultCollection.BeginTransaction())
             {
-                foreach (TSource element in itemsToCreateGroupsFor)
+                foreach (var element in itemsToCreateGroupsFor)
                 {
-                    TKey key = _keySelectorCompiled(element);
-                    bool groupExists = FindGroup(key, ResultCollection);
+                    var key = _keySelectorCompiled(element);
+                    var groupExists = FindGroup(key, ResultCollection);
                     if (!groupExists)
                     {
                         IBindableGrouping<TKey, TElement> newGroup = new BindableGrouping<TKey, TElement>(key, SourceCollection.Where(e => CompareKeys(_keySelectorCompiled(e), key)).WithDependencyExpression(_keySelector.Body, _keySelector.Parameters[0]).Select(_elementSelector));
