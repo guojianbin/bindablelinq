@@ -120,6 +120,8 @@ namespace Bindable.Linq.Adapters
         /// 	<see cref="P:System.ComponentModel.IBindingList.SupportsSorting"/> is false. </exception>
         public void ApplySort(PropertyDescriptor property, ListSortDirection direction)
         {
+            if (property == _sortProperty && direction == _sortDirection) return;
+
             if (IsSorted)
             {
                 UnwireInterceptor();
@@ -152,7 +154,16 @@ namespace Bindable.Linq.Adapters
         /// 	<see cref="P:System.ComponentModel.IBindingList.SupportsSearching"/> is false. </exception>
         public int Find(PropertyDescriptor property, object key)
         {
-            throw new NotSupportedException();
+            var list = _source as IList;
+            if (list == null) throw new NotSupportedException();
+
+            for (var index = 0; index < list.Count; index++)
+            {
+                var item = list[index];
+                if (null == item) continue;
+                if (property.GetValue(item) == key) return index;
+            }
+            return -1;
         }
 
         /// <summary>
@@ -180,19 +191,18 @@ namespace Bindable.Linq.Adapters
         /// 	<see cref="P:System.ComponentModel.IBindingList.SupportsSorting"/> is false. </exception>
         public void RemoveSort()
         {
-            if (IsSorted)
-            {
-                UnwireInterceptor();
+            if (!IsSorted) return;
 
-                _sortedSource.Dispose();
-                _sortedSource = null;
-                _sortDirection = ListSortDirection.Ascending;
-                _sortProperty = null;
+            UnwireInterceptor();
 
-                WireInterceptor(_originalSource);
+            _sortedSource.Dispose();
+            _sortedSource = null;
+            _sortDirection = ListSortDirection.Ascending;
+            _sortProperty = null;
 
-                OnListChanged(new ListChangedEventArgs(ListChangedType.Reset, -1));
-            }
+            WireInterceptor(_originalSource);
+
+            OnListChanged(new ListChangedEventArgs(ListChangedType.Reset, -1));
         }
 
         /// <summary>
@@ -236,7 +246,7 @@ namespace Bindable.Linq.Adapters
         /// <returns>true if the list supports searching using the <see cref="M:System.ComponentModel.IBindingList.Find(System.ComponentModel.PropertyDescriptor,System.Object)"/> method; otherwise, false.</returns>
         public bool SupportsSearching
         {
-            get { return false; }
+            get { return true; }
         }
 
         /// <summary>
@@ -280,7 +290,15 @@ namespace Bindable.Linq.Adapters
         /// </returns>
         public bool Contains(object value)
         {
-            throw new NotSupportedException();
+            var list = _source as IList;
+            if (null != list) return list.Contains(value);
+
+            foreach (var item in _source)
+            {
+                if (value == item) return true;
+            }
+
+            return false;
         }
 
         /// <summary>
@@ -322,7 +340,7 @@ namespace Bindable.Linq.Adapters
         /// <returns>true if the <see cref="T:System.Collections.IList"/> has a fixed size; otherwise, false.</returns>
         public bool IsFixedSize
         {
-            get { return false; }
+            get { return true; }
         }
 
         /// <summary>
@@ -332,7 +350,7 @@ namespace Bindable.Linq.Adapters
         /// <returns>true if the <see cref="T:System.Collections.IList"/> is read-only; otherwise, false.</returns>
         public bool IsReadOnly
         {
-            get { return true; }
+            get { return false; }
         }
 
         /// <summary>
@@ -365,18 +383,13 @@ namespace Bindable.Linq.Adapters
         {
             get
             {
-                if (_source is IList)
-                {
+                if (_source is IList) 
                     return ((IList) _source)[index];
-                }
-                else if (_source is IBindableQuery<TElement>)
-                {
+
+                if (_source is IBindableQuery<TElement>)
                     return ((IBindableQuery<TElement>) _source)[index];
-                }
-                else
-                {
-                    throw new NotSupportedException();
-                }
+
+                throw new NotSupportedException();
             }
             set { throw new NotSupportedException(); }
         }
