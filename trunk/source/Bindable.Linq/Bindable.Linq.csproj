@@ -182,16 +182,14 @@
   </Target>
   -->
   <PropertyGroup>
-    <PostBuildEvent>
-      cd $(ProjectDir)
+    <PostBuildEvent>cd $(ProjectDir)
+set PF=%25PROGRAMFILES(x86)%25
+if "%25PF%25"=="" set PF=%25PROGRAMFILES%25
 
-      set PF=%PROGRAMFILES(x86)%
-      if "%PF%"=="" set PF=%PROGRAMFILES%
-
-      mkdir bin\Silverlight
-
-      %WINDIR%\Microsoft.NET\Framework\v3.5\Csc.exe /noconfig /nostdlib+ /nowarn:1701,1702 /errorreport:prompt /warn:4 /doc:bin\Silverlight\Bindable.Linq.xml /define:DEBUG;TRACE;SILVERLIGHT /reference:"%PF%\Microsoft Silverlight\2.0.30226.2\System.Windows.dll" /reference:"%PF%\Microsoft Silverlight\2.0.30226.2\mscorlib.dll" /reference:"%PF%\Microsoft Silverlight\2.0.30226.2\System.Core.dll" /reference:"%PF%\Microsoft Silverlight\2.0.30226.2\System.dll" /debug+ /debug:full /filealign:512 /optimize- /out:bin\Silverlight\Bindable.Linq.dll /target:library /recurse:*.cs
-
-    </PostBuildEvent>
+set SILVERLIGHTPATH=%25PF%25\Microsoft Silverlight\2.0.30226.2
+if exist "%25SILVERLIGHTPATH%25" (
+    mkdir bin\Silverlight
+    %25WINDIR%25\Microsoft.NET\Framework\v3.5\Csc.exe /noconfig /nostdlib+ /nowarn:1701,1702 /errorreport:prompt /warn:4 /doc:bin\Silverlight\Bindable.Linq.xml /define:DEBUG;TRACE;SILVERLIGHT /reference:"%25SILVERLIGHTPATH%25\System.Windows.dll" /reference:"%25SILVERLIGHTPATH%25\mscorlib.dll" /reference:"%25SILVERLIGHTPATH%25\System.Core.dll" /reference:"%25SILVERLIGHTPATH%25\System.dll" /debug+ /debug:full /filealign:512 /optimize- /out:bin\Silverlight\Bindable.Linq.dll /target:library /recurse:*.cs
+)</PostBuildEvent>
   </PropertyGroup>
 </Project>
