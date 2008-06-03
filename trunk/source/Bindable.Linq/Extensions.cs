@@ -784,7 +784,7 @@ namespace Bindable.Linq
         }
         #endregion
 
-        #region ToBindingList
+        #region ToBindingList (DONE)
 #if !SILVERLIGHT
         // Silverlight does not provide an IBindingList interface, so this code would 
         // not compile.

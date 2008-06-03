@@ -81,9 +81,6 @@
     <None Include="Properties\AppManifest.xml" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\Images\Background.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
     <Content Include="Resources\Images\Background.png" />
     <Content Include="Resources\Images\businessman.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
