@@ -154,12 +154,12 @@ namespace Bindable.Linq.Adapters
         /// 	<see cref="P:System.ComponentModel.IBindingList.SupportsSearching"/> is false. </exception>
         public int Find(PropertyDescriptor property, object key)
         {
-            var list = _source as IList;
-            if (list == null) throw new NotSupportedException();
+            var query = _source as IBindableQuery<TElement>;
+            if (query == null) throw new NotSupportedException();
 
-            for (var index = 0; index < list.Count; index++)
+            for (var index = 0; index < query.Count; index++)
             {
-                var item = list[index];
+                var item = query[index];
                 if (null == item) continue;
                 if (property.GetValue(item) == key) return index;
             }
@@ -290,15 +290,7 @@ namespace Bindable.Linq.Adapters
         /// </returns>
         public bool Contains(object value)
         {
-            var list = _source as IList;
-            if (null != list) return list.Contains(value);
-
-            foreach (var item in _source)
-            {
-                if (value == item) return true;
-            }
-
-            return false;
+            return IndexOf(value) >= 0;
         }
 
         /// <summary>
@@ -310,12 +302,14 @@ namespace Bindable.Linq.Adapters
         /// </returns>
         public int IndexOf(object value)
         {
-            var result = -1;
-            if (_source is IList)
+            var index = 0;
+            foreach (var item in _source)
             {
-                result = ((IList) _source).IndexOf(value);
+                if (value == item) return index;
+                index++;
             }
-            return result;
+
+            return -1;
         }
 
         /// <summary>
@@ -383,13 +377,7 @@ namespace Bindable.Linq.Adapters
         {
             get
             {
-                if (_source is IList) 
-                    return ((IList) _source)[index];
-
-                if (_source is IBindableQuery<TElement>)
-                    return ((IBindableQuery<TElement>) _source)[index];
-
-                throw new NotSupportedException();
+                return _source.Item(index);
             }
             set { throw new NotSupportedException(); }
         }

@@ -116,13 +116,7 @@ namespace Bindable.Linq.Collections
         {
             get
             {
-                var result = default(TElement);
-                var bindable = _inner as IBindableQuery<TElement>;
-                if (bindable != null)
-                {
-                    result = bindable[index];
-                }
-                return result;
+                return _inner.Item(index);
             }
         }
 
