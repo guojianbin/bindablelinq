@@ -1,8 +1,9 @@
+using System;
+using Bindable.Linq.Helpers;
+using NUnit.Framework;
+
 namespace Bindable.Linq.Tests.Unit.Helpers
 {
-    using Bindable.Linq.Helpers;
-    using NUnit.Framework;
-
     /// <summary>
     /// This class contains unit tests for the <see cref="T:StateScope" />.
     /// </summary>
@@ -36,7 +37,7 @@ namespace Bindable.Linq.Tests.Unit.Helpers
         public void StateScopeEntranceTriggersCallback()
         {
             var eventsRaised = 0;
-            StateScopeChangedCallback callback = delegate { eventsRaised++; };
+            Action callback = () => eventsRaised++;
 
             var scope = new StateScope(callback);
             Assert.AreEqual(0, eventsRaised);

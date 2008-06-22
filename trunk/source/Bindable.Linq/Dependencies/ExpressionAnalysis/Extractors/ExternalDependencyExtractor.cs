@@ -1,9 +1,9 @@
+using System.ComponentModel;
+using System.Linq.Expressions;
+using Bindable.Linq.Dependencies.Definitions;
+
 namespace Bindable.Linq.Dependencies.ExpressionAnalysis.Extractors
 {
-    using System.ComponentModel;
-    using System.Linq.Expressions;
-    using Definitions;
-
     /// <summary>
     /// A dependency extractor that finds dependencies on external resources. 
     /// </summary>

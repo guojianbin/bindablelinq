@@ -18,7 +18,6 @@
     <Window.InputBindings>
         <KeyBinding Command="{x:Static test:Commands.Refresh}" Key="F5" />
         <KeyBinding Command="{x:Static test:Commands.Add}" Key="Add" />
-        <KeyBinding Command="{x:Static test:Commands.Add}" Key="Plus" />
         <KeyBinding Command="{x:Static test:Commands.Delete}" Key="Delete" />
     </Window.InputBindings>
 

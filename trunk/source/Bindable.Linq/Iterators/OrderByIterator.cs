@@ -1,8 +1,8 @@
-namespace Bindable.Linq.Iterators
-{
-    using System;
-    using System.Collections.Generic;
+using System;
+using System.Collections.Generic;
 
+namespace Bindable.Linq.Iterators
+{    
     /// <summary>
     /// The Iterator created when ordering a collection.
     /// </summary>

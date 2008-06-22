@@ -1,9 +1,9 @@
+using System;
+using System.ComponentModel;
+using Bindable.Linq.Helpers;
+
 namespace Bindable.Linq.Dependencies
 {
-    using System;
-    using System.ComponentModel;
-    using Helpers;
-
     /// <summary>
     /// Manages the subscription of PropertyChanged events on items.
     /// </summary>
@@ -47,10 +47,6 @@ namespace Bindable.Linq.Dependencies
         /// </summary>
         protected override void DisposeOverride()
         {
-            if (_weakHandler != null)
-            {
-                _weakHandler.Dispose();
-            }
         }
     }
 }

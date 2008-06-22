@@ -1,10 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1" GroupingSetting="Access">
   <Comment CommentText="This class is the typical entry point into Bindable LINQ. All of the Bindable LINQ extension methods live on this class. ">
-    <Position X="16.757" Y="23.792" Height="0.75" Width="3.801" />
+    <Position X="17.257" Y="10.042" Height="0.75" Width="3.801" />
   </Comment>
   <Comment CommentText="These interfaces are implemented by various parts of the Bindable LINQ internal system. They serve as return types and parameter types for all of the extension methods. ">
-    <Position X="4.82" Y="21.057" Height="0.75" Width="3.801" />
+    <Position X="5.32" Y="7.307" Height="0.75" Width="3.801" />
   </Comment>
   <Comment CommentText="This diagram is designed to be read from left to right. Bindable LINQ extends LINQ by adding a number of extension methods. So, furthest to the left, you'll find the Extensions class, which is the entry point for all of the Bindable LINQ subsystem. ">
     <Position X="0.5" Y="0.5" Height="0.952" Width="4.118" />
@@ -16,19 +16,19 @@
     <Position X="38.811" Y="3.097" Height="0.745" Width="3.162" />
   </Comment>
   <Comment CommentText="Operators are used by Bindable LINQ extension methods that turn a single input into a single output. ">
-    <Position X="38.362" Y="42.189" Height="0.615" Width="3.806" />
+    <Position X="38.112" Y="40.439" Height="0.615" Width="3.806" />
   </Comment>
   <Comment CommentText="Unfortunately none of the numeric types in the .NET Framework implement a common interface to enable functions such as addition and subtraction. These classes wrap these differences and are mostly used by the numeric Aggregators.">
     <Position X="48.913" Y="29.036" Height="0.858" Width="3.806" />
   </Comment>
   <Comment CommentText="These classes play a supporting role in the internals of Bindable LINQ by representing collections of return values. They contain all of the logic around tricky collection operations such as &quot;Replace&quot; or &quot;Move&quot;, iterating the collection safely, and avoiding deadlock when events are raised.Some of them can also be used without Bindable LINQ.">
-    <Position X="16.941" Y="42.866" Height="1.331" Width="3.313" />
+    <Position X="17.441" Y="29.116" Height="1.331" Width="3.313" />
   </Comment>
   <Comment CommentText="This class wraps any kind of IEnumerable and exposes it as a Bindable LINQ bindable collection. It is used by the &quot;AsBindable()&quot; extension method to allow the compiler to differentiate Bindable LINQ queries from regular LINQ queries. ">
-    <Position X="8.487" Y="43.187" Height="1.044" Width="3.287" />
+    <Position X="8.987" Y="29.437" Height="1.044" Width="3.287" />
   </Comment>
   <Comment CommentText="This is the land of the helper classes. The comments on each class give a better description of what each class does. ">
-    <Position X="61.322" Y="51.492" Height="0.921" Width="2.199" />
+    <Position X="14.072" Y="45.992" Height="0.921" Width="2.199" />
   </Comment>
   <Comment CommentText="These classes collaborate to inspect Lambda expressions passed to Bindable LINQ queries and extract dependencies from them. They are seperated from the dependency classes themselves so that this functionality can be disabled whilst still allowing manual dependencies to be registered. ">
     <Position X="66.972" Y="27.442" Height="1.224" Width="3.359" />
@@ -45,14 +45,11 @@
   <Comment CommentText="While dependencies know  how to wire up the events on a property, finding a way to read the property value is delegated to these classes. This means that any reflection that needs to be done can be done in a single place and cached. ">
     <Position X="95.168" Y="35.384" Height="1.427" Width="2.326" />
   </Comment>
-  <Comment CommentText="Rather than having each Bindable LINQ operation raise its own events, the classes will delegate to an event Publisher defined in this area. The publisher system allows events to be converted between the different event models supported by Bindable LINQ - Windows Forms' ListChanged versus WPF's CollectionChanged is an example. ">
-    <Position X="63.227" Y="6.147" Height="1.787" Width="2.366" />
-  </Comment>
   <Comment CommentText="The publisher has the ability to create transactions. These allow classes such as the BindableColleciton to perform operations and record an event, but not have it raised yet. The transaction abstracts a lot of the rules around how the same kind of event can be combined into one. Once any locks have been released and it is safe to raise the events, the RaiseAll method can be used, which will send all of the events to the Publisher. ">
-    <Position X="63.221" Y="9.239" Height="2.286" Width="2.366" />
+    <Position X="62.409" Y="19.753" Height="2.286" Width="2.366" />
   </Comment>
   <Comment CommentText="These observers are used so that Bindable LINQ queries can easily monitor events on collections of items. They abstract the use of weak references and unwiring events when the objects are removed or disposed. Note: these classes may be removed, since their functionality is duplicated partly by dependencies and partly by the ElementActioner class. ">
-    <Position X="73.866" Y="50.206" Height="1.914" Width="2.366" />
+    <Position X="81.116" Y="17.706" Height="1.914" Width="2.366" />
   </Comment>
   <Class Name="Bindable.Linq.Aggregators.Aggregator&lt;TSource, TResult&gt;">
     <Position X="38.75" Y="30.25" Width="3.25" />
@@ -141,37 +138,15 @@
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
-  <Class Name="Bindable.Linq.Transactions.CollectionChangedPublisher&lt;TElement&gt;" BaseTypeListCollapsed="true">
-    <Position X="69.25" Y="6" Width="3" />
-    <Compartments>
-      <Compartment Name="Fields" Collapsed="true" />
-    </Compartments>
-    <TypeIdentifier>
-      <HashCode>AAAAQAAAAAAAAIAAAAAAgAAAAAIAABAAAAAgAAAABAA=</HashCode>
-      <FileName>Eventing\CollectionChangePublisher.cs</FileName>
-    </TypeIdentifier>
-    <Lollipop Position="0.2" Collapsed="true" />
-  </Class>
-  <Class Name="Bindable.Linq.Transactions.CollectionChangetransaction&lt;TElement&gt;" BaseTypeListCollapsed="true">
-    <Position X="69.25" Y="9.25" Width="3" />
-    <Compartments>
-      <Compartment Name="Fields" Collapsed="true" />
-    </Compartments>
-    <TypeIdentifier>
-      <HashCode>AAAGgAAAECAAAEQAAAAAAAQAAAAAAQAAAAAAAgAAgAA=</HashCode>
-      <FileName>Eventing\CollectionChangetransaction.cs</FileName>
-    </TypeIdentifier>
-    <Lollipop Position="0.2" />
-  </Class>
   <Class Name="Bindable.Linq.Extensions">
-    <Position X="16.75" Y="25.25" Width="3.75" />
+    <Position X="17.25" Y="11.5" Width="3.75" />
     <TypeIdentifier>
       <HashCode>MKAgAGCMCBSACQgAEAAMTASAAEFAAAABAIBAQUlQQgQ=</HashCode>
       <FileName>Extensions.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Bindable.Linq.Helpers.DefaultComparer&lt;TCompared&gt;" BaseTypeListCollapsed="true">
-    <Position X="64.5" Y="54" Width="2.5" />
+    <Position X="17.25" Y="48.5" Width="2.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAgAAAAAAAAAAAAIAAAABAAAAAAAA=</HashCode>
       <FileName>Helpers\DefaultComparer.cs</FileName>
@@ -179,26 +154,26 @@
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="Bindable.Linq.Helpers.ElementActioner&lt;TElement&gt;" BaseTypeListCollapsed="true">
-    <Position X="64.5" Y="51" Width="2.5" />
+    <Position X="17.25" Y="45.5" Width="2.5" />
     <Compartments>
       <Compartment Name="Fields" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>AAAAAAAAACAAAEAAAAABAAEAAAAAAAAAUQAAASABAAA=</HashCode>
+      <HashCode>AAAAAAAAACAAAEAAAAABAAAAAAAAAAAAcQAAASCBAAA=</HashCode>
       <FileName>Helpers\ElementActioner.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="Bindable.Linq.Helpers.ElementComparerFactory">
-    <Position X="67.75" Y="54" Width="2.25" />
+    <Position X="20.5" Y="48.5" Width="2.25" />
     <NestedTypes>
-      <Class Name="Bindable.Linq.Helpers.ElementComparerFactory.ValueTypeComparer&lt;TElement&gt;" Collapsed="true">
+      <Class Name="Bindable.Linq.Helpers.ElementComparerFactory.ReferenceTypeComparer&lt;TElement&gt;" Collapsed="true">
         <TypeIdentifier>
           <NewMemberFileName>Helpers\ElementComparerFactory.cs</NewMemberFileName>
         </TypeIdentifier>
         <Lollipop Position="0.2" />
       </Class>
-      <Class Name="Bindable.Linq.Helpers.ElementComparerFactory.ReferenceTypeComparer&lt;TElement&gt;" Collapsed="true">
+      <Class Name="Bindable.Linq.Helpers.ElementComparerFactory.ValueTypeComparer&lt;TElement&gt;" Collapsed="true">
         <TypeIdentifier>
           <NewMemberFileName>Helpers\ElementComparerFactory.cs</NewMemberFileName>
         </TypeIdentifier>
@@ -211,9 +186,9 @@
     </TypeIdentifier>
   </Class>
   <Class Name="Bindable.Linq.Helpers.InternalExtensions">
-    <Position X="58" Y="51" Width="2.5" />
+    <Position X="10.75" Y="45.5" Width="2.5" />
     <TypeIdentifier>
-      <HashCode>AAAACAIAIAAAAAAAAAAAAAAACAgAAAAACAAAAAEAAAA=</HashCode>
+      <HashCode>AAAACAIAIAAAAAAAAAAAAAAECAgAAAAACAAAAAEAAAA=</HashCode>
       <FileName>Helpers\InternalExtensions.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -234,18 +209,6 @@
       <HashCode>AAAAAAAAAAAAAAAAAAAAABCAAAAEAAAAAEBAAAAAAAA=</HashCode>
       <FileName>Iterators\ItemSorter.cs</FileName>
     </TypeIdentifier>
-  </Class>
-  <Class Name="Bindable.Linq.Helpers.object" BaseTypeListCollapsed="true">
-    <Position X="61.25" Y="53" Width="2.5" />
-    <Compartments>
-      <Compartment Name="Private" Collapsed="true" />
-      <Compartment Name="Fields" Collapsed="true" />
-    </Compartments>
-    <TypeIdentifier>
-      <HashCode>AAAAAAQAAAAAAAgAAAAAgAAAAAEECAAAAAAJAQAAAgA=</HashCode>
-      <FileName>Helpers\object.cs</FileName>
-    </TypeIdentifier>
-    <Lollipop Position="0.2" />
   </Class>
   <Class Name="Bindable.Linq.Iterators.ProjectionRegister&lt;TSource, TResult&gt;" BaseTypeListCollapsed="true">
     <Position X="43.5" Y="20.75" Width="2.5" />
@@ -290,7 +253,7 @@
     </TypeIdentifier>
   </Class>
   <Class Name="Bindable.Linq.Helpers.StateScope" BaseTypeListCollapsed="true">
-    <Position X="58" Y="54" Width="2.5" />
+    <Position X="10.75" Y="48.5" Width="2.5" />
     <Compartments>
       <Compartment Name="Fields" Collapsed="true" />
     </Compartments>
@@ -314,7 +277,7 @@
       </Class>
     </NestedTypes>
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAgAgAAAAAAAAAAAEAAgQAAAAAAACAACg=</HashCode>
+      <HashCode>AAAAAAAAAAAAgQgAAAAAAAAAAAEAAgQAAAAAAACAACg=</HashCode>
       <FileName>Iterators\AsynchronousIterator.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -397,7 +360,7 @@
     </TypeIdentifier>
   </Class>
   <Class Name="Bindable.Linq.Operators.IfOperator&lt;TSource, TResult&gt;">
-    <Position X="38" Y="50.25" Width="2.25" />
+    <Position X="37.75" Y="48.5" Width="2.25" />
     <Compartments>
       <Compartment Name="Fields" Collapsed="true" />
     </Compartments>
@@ -407,7 +370,7 @@
     </TypeIdentifier>
   </Class>
   <Class Name="Bindable.Linq.Operators.Operator&lt;TSource, TResult&gt;">
-    <Position X="38.75" Y="44" Width="3.25" />
+    <Position X="38.5" Y="42.25" Width="3.25" />
     <Compartments>
       <Compartment Name="Fields" Collapsed="true" />
     </Compartments>
@@ -418,7 +381,7 @@
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="Bindable.Linq.Operators.ProjectOperator&lt;TSource, TResult&gt;">
-    <Position X="40.5" Y="50.25" Width="2.75" />
+    <Position X="40.25" Y="48.5" Width="2.75" />
     <Compartments>
       <Compartment Name="Fields" Collapsed="true" />
     </Compartments>
@@ -428,7 +391,7 @@
     </TypeIdentifier>
   </Class>
   <Class Name="Bindable.Linq.Dependencies.CollectionChangeObserver">
-    <Position X="74.5" Y="53.75" Width="4.5" />
+    <Position X="81.75" Y="21.25" Width="4.5" />
     <Compartments>
       <Compartment Name="Fields" Collapsed="true" />
     </Compartments>
@@ -438,7 +401,7 @@
     </TypeIdentifier>
   </Class>
   <Class Name="Bindable.Linq.Dependencies.EventDependency&lt;TPublisher, TEventArgs&gt;">
-    <Position X="78" Y="49.25" Width="2.75" />
+    <Position X="85.25" Y="16.75" Width="2.75" />
     <Compartments>
       <Compartment Name="Fields" Collapsed="true" />
     </Compartments>
@@ -449,7 +412,7 @@
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="Bindable.Linq.Dependencies.PropertyChangeObserver">
-    <Position X="79.75" Y="53.75" Width="4.25" />
+    <Position X="87" Y="21.25" Width="4.25" />
     <Compartments>
       <Compartment Name="Fields" Collapsed="true" />
     </Compartments>
@@ -499,29 +462,28 @@
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="Bindable.Linq.Helpers.WeakEventReference&lt;A&gt;" BaseTypeListCollapsed="true">
-    <Position X="64.5" Y="48.75" Width="2.5" />
+    <Position X="17.25" Y="43.25" Width="2.5" />
     <Compartments>
       <Compartment Name="Private" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>AAAAAAAAACAAAAAgAAAAAAEAAAAAAAAAAAAAgAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAgAAAAAAEAAAAAAAAAAAAAgAAAAAA=</HashCode>
       <FileName>Helpers\WeakEventReference.cs</FileName>
     </TypeIdentifier>
-    <Lollipop Position="0.2" />
   </Class>
   <Class Name="Bindable.Linq.Collections.BindableCollection&lt;TElement&gt;">
-    <Position X="16.75" Y="44.5" Width="3.5" />
+    <Position X="17.25" Y="30.75" Width="3.5" />
     <Compartments>
       <Compartment Name="Private" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>QWIEQEAAAKKAADAUKAAAlBQ4gFEQABAECGIAAJRUJCE=</HashCode>
+      <HashCode>QWIEQEABIKKAADAUKAAAlBQwgAEQABAECGIAAIRUICE=</HashCode>
       <FileName>Collections\BindableCollection.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="Bindable.Linq.Collections.SnapshotManager&lt;TElement&gt;">
-    <Position X="20.75" Y="44.5" Width="2.75" />
+    <Position X="21.25" Y="30.75" Width="2.75" />
     <Compartments>
       <Compartment Name="Private" Collapsed="true" />
     </Compartments>
@@ -531,7 +493,7 @@
     </TypeIdentifier>
   </Class>
   <Class Name="Bindable.Linq.Collections.BindableGrouping&lt;TKey, TElement&gt;">
-    <Position X="12.75" Y="45.25" Width="3" />
+    <Position X="13.25" Y="31.5" Width="3" />
     <Compartments>
       <Compartment Name="Private" Collapsed="true" />
     </Compartments>
@@ -542,7 +504,7 @@
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="Bindable.Linq.Helpers.WeakTimer">
-    <Position X="67.5" Y="48.75" Width="1.75" />
+    <Position X="20.25" Y="43.25" Width="1.75" />
     <Compartments>
       <Compartment Name="Private" Collapsed="true" />
     </Compartments>
@@ -551,13 +513,6 @@
       <FileName>Helpers\WeakTimer.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
-  </Class>
-  <Class Name="Bindable.Linq.Helpers.LockAttemptTimeoutException" Collapsed="true">
-    <Position X="61.25" Y="55.5" Width="2.75" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Helpers\LockAttemptTimeoutException.cs</FileName>
-    </TypeIdentifier>
   </Class>
   <Class Name="Bindable.Linq.Dependencies.ExpressionAnalysis.Extractors.DependencyExtractor">
     <Position X="64.5" Y="27.75" Width="2" />
@@ -615,7 +570,7 @@
       <Compartment Name="Private" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>AAAAAABAAAAAAAAUAAAAAAAAAAACAAIAAAgAAgAAAAE=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAUAAAAAAAAAAACAAAAAAgAAgAAAAE=</HashCode>
       <FileName>Dependencies\Definitions\ExternalDependencyDefinition.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
@@ -626,7 +581,7 @@
       <Compartment Name="Private" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAEAAAAAAAAAAAKAgIAAAgAAgAAAAE=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAEAAAAAAAAAAAKAAAAAAgAAgAAAAE=</HashCode>
       <FileName>Dependencies\Definitions\StaticDependencyDefinition.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
@@ -637,7 +592,7 @@
       <Compartment Name="Private" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAEAAAAAAAAAAACAJIAAAgAAgAAAAE=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAEAAAAAAAAAAACABAAAAgAAgAAAAE=</HashCode>
       <FileName>Dependencies\Definitions\ItemDependencyDefinition.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
@@ -751,7 +706,7 @@
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="Bindable.Linq.Adapters.BindableCollectionAdapter&lt;TElement&gt;">
-    <Position X="8.5" Y="45.25" Width="3.25" />
+    <Position X="9" Y="31.5" Width="3.25" />
     <Compartments>
       <Compartment Name="Private" Collapsed="true" />
     </Compartments>
@@ -761,8 +716,29 @@
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
+  <Class Name="Bindable.Linq.Transactions.TransactionLog">
+    <Position X="68.75" Y="19.75" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Private" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AEAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Transactions\TransactionLog.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Bindable.Linq.Transactions.Transaction" BaseTypeListCollapsed="true">
+    <Position X="66.75" Y="19.75" Width="1.75" />
+    <Compartments>
+      <Compartment Name="Private" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AIAAAEBAACAAAAUAAAAAAAAAAAAAAQAAAQQAAEIAAAA=</HashCode>
+      <FileName>Transactions\Transaction.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
   <Interface Name="Bindable.Linq.Dependencies.IAcceptsDependencies">
-    <Position X="5" Y="38.75" Width="4.5" />
+    <Position X="5.5" Y="25" Width="4.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAA=</HashCode>
       <FileName>Dependencies\IAcceptsDependencies.cs</FileName>
@@ -782,71 +758,57 @@
       <FileName>Dependencies\IDependencyDefinition.cs</FileName>
     </TypeIdentifier>
   </Interface>
-  <Interface Name="Bindable.Linq.Transactions.ICollectionChangedPublisher&lt;TElement&gt;">
-    <Position X="66" Y="6" Width="3" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAIAAAAAAgAAAAAAAAAAAAAAAAAAABAA=</HashCode>
-      <FileName>Eventing\ICollectionChangedPublisher.cs</FileName>
-    </TypeIdentifier>
-  </Interface>
-  <Interface Name="Bindable.Linq.Transactions.ICollectionChangedtransaction&lt;TElement&gt;">
-    <Position X="66" Y="9.25" Width="3" />
-    <TypeIdentifier>
-      <HashCode>AAACgAAAAAAAAEAAAAAAAAQAAAAAAAAAAAAAAgAAgAA=</HashCode>
-      <FileName>Eventing\ICollectionChangedtransaction.cs</FileName>
-    </TypeIdentifier>
-  </Interface>
   <Interface Name="Bindable.Linq.IBindable&lt;TValue&gt;">
-    <Position X="5" Y="35.5" Width="3.5" />
+    <Position X="5.5" Y="21.75" Width="3.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>IBindable.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Interface Name="Bindable.Linq.IBindableCollection">
-    <Position X="5" Y="22.75" Width="3.25" />
+    <Position X="5.5" Y="9" Width="3.25" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>IBindableCollection.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Interface Name="Bindable.Linq.IBindableCollection&lt;TElement&gt;">
-    <Position X="9.25" Y="25.25" Width="3.25" />
+    <Position X="9.75" Y="11.5" Width="3.25" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>IBindableCollection.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Interface Name="Bindable.Linq.IBindableGrouping&lt;TKey, TElement&gt;">
-    <Position X="9.25" Y="29" Width="3.25" />
+    <Position X="9.75" Y="15.25" Width="3.25" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>IBindableGrouping.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Interface Name="Bindable.Linq.IBindableQuery">
-    <Position X="5" Y="25.25" Width="3.25" />
+    <Position X="5.5" Y="11.5" Width="3.25" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAA=</HashCode>
       <FileName>IBindableQuery.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Interface Name="Bindable.Linq.IBindableQuery&lt;TResult&gt;">
-    <Position X="5" Y="28.5" Width="3.25" />
+    <Position X="5.5" Y="14.75" Width="3.25" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>IBindableQuery.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Interface Name="Bindable.Linq.IOrderedBindableQuery&lt;TResult&gt;">
-    <Position X="5" Y="31" Width="3.25" />
+    <Position X="5.5" Y="17.25" Width="3.25" />
     <TypeIdentifier>
       <HashCode>AAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>IOrderedBindableQuery.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Interface Name="Bindable.Linq.IRefreshable">
-    <Position X="0.5" Y="28.25" Width="3.25" />
+    <Position X="1" Y="14.5" Width="3.25" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>IRefreshable.cs</FileName>
@@ -867,7 +829,7 @@
     </TypeIdentifier>
   </Interface>
   <Interface Name="Bindable.Linq.IEditableBindableGrouping&lt;TKey, TElement&gt;">
-    <Position X="9.25" Y="31" Width="3.25" />
+    <Position X="9.75" Y="17.25" Width="3.25" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAIAEAAA=</HashCode>
       <FileName>IEditableBindableGrouping.cs</FileName>
@@ -908,13 +870,13 @@
       <FileName>Dependencies\PathNavigation\IPathNavigator.cs</FileName>
     </TypeIdentifier>
   </Interface>
-  <Enum Name="Bindable.Linq.Transactions.CollectionChangeMode" Collapsed="true">
-    <Position X="66.25" Y="8.25" Width="2.25" />
+  <Interface Name="Bindable.Linq.Transactions.ITransaction">
+    <Position X="65" Y="19.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAgAAAAAAAQAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Eventing\CollectionChangeMode.cs</FileName>
+      <HashCode>AAAAAEBAAAAAAAEAAAAAAAAAAAAAAAAAAAQAAEIAAAA=</HashCode>
+      <FileName>Transactions\ITransaction.cs</FileName>
     </TypeIdentifier>
-  </Enum>
+  </Interface>
   <Enum Name="Bindable.Linq.Iterators.LoadState">
     <Position X="33.75" Y="12.75" Width="1.5" />
     <TypeIdentifier>
@@ -922,12 +884,5 @@
       <FileName>Iterators\LoadState.cs</FileName>
     </TypeIdentifier>
   </Enum>
-  <Delegate Name="Bindable.Linq.Helpers.StateScopeChangedCallback" Collapsed="true">
-    <Position X="58" Y="57" Width="2.5" />
-    <TypeIdentifier>
-      <HashCode>AAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Helpers\StateScope.cs</FileName>
-    </TypeIdentifier>
-  </Delegate>
   <Font Name="Segoe UI" Size="9" />
 </ClassDiagram>

@@ -1,9 +1,9 @@
+using System;
+using Bindable.Linq.Dependencies.PathNavigation.TokenFactories;
+using Bindable.Linq.Dependencies.PathNavigation.Tokens;
+
 namespace Bindable.Linq.Dependencies.PathNavigation
 {
-    using System;
-    using TokenFactories;
-    using Tokens;
-
     /// <summary>
     /// A factory for the construction of property monitors by detecting information about the object.
     /// </summary>

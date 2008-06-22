@@ -1,8 +1,8 @@
+using System;
+using System.ComponentModel;
+
 namespace Bindable.Linq
 {
-    using System;
-    using System.ComponentModel;
-
     /// <summary>
     /// This interface is implemented by the results of any Bindable LINQ query which result in 
     /// single items, as opposed to collections. 

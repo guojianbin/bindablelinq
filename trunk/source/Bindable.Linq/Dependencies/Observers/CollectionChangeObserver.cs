@@ -1,9 +1,9 @@
+using System;
+using System.Collections.Specialized;
+using Bindable.Linq.Helpers;
+
 namespace Bindable.Linq.Dependencies
 {
-    using System;
-    using System.Collections.Specialized;
-    using Helpers;
-
     /// <summary>
     /// Manages the subscription of CollectionChanged events on items.
     /// </summary>

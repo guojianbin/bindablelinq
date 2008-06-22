@@ -1,7 +1,7 @@
-namespace Bindable.Linq.Aggregators.Numerics
-{
-    using System.Collections.Generic;
+using System.Collections.Generic;
 
+namespace Bindable.Linq.Aggregators.Numerics
+{    
     /// <summary>
     /// Provides a numeric operations wrapper for long types.
     /// </summary>

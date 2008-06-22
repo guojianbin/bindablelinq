@@ -1,8 +1,8 @@
+using System.Linq.Expressions;
+using Bindable.Linq.Dependencies.Definitions;
+
 namespace Bindable.Linq.Dependencies.ExpressionAnalysis.Extractors
 {
-    using System.Linq.Expressions;
-    using Definitions;
-
     internal sealed class StaticDependencyExtractor : DependencyExtractor
     {
         /// <summary>

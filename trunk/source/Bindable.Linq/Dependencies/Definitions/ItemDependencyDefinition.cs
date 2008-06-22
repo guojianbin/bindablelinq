@@ -1,10 +1,10 @@
+using System;
+using Bindable.Linq.Collections;
+using Bindable.Linq.Dependencies.Instances;
+using Bindable.Linq.Dependencies.PathNavigation;
+
 namespace Bindable.Linq.Dependencies.Definitions
 {
-    using System;
-    using Collections;
-    using Instances;
-    using PathNavigation;
-
     /// <summary>
     /// Defines a dependency on a property on an item where the item implements the INotifyPropertyChanged interface.
     /// </summary>

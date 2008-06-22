@@ -1,10 +1,10 @@
+using System;
+using System.Windows;
+using System.Reflection;
+using Bindable.Linq.Dependencies.PathNavigation.Tokens;
+
 namespace Bindable.Linq.Dependencies.PathNavigation.TokenFactories
 {
-    using System;
-    using Tokens;
-    using System.Windows;
-    using System.Reflection;
-
     /// <summary>
     /// A parser for Silverlight dependency properties.
     /// </summary>

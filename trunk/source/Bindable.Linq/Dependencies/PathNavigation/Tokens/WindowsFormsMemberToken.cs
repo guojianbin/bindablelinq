@@ -1,8 +1,8 @@
-namespace Bindable.Linq.Dependencies.PathNavigation.Tokens
-{
-    using System;
-    using Helpers;
+using System;
+using Bindable.Linq.Helpers;
 
+namespace Bindable.Linq.Dependencies.PathNavigation.Tokens
+{    
     /// <summary>
     /// A property monitor for CLR based properties.
     /// </summary>

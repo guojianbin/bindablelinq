@@ -1,4 +1,4 @@
 namespace Bindable.Linq.Tests.Unit.Aggregators
 {
-    internal class SumAggregatorTests {}
+    internal class SumAggregatorTests { }
 }

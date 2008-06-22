@@ -1,9 +1,9 @@
+using Bindable.Linq.Collections;
+using Bindable.Linq.Dependencies.Instances;
+using Bindable.Linq.Dependencies.PathNavigation;
+
 namespace Bindable.Linq.Dependencies.Definitions
 {
-    using Collections;
-    using Instances;
-    using PathNavigation;
-
     /// <summary>
     /// Defines a dependency on an external object that implements the INotifyPropertyChanged interface.
     /// </summary>

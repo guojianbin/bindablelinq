@@ -1,10 +1,10 @@
+using System;
+using System.Collections.Generic;
+using Bindable.Linq.Configuration;
+using Bindable.Linq.Dependencies;
+
 namespace Bindable.Linq
 {
-    using System;
-    using System.Collections.Generic;
-    using Configuration;
-    using Dependencies;
-
     /// <summary>
     /// This interface is supported by all Bindable LINQ result sets. As well as being an <see cref="T:IEnumerable"/>, 
     /// it provides a number of other properties and methods which take advantage of Bindable LINQ's data 

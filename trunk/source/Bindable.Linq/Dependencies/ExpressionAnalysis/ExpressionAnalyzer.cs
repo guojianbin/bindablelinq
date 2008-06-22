@@ -1,11 +1,11 @@
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using Bindable.Linq.Dependencies.ExpressionAnalysis.Extractors;
+using Bindable.Linq.Helpers;
+
 namespace Bindable.Linq.Dependencies.ExpressionAnalysis
 {
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Linq.Expressions;
-    using Extractors;
-    using Helpers;
-
     /// <summary>
     /// A factory for extracting dependencies from LINQ expression trees.
     /// </summary>

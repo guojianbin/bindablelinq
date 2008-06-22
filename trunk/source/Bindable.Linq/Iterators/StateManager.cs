@@ -1,8 +1,8 @@
+using System.Collections.Generic;
+using Bindable.Linq.Collections;
+
 namespace Bindable.Linq.Iterators
 {
-    using System.Collections.Generic;
-    using Collections;
-
     /// <summary>
     /// This class provides the ability to track the state of an item in a collection, as well 
     /// as to iterate over the items in a thread-safe manner. 

@@ -1,62 +1,68 @@
-namespace Bindable.Linq.Tests.TestHelpers
-{
-    using System.Collections;
-    using System.Collections.Specialized;
-    using System.Text;
-    using Helpers;
-    using NUnit.Framework;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Collections.Specialized;
+using System.Collections;
+using NUnit.Framework;
+using Bindable.Linq.Helpers;
 
-    public class CollectionChangeSpecification
+namespace Bindable.Linq.Tests.TestLanguage.Expectations
+{
+    internal sealed class RaiseEventExpectation : IExpectation
     {
-        public CollectionChangeSpecification(NotifyCollectionChangedAction action)
+        public RaiseEventExpectation()
         {
-            Action = action;
+
         }
 
-        public NotifyCollectionChangedAction Action { get; set; }
-
+        public NotifyCollectionChangedAction? Action { get; set; }
         public object[] OldItems { get; set; }
-
         public object[] NewItems { get; set; }
-
         public int? NewIndex { get; set; }
-
         public int? OldIndex { get; set; }
-
         public int? NewItemsCount { get; set; }
-
         public int? OldItemsCount { get; set; }
+        public int? GroupIndex { get; set; }
 
-        public string Description
+        public override string ToString()
         {
-            get
+            var result = this.Action.ToString();
+            if (GroupIndex != null)
             {
-                var result = Action.ToString();
-                if (GroupIndex != null)
-                {
-                    result += " on group " + GroupIndex.Value;
-                }
-                if (NewItems != null)
-                {
-                    result += ", new items " + PrintItems(NewItems);
-                }
-                if (OldItems != null)
-                {
-                    result += ", old items " + PrintItems(OldItems);
-                }
-                if (NewIndex != null)
-                {
-                    result += ", new index " + NewIndex;
-                }
-                if (OldIndex != null)
-                {
-                    result += ", original index " + OldIndex;
-                }
-                return result;
+                result += " on group " + GroupIndex.Value;
+            }
+            if (NewItems != null)
+            {
+                result += ", new items " + PrintItems(NewItems);
+            }
+            if (OldItems != null)
+            {
+                result += ", old items " + PrintItems(OldItems);
+            }
+            if (NewIndex != null)
+            {
+                result += ", new index " + NewIndex;
+            }
+            if (OldIndex != null)
+            {
+                result += ", original index " + OldIndex;
+            }
+            return result;
+        }
+
+        public void Validate(IScenario scenario)
+        {
+            var lastEvent = scenario.EventMonitor.DequeueNextEvent();
+            if (lastEvent != null)
+            {
+                this.CompareTo(lastEvent.Arguments);
+            }
+            else
+            {
+                this.CompareTo(null);
             }
         }
-
-        public int? GroupIndex { get; set; }
 
         private static bool CompareItems(IEnumerable actualItems, IEnumerable expectedItems)
         {
@@ -110,7 +116,20 @@ namespace Bindable.Linq.Tests.TestHelpers
 
         public void CompareTo(NotifyCollectionChangedEventArgs argument)
         {
-            if (argument.Action != Action)
+            if (this.Action == null && argument != null)
+            {
+                Assert.Fail("No events were expected at this point, but instead a {0} event was raised with old items '{1}' and new items '{2}'".FormatWith(argument.Action, PrintItems(argument.OldItems), PrintItems(argument.NewItems)));
+            }
+            if (this.Action != null && argument == null)
+            {
+                Assert.Fail("An {0} event was expected at this point but was not raised. Expected new items were '{0}', expected old items were '{1}'".FormatWith(this.Action.Value, PrintItems(this.OldItems), PrintItems(this.NewItems)));
+            }
+            if (this.Action == null && argument == null)
+            {
+                return;
+            }
+
+            if (argument.Action != Action.Value)
             {
                 Assert.Fail("Expected action {0} but got action {1} instead.".FormatWith(Action, argument.Action));
             }

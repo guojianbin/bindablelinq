@@ -1,11 +1,11 @@
+using System.Collections;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.ComponentModel;
+using Bindable.Linq.Configuration;
+
 namespace Bindable.Linq.Collections
 {
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.Collections.Specialized;
-    using System.ComponentModel;
-    using Configuration;
-
     /// <summary>
     /// Used in the <see cref="T:GroupByIterator`2"/> as the result of a grouping.
     /// </summary>

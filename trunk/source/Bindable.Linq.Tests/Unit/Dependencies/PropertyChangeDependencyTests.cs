@@ -1,15 +1,18 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using Bindable.Linq.Configuration;
+using Bindable.Linq.Tests.TestLanguage.Helpers;
+using NUnit.Framework;
+
 namespace Bindable.Linq.Tests.Unit.Dependencies
 {
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel;
-    using Configuration;
-    using NUnit.Framework;
-    using TestHelpers;
-
+    /// <remarks>
+    /// These tests need to be revised heavily.</remarks>
     [TestFixture]
     public class PropertyChangeDependencyTests : TestFixture
     {
+        #region Test Helpers
         private class DomainObject : INotifyPropertyChanged
         {
             #region INotifyPropertyChanged Members
@@ -113,6 +116,7 @@ namespace Bindable.Linq.Tests.Unit.Dependencies
                 }
             }
         }
+        #endregion
 
         [Test]
         public void PropertyChangeDependency_NestedPropertyChangeStopsEventsBeingRaised()

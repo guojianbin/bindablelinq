@@ -1,7 +1,7 @@
+using System.Collections.Generic;
+
 namespace Bindable.Linq.Dependencies
 {
-    using System.Collections.Generic;
-
     /// <summary>
     /// Compares dependencies.
     /// </summary>
@@ -22,7 +22,6 @@ namespace Bindable.Linq.Dependencies
             get { return _instance; }
         }
 
-        #region IEqualityComparer<IDependencyDefinition> Members
         /// <summary>
         /// Determines whether the specified objects are equal.
         /// </summary>
@@ -46,6 +45,5 @@ namespace Bindable.Linq.Dependencies
         {
             return obj.ToString().GetHashCode();
         }
-        #endregion
     }
 }

@@ -1,7 +1,10 @@
+using System.ComponentModel;
+
 namespace Bindable.Linq.Helpers
 {
-    using System.ComponentModel;
-
+    /// <summary>
+    /// An internal cache for storing static <see cref="PropertyChangedEventArgs"/> instances.
+    /// </summary>
     internal static class PropertyChangedCache
     {
         public static readonly PropertyChangedEventArgs Count = new PropertyChangedEventArgs("Count");

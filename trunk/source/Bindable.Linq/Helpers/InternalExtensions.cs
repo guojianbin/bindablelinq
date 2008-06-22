@@ -1,10 +1,10 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Text;
+
 namespace Bindable.Linq.Helpers
 {
-    using System;
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.Text;
-
     /// <summary>
     /// Contains useful extension methods used only in Bindable LINQ.
     /// </summary>

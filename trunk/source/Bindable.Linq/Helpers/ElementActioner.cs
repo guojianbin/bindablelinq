@@ -1,10 +1,10 @@
+using System;
+using System.Collections.Specialized;
+using System.Linq;
+using Bindable.Linq.Collections;
+
 namespace Bindable.Linq.Helpers
 {
-    using System;
-    using System.Collections.Specialized;
-    using System.Linq;
-    using Collections;
-
     /// <summary>
     /// Performs actions on the elements of a collection when they are added or removed. Ensures 
     /// the action is always performed at least once. 
@@ -71,7 +71,6 @@ namespace Bindable.Linq.Helpers
             {
                 _copy.ForEach(e => HandleElement(NotifyCollectionChangedAction.Remove, e));
                 _collection.CollectionChanged -= _weakEventHandler.WeakEventHandler;
-                _weakEventHandler.Dispose();
             }
         }
         #endregion
@@ -102,10 +101,6 @@ namespace Bindable.Linq.Helpers
                         _copy.Add(element);
                     }
                     break;
-#if !SILVERLIGHT
-                case NotifyCollectionChangedAction.Move:
-                    break;
-#endif
                 case NotifyCollectionChangedAction.Remove:
                     foreach (TElement element in e.OldItems)
                     {

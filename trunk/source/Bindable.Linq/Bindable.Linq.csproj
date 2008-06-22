@@ -122,8 +122,6 @@
     <Compile Include="Iterators\LoadState.cs" />
     <Compile Include="Collections\SnapshotManager.cs" />
     <Compile Include="Iterators\StateManager.cs" />
-    <Compile Include="Helpers\LockAttemptTimeoutException.cs" />
-    <Compile Include="Helpers\LockScope.cs" />
     <Compile Include="Aggregators\Numerics\FloatNumeric.cs" />
     <Compile Include="Aggregators\Numerics\DoubleNumeric.cs" />
     <Compile Include="Aggregators\Numerics\Int64Numeric.cs" />

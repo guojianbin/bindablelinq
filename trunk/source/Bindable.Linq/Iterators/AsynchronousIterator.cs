@@ -1,11 +1,11 @@
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using Bindable.Linq.Helpers;
+using Bindable.Linq.Threading;
+
 namespace Bindable.Linq.Iterators
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Threading;
-    using Helpers;
-    using Threading;
-
     /// <summary>
     /// An Iterator that reads the the enumerator of the source collection on a background thread, 
     /// using the advantages of data binding and <see cref="T:INotifyCollectionChanged"/>.

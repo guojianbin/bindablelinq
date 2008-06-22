@@ -1,9 +1,9 @@
+using Bindable.Linq.Collections;
+using Bindable.Linq.Tests.MockObjectModel;
+using NUnit.Framework;
+
 namespace Bindable.Linq.Tests.Unit.Helpers
 {
-    using Collections;
-    using NUnit.Framework;
-    using TestObjectModel;
-
     /// <summary>
     /// This class contains tests for the Bindable LINQ BindableCollection utility class.
     /// </summary>
@@ -18,9 +18,9 @@ namespace Bindable.Linq.Tests.Unit.Helpers
         {
             // Initialize the test data
             var customers = new BindableCollection<Contact>();
-            customers.Add(new Contact {Name = "Paul"});
-            customers.Add(new Contact {Name = "Greg"});
-            customers.Add(new Contact {Name = "Sam"});
+            customers.Add(new Contact { Name = "Paul" });
+            customers.Add(new Contact { Name = "Greg" });
+            customers.Add(new Contact { Name = "Sam" });
 
             // Enumerate over the items, and whilst enumerating, add some new items. The new items 
             // should be added and should not effect the items being enumerated.
@@ -29,7 +29,7 @@ namespace Bindable.Linq.Tests.Unit.Helpers
             {
                 enumerated++;
                 // This would normally raise an InvalidOperationException
-                customers.Add(new Contact {Name = "Jack " + enumerated});
+                customers.Add(new Contact { Name = "Jack " + enumerated });
             }
 
             // Check that the items were actually added and enumerated correctly

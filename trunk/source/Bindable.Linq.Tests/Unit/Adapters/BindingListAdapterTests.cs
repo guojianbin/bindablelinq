@@ -1,6 +1,7 @@
 using System.ComponentModel;
-using Bindable.Linq.Tests.TestHelpers;
-using Bindable.Linq.Tests.TestObjectModel;
+using Bindable.Linq.Tests.MockObjectModel;
+using Bindable.Linq.Tests.TestLanguage;
+using Bindable.Linq.Tests.TestLanguage.Helpers;
 using NUnit.Framework;
 
 namespace Bindable.Linq.Tests.Unit.Adapters
@@ -8,9 +9,10 @@ namespace Bindable.Linq.Tests.Unit.Adapters
     [TestFixture]
     public class BindingListAdapterTests : TestFixture
     {
+        #region Test Helpers
         private IBindingList NewTestBindingList()
         {
-            return Given.Collection(Gordon, Brian, Harry).OrderBy(c => c.Name).ToBindingList();
+            return With.Inputs(Gordon, Brian, Harry).OrderBy(c => c.Name).ToBindingList();
         }
 
         private IBindingList NewTestBindingListSortedDescending()
@@ -24,6 +26,7 @@ namespace Bindable.Linq.Tests.Unit.Adapters
         {
             return TypeDescriptor.GetProperties(typeof (Contact))["Name"];
         }
+        #endregion
 
         [Test]
         public void ContainsNaturalOrder()
@@ -79,12 +82,10 @@ namespace Bindable.Linq.Tests.Unit.Adapters
         [Test]
         public void IndexerNaturalOrder()
         {
-            var bindingList = Given.Collection(Brian, Gordon, Harry).AsBindable().ToBindingList();
+            var bindingList = With.Inputs(Brian, Gordon, Harry).AsBindable().ToBindingList();
             Assert.AreSame(Brian, bindingList[0]);
             Assert.AreSame(Gordon, bindingList[1]);
             Assert.AreSame(Harry, bindingList[2]);
         }
-
     }
-
 }

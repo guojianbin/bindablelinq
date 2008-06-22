@@ -1,7 +1,7 @@
+using System.Collections.Generic;
+
 namespace Bindable.Linq
 {
-    using System.Collections.Generic;
-
     internal interface IEditableBindableGrouping<TKey, TElement> : IBindableGrouping<TKey, TElement>
     {
         /// <summary>

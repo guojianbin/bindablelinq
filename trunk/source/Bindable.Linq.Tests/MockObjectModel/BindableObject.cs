@@ -1,4 +1,4 @@
-namespace Bindable.Linq.Tests.TestObjectModel
+namespace Bindable.Linq.Tests.MockObjectModel
 {
     using System.ComponentModel;
 

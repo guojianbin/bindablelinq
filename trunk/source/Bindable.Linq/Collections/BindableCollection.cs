@@ -1,15 +1,15 @@
-namespace Bindable.Linq.Collections
-{
-    using System;
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.Collections.Specialized;
-    using System.ComponentModel;
-    using System.Globalization;
-    using System.Threading;
-    using Helpers;
-    using Transactions;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.ComponentModel;
+using System.Globalization;
+using System.Threading;
+using Bindable.Linq.Helpers;
+using Bindable.Linq.Transactions;
 
+namespace Bindable.Linq.Collections
+{    
     /// <summary>
     /// This class is used as the primary implementation of a bindable collection. Most of the Iterators
     /// in Bindable LINQ use this class eventually to store their bindable results, as it abstracts a lot of the 

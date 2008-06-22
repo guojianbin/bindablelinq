@@ -1,7 +1,7 @@
+using Bindable.Linq.Aggregators.Numerics;
+
 namespace Bindable.Linq.Aggregators
 {
-    using Numerics;
-
     /// <summary>
     /// Aggregates a collection of numeric values into a bindable result, which will be updated when the source
     /// collection changes.

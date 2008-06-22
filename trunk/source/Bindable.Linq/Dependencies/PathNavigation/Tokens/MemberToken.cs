@@ -1,7 +1,7 @@
+using System;
+
 namespace Bindable.Linq.Dependencies.PathNavigation.Tokens
 {
-    using System;
-
     /// <summary>
     /// A base class for objects that monitor a property.
     /// </summary>

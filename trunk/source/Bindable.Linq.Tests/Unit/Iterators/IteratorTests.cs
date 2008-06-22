@@ -1,19 +1,21 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Threading;
+using Bindable.Linq.Collections;
+using Bindable.Linq.Dependencies.Definitions;
+using Bindable.Linq.Iterators;
+using Bindable.Linq.Tests.MockObjectModel;
+using Bindable.Linq.Tests.TestLanguage;
+using Bindable.Linq.Tests.TestLanguage.Helpers;
+using NUnit.Framework;
+
 namespace Bindable.Linq.Tests.Unit.Iterators
 {
-    using System;
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.Threading;
-    using Bindable.Linq.Dependencies.Definitions;
-    using Bindable.Linq.Iterators;
-    using Collections;
-    using NUnit.Framework;
-    using TestHelpers;
-    using TestObjectModel;
-
     [TestFixture]
     public class IteratorTests : TestFixture
     {
+        #region Test Helpers
         private static void ForcesLoad(BindableCollection<Contact> contacts, Action<SimpleIterator<Contact>> action)
         {
             var sourceCollection = new SourceCollection(contacts);
@@ -124,7 +126,7 @@ namespace Bindable.Linq.Tests.Unit.Iterators
             where TElement : class
         {
             public SimpleIterator(IBindableCollection<TElement> sourceCollection)
-                : base(sourceCollection) {}
+                : base(sourceCollection) { }
 
             private void EnsureLockIsNotHeld()
             {
@@ -178,32 +180,33 @@ namespace Bindable.Linq.Tests.Unit.Iterators
                 EnsureLockIsNotHeld();
             }
         }
+        #endregion
 
         [Test]
         public void IteratorIListMethodsForceLoad()
         {
-            ForcesLoad(Given.Collection(Tom, Sam, Sally), iterator => iterator.Contains(Tom));
-            ForcesLoad(Given.Collection(Tom, Sam, Sally), iterator => iterator.GetEnumerator());
-            ForcesLoad(Given.Collection(Tom, Sam, Sally), iterator => iterator.IndexOf(Tom));
-            ForcesLoad(Given.Collection(Tom, Sam, Sally), iterator => iterator.Count);
-            ForcesLoad(Given.Collection(Tom, Sam, Sally), iterator => iterator[2]);
-            ForcesLoad(Given.Collection(Tom, Sam, Sally), iterator => ((IList) iterator)[2]);
-            ForcesLoad(Given.Collection(Tom, Sam, Sally), iterator => iterator.CopyTo(new Contact[3], 0));
-            DoesNotForceLoad(Given.Collection(Tom, Sam, Sally), iterator => iterator.Contains(new object()));
-            DoesNotForceLoad(Given.Collection(Tom, Sam, Sally), iterator => iterator.IndexOf(new object()));
-            DoesNotForceLoad(Given.Collection(Tom, Sam, Sally), iterator => iterator.CurrentCount);
-            DoesNotForceLoad(Given.Collection(Tom, Sam, Sally), iterator => iterator.IsReadOnly);
-            DoesNotForceLoad(Given.Collection(Tom, Sam, Sally), iterator => iterator.IsLoading);
-            DoesNotForceLoad(Given.Collection(Tom, Sam, Sally), iterator => iterator.IsSynchronized);
-            DoesNotForceLoad(Given.Collection(Tom, Sam, Sally), iterator => iterator.IsFixedSize);
-            DoesNotForceLoad(Given.Collection(Tom, Sam, Sally), iterator => iterator.SyncRoot);
-            DoesNotForceLoad(Given.Collection(Tom, Sam, Sally), iterator => iterator.ToString());
+            ForcesLoad(With.Inputs(Tom, Sam, Sally), iterator => iterator.Contains(Tom));
+            ForcesLoad(With.Inputs(Tom, Sam, Sally), iterator => iterator.GetEnumerator());
+            ForcesLoad(With.Inputs(Tom, Sam, Sally), iterator => iterator.IndexOf(Tom));
+            ForcesLoad(With.Inputs(Tom, Sam, Sally), iterator => iterator.Count);
+            ForcesLoad(With.Inputs(Tom, Sam, Sally), iterator => iterator[2]);
+            ForcesLoad(With.Inputs(Tom, Sam, Sally), iterator => ((IList)iterator)[2]);
+            ForcesLoad(With.Inputs(Tom, Sam, Sally), iterator => iterator.CopyTo(new Contact[3], 0));
+            DoesNotForceLoad(With.Inputs(Tom, Sam, Sally), iterator => iterator.Contains(new object()));
+            DoesNotForceLoad(With.Inputs(Tom, Sam, Sally), iterator => iterator.IndexOf(new object()));
+            DoesNotForceLoad(With.Inputs(Tom, Sam, Sally), iterator => iterator.CurrentCount);
+            DoesNotForceLoad(With.Inputs(Tom, Sam, Sally), iterator => iterator.IsReadOnly);
+            DoesNotForceLoad(With.Inputs(Tom, Sam, Sally), iterator => iterator.IsLoading);
+            DoesNotForceLoad(With.Inputs(Tom, Sam, Sally), iterator => iterator.IsSynchronized);
+            DoesNotForceLoad(With.Inputs(Tom, Sam, Sally), iterator => iterator.IsFixedSize);
+            DoesNotForceLoad(With.Inputs(Tom, Sam, Sally), iterator => iterator.SyncRoot);
+            DoesNotForceLoad(With.Inputs(Tom, Sam, Sally), iterator => iterator.ToString());
         }
 
         [Test]
         public void IteratorUnsubscribesFromItemWhenRemoved()
         {
-            var sourceCollection = Given.Collection(Mike, Tom, Jack);
+            var sourceCollection = With.Inputs(Mike, Tom, Jack);
 
             var contactIterator = new SimpleIterator<Contact>(sourceCollection);
             Assert.IsFalse(Mike.HasPropertyChangedSubscribers);
@@ -213,7 +216,7 @@ namespace Bindable.Linq.Tests.Unit.Iterators
             Assert.IsTrue(sourceCollection.HasCollectionChangedSubscribers);
 
             contactIterator.AcceptDependency(new ItemDependencyDefinition("Name"));
-            foreach (var c in contactIterator) {}
+            foreach (var c in contactIterator) { }
 
             Assert.IsTrue(Mike.HasPropertyChangedSubscribers);
             Assert.IsTrue(Tom.HasPropertyChangedSubscribers);
@@ -241,7 +244,7 @@ namespace Bindable.Linq.Tests.Unit.Iterators
         [Test]
         public void IteratorWithDependenciesUnsubscribesFromAllSourceEventsWhenDisposed()
         {
-            var sourceCollection = Given.Collection(Mike, Tom, Jack);
+            var sourceCollection = With.Inputs(Mike, Tom, Jack);
 
             var contactIterator = new SimpleIterator<Contact>(sourceCollection);
             Assert.IsFalse(Mike.HasPropertyChangedSubscribers);
@@ -258,7 +261,7 @@ namespace Bindable.Linq.Tests.Unit.Iterators
             Assert.IsTrue(sourceCollection.HasPropertyChangedSubscribers);
             Assert.IsTrue(sourceCollection.HasCollectionChangedSubscribers);
 
-            foreach (var c in contactIterator) {}
+            foreach (var c in contactIterator) { }
 
             Assert.IsTrue(Mike.HasPropertyChangedSubscribers);
             Assert.IsTrue(Tom.HasPropertyChangedSubscribers);
@@ -278,7 +281,7 @@ namespace Bindable.Linq.Tests.Unit.Iterators
         [Test]
         public void IteratorWithDepenedenciesDoesNotEnumerateSourceUntilResultIsEnumerated()
         {
-            var sourceCollection = new SourceCollection(Given.Collection(Tom, Tim, Jack));
+            var sourceCollection = new SourceCollection(With.Inputs(Tom, Tim, Jack));
             Assert.AreEqual(0, sourceCollection.GetEnumeratorCalls);
 
             var contactIterator = new SimpleIterator<Contact>(sourceCollection.AsBindable());
@@ -287,7 +290,7 @@ namespace Bindable.Linq.Tests.Unit.Iterators
             contactIterator.AcceptDependency(new ItemDependencyDefinition("Name"));
             Assert.AreEqual(0, sourceCollection.GetEnumeratorCalls);
 
-            foreach (var c in contactIterator) {}
+            foreach (var c in contactIterator) { }
             Assert.AreEqual(1, sourceCollection.GetEnumeratorCalls);
 
             contactIterator.Dispose();
@@ -297,7 +300,7 @@ namespace Bindable.Linq.Tests.Unit.Iterators
         [Test]
         public void IteratorWithoutDependenciesUnsubscribesFromAllSourceEventsWhenDisposed()
         {
-            var sourceCollection = Given.Collection(Mike, Tom, Jack);
+            var sourceCollection = With.Inputs(Mike, Tom, Jack);
 
             var contactIterator = new SimpleIterator<Contact>(sourceCollection);
             Assert.IsFalse(Mike.HasPropertyChangedSubscribers);
@@ -326,7 +329,7 @@ namespace Bindable.Linq.Tests.Unit.Iterators
         [Test]
         public void IteratorWriteMethodsThrowExceptions()
         {
-            var sourceCollection = Given.Collection(Mike, Tom, Jack);
+            var sourceCollection = With.Inputs(Mike, Tom, Jack);
             var contactIterator = new SimpleIterator<Contact>(sourceCollection);
 
             IsNotSupported(() => contactIterator.Add(new object()));
@@ -335,7 +338,7 @@ namespace Bindable.Linq.Tests.Unit.Iterators
             IsNotSupported(() => contactIterator.Remove(new object()));
             IsNotSupported(() => contactIterator.RemoveAt(2));
             IsNotSupported(() => contactIterator[0] = new Contact());
-            IsNotSupported(() => ((IList) contactIterator)[0] = new Contact());
+            IsNotSupported(() => ((IList)contactIterator)[0] = new Contact());
             Assert.IsTrue(contactIterator.IsReadOnly);
             Assert.IsTrue(contactIterator.IsSynchronized);
             Assert.IsFalse(contactIterator.IsFixedSize);

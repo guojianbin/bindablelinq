@@ -1,9 +1,10 @@
+using Bindable.Linq.Collections;
+using Bindable.Linq.Tests.TestLanguage.EventMonitoring;
+using Bindable.Linq.Tests.TestLanguage.Helpers;
+using NUnit.Framework;
+
 namespace Bindable.Linq.Tests.Behaviour.Aggregators
 {
-    using Collections;
-    using NUnit.Framework;
-    using TestHelpers;
-
     /// <summary>
     /// Contains unit tests for the <see cref="T:CustomAggregator`2"/> class.
     /// </summary>
@@ -18,7 +19,7 @@ namespace Bindable.Linq.Tests.Behaviour.Aggregators
         {
             var names = new[] {"Paul", "Jackie", "Tom"};
             var aggregator = names.AsBindable().Aggregate(0, (i, name) => i + name.Length);
-            var eventCatcher = new PropertyEventCatcher(aggregator);
+            var eventCatcher = new PropertyEventMonitor(aggregator);
             Assert.AreEqual(4 + 6 + 3, aggregator.Current);
             Assert.AreEqual(1, eventCatcher.Count);
         }
@@ -31,7 +32,7 @@ namespace Bindable.Linq.Tests.Behaviour.Aggregators
         {
             var numbers = new object[] {1, 2, 4};
             var aggregator = numbers.AsBindable<object, int>().Aggregate((i, result) => result + i);
-            var eventCatcher = new PropertyEventCatcher(aggregator);
+            var eventCatcher = new PropertyEventMonitor(aggregator);
             Assert.AreEqual(1 + 2 + 4, aggregator.Current);
             Assert.AreEqual(1, eventCatcher.Count);
         }
@@ -45,7 +46,7 @@ namespace Bindable.Linq.Tests.Behaviour.Aggregators
             var numbers = new BindableCollection<object>();
             numbers.AddRange(1, 2, 4);
             var aggregator = numbers.AsBindable<object, int>().Aggregate((i, result) => result + i);
-            var eventCatcher = new PropertyEventCatcher(aggregator);
+            var eventCatcher = new PropertyEventMonitor(aggregator);
             Assert.AreEqual(1 + 2 + 4, aggregator.Current);
             Assert.AreEqual(1, eventCatcher.Count);
 

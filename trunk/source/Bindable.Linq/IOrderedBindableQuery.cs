@@ -1,8 +1,8 @@
+using System;
+using System.Collections.Generic;
+
 namespace Bindable.Linq
 {
-    using System;
-    using System.Collections.Generic;
-
     /// <summary>
     /// This interface is supported by all Bindable LINQ result sets. As well as being an <see cref="T:IEnumerable`1"/>, 
     /// it provides a number of other properties and methods which take advantage of Bindable LINQ's data 

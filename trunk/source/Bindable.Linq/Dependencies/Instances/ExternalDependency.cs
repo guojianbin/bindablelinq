@@ -1,9 +1,9 @@
+using System;
+using Bindable.Linq.Dependencies.PathNavigation;
+using Bindable.Linq.Dependencies.PathNavigation.Tokens;
+
 namespace Bindable.Linq.Dependencies.Instances
 {
-    using System;
-    using Bindable.Linq.Dependencies.PathNavigation.Tokens;
-    using PathNavigation;
-
     /// <summary>
     /// Represents an item property dependency applied over a collection of items.
     /// </summary>

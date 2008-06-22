@@ -1,7 +1,7 @@
+using System;
+
 namespace Bindable.Linq.Helpers
 {
-    using System;
-
     /// <summary>
     /// An event handler wrapper used to create weak-reference event handlers, so that event subscribers 
     /// can be garbage collected without the event publisher interfering. 
@@ -13,7 +13,7 @@ namespace Bindable.Linq.Helpers
     /// For examples on how this is used, it is best to look at the unit test: 
     ///     WeakEventReferenceTests.cs
     /// </remarks>
-    internal sealed class WeakEventReference<A> : IDisposable
+    internal sealed class WeakEventReference<A> 
         where A : EventArgs
     {
         private readonly WeakReference _callbackReference;
@@ -27,16 +27,6 @@ namespace Bindable.Linq.Helpers
         {
             _callbackReference = new WeakReference(callback, true);
         }
-
-        #region IDisposable Members
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
-        }
-        #endregion
 
         /// <summary>
         /// Used as the event handler which should be subscribed to source collections.

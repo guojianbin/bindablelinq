@@ -1,11 +1,11 @@
-namespace Bindable.Linq.Tests.TestHelpers
-{
-    using System.Collections;
-    using System.Collections.Specialized;
-    using TestObjectModel;
+using System.Collections.Specialized;
+using Bindable.Linq.Tests.MockObjectModel;
 
+namespace Bindable.Linq.Tests.TestLanguage.Helpers
+{
     /// <summary>
-    /// A base class for all Iterator tests fixtures.
+    /// A base class for all test classes that can provide access to a variety of 
+    /// helper properties and methods.
     /// </summary>
     public abstract class TestFixture
     {
@@ -37,7 +37,7 @@ namespace Bindable.Linq.Tests.TestHelpers
         /// <summary>
         /// Shortcut to NotifyCollectionChangedAction.Add.
         /// </summary>
-        protected NotifyCollectionChangedAction Add
+        protected static NotifyCollectionChangedAction Add
         {
             get { return NotifyCollectionChangedAction.Add; }
         }
@@ -45,7 +45,7 @@ namespace Bindable.Linq.Tests.TestHelpers
         /// <summary>
         /// Shortcut to NotifyCollectionChangedAction.Remove.
         /// </summary>
-        protected NotifyCollectionChangedAction Remove
+        protected static NotifyCollectionChangedAction Remove
         {
             get { return NotifyCollectionChangedAction.Remove; }
         }
@@ -53,7 +53,7 @@ namespace Bindable.Linq.Tests.TestHelpers
         /// <summary>
         /// Shortcut to NotifyCollectionChangedAction.Replace.
         /// </summary>
-        protected NotifyCollectionChangedAction Replace
+        protected static NotifyCollectionChangedAction Replace
         {
             get { return NotifyCollectionChangedAction.Replace; }
         }
@@ -61,7 +61,7 @@ namespace Bindable.Linq.Tests.TestHelpers
         /// <summary>
         /// Shortcut to NotifyCollectionChangedAction.Move.
         /// </summary>
-        protected NotifyCollectionChangedAction Move
+        protected static NotifyCollectionChangedAction Move
         {
             get { return NotifyCollectionChangedAction.Move; }
         }
@@ -69,29 +69,9 @@ namespace Bindable.Linq.Tests.TestHelpers
         /// <summary>
         /// Shortcut to NotifyCollectionChangedAction.Reset.
         /// </summary>
-        protected NotifyCollectionChangedAction Reset
+        protected static NotifyCollectionChangedAction Reset
         {
             get { return NotifyCollectionChangedAction.Reset; }
-        }
-
-        /// <summary>
-        /// Compares a Bindable LINQ query with a LINQ query.
-        /// </summary>
-        /// <param name="syncLinqCollection">The sync linq collection.</param>
-        /// <param name="linqQuery">The linq query.</param>
-        protected void CompareWithLinqOrdered(IBindableQuery syncLinqCollection, IEnumerable linqQuery)
-        {
-            CompatibilityValidator.CompareWithLinq(CompatibilityExpectation.FullyCompatible, syncLinqCollection, linqQuery);
-        }
-
-        /// <summary>
-        /// Compares a Bindable LINQ query with a LINQ query.
-        /// </summary>
-        /// <param name="syncLinqCollection">The sync linq collection.</param>
-        /// <param name="linqQuery">The linq query.</param>
-        protected void CompareWithLinqUnordered(IBindableQuery syncLinqCollection, IEnumerable linqQuery)
-        {
-            CompatibilityValidator.CompareWithLinq(CompatibilityExpectation.FullyCompatibleExceptOrdering, syncLinqCollection, linqQuery);
         }
     }
 }

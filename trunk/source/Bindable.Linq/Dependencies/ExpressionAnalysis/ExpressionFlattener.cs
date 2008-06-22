@@ -1,11 +1,11 @@
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using Bindable.Linq.Helpers;
+
 namespace Bindable.Linq.Dependencies.ExpressionAnalysis
 {
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Linq.Expressions;
-    using Helpers;
-
     /// <summary>
     /// Given a LINQ expression, traverses the expression and produces a flat list of all of the 
     /// expressions. A list of expression types can be provided which the expression flattener will stop 

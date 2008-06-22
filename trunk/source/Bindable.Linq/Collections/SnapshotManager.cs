@@ -1,8 +1,8 @@
+using System;
+using System.Collections.Generic;
+
 namespace Bindable.Linq.Collections
 {
-    using System;
-    using System.Collections.Generic;
-
     /// <summary>
     /// Manages the snapshots of a collection.
     /// </summary>

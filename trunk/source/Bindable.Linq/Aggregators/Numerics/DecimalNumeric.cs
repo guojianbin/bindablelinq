@@ -1,7 +1,7 @@
+using System.Collections.Generic;
+
 namespace Bindable.Linq.Aggregators.Numerics
 {
-    using System.Collections.Generic;
-
     /// <summary>
     /// Provides a numeric operations wrapper for decimal types.
     /// </summary>

@@ -1,7 +1,7 @@
-namespace Bindable.Linq.Aggregators
-{
-    using System;
+using System;
 
+namespace Bindable.Linq.Aggregators
+{    
     /// <summary>
     /// Aggregates a source collection using a custom accumulator callback provided by the caller.
     /// </summary>

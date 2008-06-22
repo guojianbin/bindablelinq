@@ -1,7 +1,7 @@
+using System;
+
 namespace Bindable.Linq.Operators
 {
-    using System;
-
     /// <summary>
     /// Projects one item to another item.
     /// </summary>

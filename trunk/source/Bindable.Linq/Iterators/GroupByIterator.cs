@@ -1,11 +1,11 @@
+using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Linq.Expressions;
+using Bindable.Linq.Collections;
+
 namespace Bindable.Linq.Iterators
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Collections.Specialized;
-    using System.Linq.Expressions;
-    using Collections;
-
     /// <summary>
     /// An Iterator that reads items from the source collection and groups them by a common key. 
     /// </summary>

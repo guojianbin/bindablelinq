@@ -1,8 +1,8 @@
+using System;
+using Bindable.Linq.Dependencies.PathNavigation.Tokens;
+
 namespace Bindable.Linq.Dependencies.PathNavigation.TokenFactories
 {
-    using System;
-    using Tokens;
-
     /// <summary>
     /// A parser for CLR properties.
     /// </summary>

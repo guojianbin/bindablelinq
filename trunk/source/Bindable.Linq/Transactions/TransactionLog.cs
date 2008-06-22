@@ -1,8 +1,8 @@
+using System.Collections.Generic;
+using System.Collections.Specialized;
+
 namespace Bindable.Linq.Transactions
 {
-    using System.Collections.Generic;
-    using System.Collections.Specialized;
-
     /// <summary>
     /// The transaction log provides a record of all of the events that should be
     /// raised once the transaction has completed.

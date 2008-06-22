@@ -1,15 +1,16 @@
+using System;
+using Bindable.Linq.Helpers;
+using NUnit.Framework;
+
 namespace Bindable.Linq.Tests.Unit.Helpers
 {
-    using System;
-    using Bindable.Linq.Helpers;
-    using NUnit.Framework;
-
     /// <summary>
     /// This class contains tests for the Bindable LINQ Weak Event implementation.
     /// </summary>
     [TestFixture]
     public sealed class WeakEventReferenceTests
     {
+        #region Test Helpers
         private sealed class EventPublisher
         {
             public int Subscribers;
@@ -45,7 +46,7 @@ namespace Bindable.Linq.Tests.Unit.Helpers
                 _publisher.EventRaised -= Publisher_EventRaised;
             }
 
-            private void Publisher_EventRaised(object sender, EventArgs e) {}
+            private void Publisher_EventRaised(object sender, EventArgs e) { }
         }
 
         private sealed class WeakEventSubscriber
@@ -66,7 +67,7 @@ namespace Bindable.Linq.Tests.Unit.Helpers
                 _publisher.EventRaised += _weakEventReference.WeakEventHandler;
             }
 
-            private void EventPublisher_EventRaised(object sender, EventArgs e) {}
+            private void EventPublisher_EventRaised(object sender, EventArgs e) { }
 
             ~WeakEventSubscriber()
             {
@@ -91,6 +92,7 @@ namespace Bindable.Linq.Tests.Unit.Helpers
             Assert.AreEqual(1, publisher.Subscribers);
             return new WeakReference(subscriber);
         }
+        #endregion
 
         /// <summary>
         /// Tests that standard .NET events do indeed cause referencing issues between 

@@ -1,14 +1,17 @@
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using Bindable.Linq.Tests.TestLanguage;
+using Bindable.Linq.Tests.TestLanguage.Expectations;
+using Bindable.Linq.Tests.TestLanguage.Helpers;
+using Bindable.Linq.Transactions;
+using NUnit.Framework;
+
 namespace Bindable.Linq.Tests.Unit.Eventing
 {
-    using System.Collections.Generic;
-    using System.Collections.Specialized;
-    using NUnit.Framework;
-    using TestHelpers;
-    using Transactions;
-
     [TestFixture]
-    public class CollectionChangetransactionTests : TestFixture
+    public class TransactionTests : TestFixture
     {
+        #region Test Helpers
         private class MockPublisher
         {
             private readonly Queue<NotifyCollectionChangedEventArgs> _arguments;
@@ -26,7 +29,7 @@ namespace Bindable.Linq.Tests.Unit.Eventing
                 }
             }
 
-            public void Expect(CollectionChangeSpecification specification)
+            public void Expect(RaiseEventExpectation specification)
             {
                 if (_arguments.Count > 0)
                 {
@@ -47,6 +50,7 @@ namespace Bindable.Linq.Tests.Unit.Eventing
                 Assert.AreEqual(_arguments.Count, 0);
             }
         }
+        #endregion
 
         [Test]
         public void AdjacentAddsAreCombined()
@@ -59,8 +63,8 @@ namespace Bindable.Linq.Tests.Unit.Eventing
                 transaction.LogAddEvent(Tim, 2);
                 publisher.ExpectNoEvents();
             }
-            publisher.Expect(Add.WithNewIndex(1).WithNewItems(Mike, Tim));
-            publisher.Expect(Add.WithNewIndex(32).WithNewItems(Sam));
+            publisher.Expect(Add.AtNew(1).WithNew(Mike, Tim));
+            publisher.Expect(Add.AtNew(32).WithNew(Sam));
         }
 
         [Test]
@@ -74,9 +78,9 @@ namespace Bindable.Linq.Tests.Unit.Eventing
                 transaction.LogAddEvent(Tim, 1);
                 publisher.ExpectNoEvents();
             }
-            publisher.Expect(Add.WithNewIndex(1).WithNewItems(Mike));
-            publisher.Expect(Add.WithNewIndex(32).WithNewItems(Sam));
-            publisher.Expect(Add.WithNewIndex(1).WithNewItems(Tim));
+            publisher.Expect(Add.AtNew(1).WithNew(Mike));
+            publisher.Expect(Add.AtNew(32).WithNew(Sam));
+            publisher.Expect(Add.AtNew(1).WithNew(Tim));
         }
 
         [Test]
@@ -90,9 +94,9 @@ namespace Bindable.Linq.Tests.Unit.Eventing
                 transaction.LogAddEvent(Tim, 3);
                 publisher.ExpectNoEvents();
             }
-            publisher.Expect(Add.WithNewIndex(1).WithNewItems(Mike));
-            publisher.Expect(Add.WithNewIndex(32).WithNewItems(Sam));
-            publisher.Expect(Add.WithNewIndex(3).WithNewItems(Tim));
+            publisher.Expect(Add.AtNew(1).WithNew(Mike));
+            publisher.Expect(Add.AtNew(32).WithNew(Sam));
+            publisher.Expect(Add.AtNew(3).WithNew(Tim));
         }
     }
 }

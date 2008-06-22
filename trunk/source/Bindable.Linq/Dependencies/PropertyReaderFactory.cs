@@ -1,9 +1,9 @@
+using System;
+using System.Collections.Generic;
+using System.Reflection;
+
 namespace Bindable.Linq.Helpers
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Reflection;
-
     /// <summary>
     /// Provides the ability to read the value of a property from a given object without using reflection.
     /// </summary>

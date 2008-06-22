@@ -1,9 +1,9 @@
+using System;
+using System.Collections.Generic;
+using Bindable.Linq.Helpers;
+
 namespace Bindable.Linq.Iterators
 {
-    using System;
-    using System.Collections.Generic;
-    using Helpers;
-
     /// <summary>
     /// Base class used for creating a list of comparers.
     /// </summary>

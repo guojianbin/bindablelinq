@@ -1,9 +1,9 @@
-namespace Bindable.Linq.Dependencies
-{
-    using System;
-    using System.Collections;
-    using System.Collections.Generic;
+using System;
+using System.Collections;
+using System.Collections.Generic;
 
+namespace Bindable.Linq.Dependencies
+{    
     /// <summary>
     /// A base class for managing weak-reference event subscriptions on multiple objects,
     /// ensuring:

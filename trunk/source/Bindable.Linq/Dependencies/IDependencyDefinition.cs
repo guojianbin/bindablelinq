@@ -1,8 +1,8 @@
+using Bindable.Linq.Collections;
+using Bindable.Linq.Dependencies.PathNavigation;
+
 namespace Bindable.Linq.Dependencies
 {
-    using Collections;
-    using PathNavigation;
-
     /// <summary>
     /// This interface is implemented by items that represent a dependency.
     /// </summary>

@@ -1,8 +1,8 @@
+using System;
+using System.Collections.Generic;
+
 namespace Bindable.Linq.Iterators
 {
-    using System;
-    using System.Collections.Generic;
-
     /// <summary>
     /// The Iterator created when performing a select and projection into another type.
     /// </summary>

@@ -24,7 +24,13 @@ namespace Bindable.Linq.SampleApplication.Samples
             DataContext = from c in _contacts.AsBindable()
                           where c.Name.IndexOf(_filterTextBox.Text, StringComparison.CurrentCultureIgnoreCase) >= 0 || c.Company.IndexOf(_filterTextBox.Text, StringComparison.CurrentCultureIgnoreCase) >= 0
                           group c by c.Company
-                          into g orderby g.Key select new {Company = g.Key, Contacts = g.OrderBy(c => c.Name), NameLengths = g.Sum(c => c.Name.Length)};
+                          into g orderby g.Key 
+                          select new 
+                          {
+                              Company = g.Key, 
+                              Contacts = g.OrderBy(c => c.Name), 
+                              NameLengths = g.Sum(c => c.Name.Length)
+                          };
         }
 
         private void DeleteCommand_Execute(object sender, ExecutedRoutedEventArgs e)

@@ -1,4 +1,4 @@
-namespace Bindable.Linq.Tests.TestObjectModel
+namespace Bindable.Linq.Tests.MockObjectModel
 {
     /// <summary>
     /// A summary of a contact, used for projection.

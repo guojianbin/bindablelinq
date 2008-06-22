@@ -1,8 +1,8 @@
-namespace Bindable.Linq.Tests.TestHelpers
-{
-    using System.Collections;
-    using NUnit.Framework;
+﻿using System.Collections;
+using NUnit.Framework;
 
+namespace Bindable.Linq.Tests.TestLanguage.Helpers
+{
     /// <summary>
     /// A helper class to compare Bindable LINQ queries with their LINQ to Objects counterpart.
     /// </summary>
@@ -13,14 +13,14 @@ namespace Bindable.Linq.Tests.TestHelpers
         /// </summary>
         /// <param name="syncLinqQuery">The Bindable LINQ query.</param>
         /// <param name="linqQuery">The LINQ query.</param>
-        public static void CompareWithLinq(CompatibilityExpectation expectations, IEnumerable syncLinqQuery, IEnumerable linqQuery)
+        public static void CompareWithLinq(CompatabilityLevel expectations, IEnumerable syncLinqQuery, IEnumerable linqQuery)
         {
             switch (expectations)
             {
-                case CompatibilityExpectation.FullyCompatible:
+                case CompatabilityLevel.FullyCompatible:
                     CompareWithLinqOrdered(syncLinqQuery, linqQuery);
                     break;
-                case CompatibilityExpectation.FullyCompatibleExceptOrdering:
+                case CompatabilityLevel.FullyCompatibleExceptOrdering:
                     CompareWithLinqUnordered(syncLinqQuery, linqQuery);
                     break;
             }
@@ -33,7 +33,7 @@ namespace Bindable.Linq.Tests.TestHelpers
         /// <param name="linqQuery">The linq query.</param>
         private static void CompareWithLinqOrdered(IEnumerable syncLinqCollection, IEnumerable linqQuery)
         {
-            CompareOrdered(syncLinqCollection, linqQuery);
+            InnerCompareOrderedRecursively(syncLinqCollection, linqQuery);
         }
 
         /// <summary>
@@ -43,13 +43,13 @@ namespace Bindable.Linq.Tests.TestHelpers
         /// <param name="linqQuery">The linq query.</param>
         private static void CompareWithLinqUnordered(IEnumerable syncLinqCollection, IEnumerable linqQuery)
         {
-            if (!CompareUnordered(syncLinqCollection, linqQuery))
+            if (!InnerCompareUnorderedRecursively(syncLinqCollection, linqQuery))
             {
                 Assert.Fail(string.Format("Iterator {0} does not match Iterator {1}.", syncLinqCollection, linqQuery));
             }
         }
 
-        private static void CompareOrdered(IEnumerable left, IEnumerable right)
+        private static void InnerCompareOrderedRecursively(IEnumerable left, IEnumerable right)
         {
             var leftEnumerator = left.GetEnumerator();
             var rightEnumerator = right.GetEnumerator();
@@ -62,10 +62,10 @@ namespace Bindable.Linq.Tests.TestHelpers
                     var rightChildIterator = rightEnumerator.Current as IEnumerable;
                     if (leftChildIterator != null && rightChildIterator != null)
                     {
-                        CompareOrdered(leftChildIterator, rightChildIterator);
+                        InnerCompareOrderedRecursively(leftChildIterator, rightChildIterator);
                     }
                 }
-                else if (!CompareObject(leftEnumerator.Current, rightEnumerator.Current))
+                else if (!AreEqual(leftEnumerator.Current, rightEnumerator.Current))
                 {
                     Assert.Fail(string.Format("Error when comparing Iterator '{0}' with Iterator '{1}': Items at index {2} ('{3}' : '{4}') do not match.", left, right, index, leftEnumerator.Current, rightEnumerator.Current));
                 }
@@ -73,7 +73,7 @@ namespace Bindable.Linq.Tests.TestHelpers
             }
         }
 
-        private static bool CompareUnordered(IEnumerable left, IEnumerable right)
+        private static bool InnerCompareUnorderedRecursively(IEnumerable left, IEnumerable right)
         {
             var equal = false;
             var leftList = new ArrayList();
@@ -97,7 +97,7 @@ namespace Bindable.Linq.Tests.TestHelpers
                     {
                         foreach (var rightItem in rightList)
                         {
-                            if (CompareUnordered(leftItem as IEnumerable, rightItem as IEnumerable))
+                            if (InnerCompareUnorderedRecursively(leftItem as IEnumerable, rightItem as IEnumerable))
                             {
                                 leftItemFound = true;
                                 break;
@@ -106,8 +106,8 @@ namespace Bindable.Linq.Tests.TestHelpers
                     }
                     else
                     {
-                        var rightItem = FindEqual(leftItem, rightList);
-                        if (rightItem != null && ContainsEqual(leftItem, rightList))
+                        var rightItem = FindEqualItem(leftItem, rightList);
+                        if (rightItem != null && ContainsEqualItem(leftItem, rightList))
                         {
                             leftItemFound = true;
                         }
@@ -122,26 +122,26 @@ namespace Bindable.Linq.Tests.TestHelpers
             return equal;
         }
 
-        private static object FindEqual(object find, IEnumerable list)
+        private static bool ContainsEqualItem(object find, IEnumerable list)
+        {
+            return FindEqualItem(find, list) != null;
+        }
+
+        private static object FindEqualItem(object find, IEnumerable list)
         {
             object result = null;
-            foreach (var item in list)
+            foreach (var found in list)
             {
-                if (CompareObject(find, item))
+                if (AreEqual(find, found))
                 {
-                    result = item;
+                    result = found;
                     break;
                 }
             }
             return result;
         }
 
-        private static bool ContainsEqual(object find, IEnumerable list)
-        {
-            return FindEqual(find, list) != null;
-        }
-
-        private static bool CompareObject(object left, object right)
+        private static bool AreEqual(object left, object right)
         {
             var equal = true;
             if (left != right)
@@ -160,4 +160,5 @@ namespace Bindable.Linq.Tests.TestHelpers
             return equal;
         }
     }
+
 }

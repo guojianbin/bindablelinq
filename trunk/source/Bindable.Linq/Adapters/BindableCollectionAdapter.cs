@@ -1,13 +1,13 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.ComponentModel;
+using Bindable.Linq.Configuration;
+using Bindable.Linq.Helpers;
+
 namespace Bindable.Linq.Adapters
 {
-    using System;
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.Collections.Specialized;
-    using System.ComponentModel;
-    using Configuration;
-    using Helpers;
-
     /// <summary>
     /// Turns any kind of collection into a bindable collection.
     /// </summary>
@@ -142,21 +142,6 @@ namespace Bindable.Linq.Adapters
         /// </summary>
         public void Dispose()
         {
-            if (_propertyWeakHandler != null)
-            {
-                _propertyWeakHandler.Dispose();
-            }
-            if (_collectionWeakHandler != null)
-            {
-                _collectionWeakHandler.Dispose();
-            }
-#if !SILVERLIGHT
-            // Silverlight does not provide ListChanged events
-            if (_listWeakHandler != null)
-            {
-                _listWeakHandler.Dispose();
-            }
-#endif
         }
         #endregion
 

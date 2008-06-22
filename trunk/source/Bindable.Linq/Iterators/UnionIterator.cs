@@ -1,17 +1,17 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.ComponentModel;
+using System.Globalization;
+using System.Linq;
+using Bindable.Linq.Collections;
+using Bindable.Linq.Configuration;
+using Bindable.Linq.Dependencies;
+using Bindable.Linq.Helpers;
+
 namespace Bindable.Linq.Iterators
 {
-    using System;
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.Collections.Specialized;
-    using System.ComponentModel;
-    using System.Globalization;
-    using System.Linq;
-    using Collections;
-    using Configuration;
-    using Dependencies;
-    using Helpers;
-
     /// <summary>
     /// The Iterator created when a Union is performed.
     /// </summary>

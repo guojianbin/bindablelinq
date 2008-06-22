@@ -1,11 +1,11 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using Bindable.Linq.Configuration;
+using Bindable.Linq.Dependencies;
+
 namespace Bindable.Linq.Operators
 {
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel;
-    using Configuration;
-    using Dependencies;
-
     /// <summary>
     /// Serves as a base class for all operator functions. From Bindable LINQ's perspective,
     /// an <see cref="T:Operator`2"/> is a LINQ operation which tranforms a single source items

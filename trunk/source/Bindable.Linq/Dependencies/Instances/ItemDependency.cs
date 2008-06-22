@@ -1,13 +1,13 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using Bindable.Linq.Collections;
+using Bindable.Linq.Dependencies.PathNavigation;
+using Bindable.Linq.Dependencies.PathNavigation.Tokens;
+using Bindable.Linq.Helpers;
+
 namespace Bindable.Linq.Dependencies.Instances
 {
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel;
-    using Bindable.Linq.Dependencies.PathNavigation.Tokens;
-    using Collections;
-    using Helpers;
-    using PathNavigation;
-
     /// <summary>
     /// Represents an property dependency applied over a collection of items.
     /// </summary>

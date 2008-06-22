@@ -1,8 +1,8 @@
+using System;
+using System.Windows.Threading;
+
 namespace Bindable.Linq.Threading
 {
-    using System;
-    using System.Windows.Threading;
-
 #if !SILVERLIGHT
     /// <summary>
     /// This dispatcher is used at runtime by both Windows Forms and WPF. The WPF Dispatcher 

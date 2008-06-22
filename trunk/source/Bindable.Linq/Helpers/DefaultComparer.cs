@@ -1,8 +1,8 @@
+using System;
+using System.Collections.Generic;
+
 namespace Bindable.Linq.Helpers
 {
-    using System;
-    using System.Collections.Generic;
-
     /// <summary>
     /// A class that provides a default <see cref="IComparer{T}"/> and <see cref="IEqualityComparer{T}"/> implementation for any type.
     /// </summary>
@@ -14,7 +14,6 @@ namespace Bindable.Linq.Helpers
     /// </remarks>
     internal sealed class DefaultComparer<TCompared> : IComparer<TCompared>, IEqualityComparer<TCompared>
     {
-        #region IComparer<TCompared> Members
         /// <summary>
         /// Compares the specified items.
         /// </summary>
@@ -49,9 +48,7 @@ namespace Bindable.Linq.Helpers
                 return left.GetHashCode().CompareTo(right.GetHashCode());
             }
         }
-        #endregion
 
-        #region IEqualityComparer<TCompared> Members
         /// <summary>
         /// Determines whether the specified objects are equal.
         /// </summary>
@@ -96,6 +93,5 @@ namespace Bindable.Linq.Helpers
             }
             return result;
         }
-        #endregion
     }
 }

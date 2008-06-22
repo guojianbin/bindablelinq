@@ -1,8 +1,8 @@
+using System.Collections.Specialized;
+using System.Linq;
+
 namespace Bindable.Linq
 {
-    using System.Collections.Specialized;
-    using System.Linq;
-
     /// <summary>
     /// Implemented by classes that represent a bindable collection of objects with a common key.
     /// </summary>

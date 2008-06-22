@@ -1,14 +1,14 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.ComponentModel;
+using Bindable.Linq.Configuration;
+using Bindable.Linq.Dependencies;
+using Bindable.Linq.Helpers;
+
 namespace Bindable.Linq.Collections
 {
-    using System;
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.Collections.Specialized;
-    using System.ComponentModel;
-    using Configuration;
-    using Dependencies;
-    using Helpers;
-
     /// <summary>
     /// 
     /// </summary>

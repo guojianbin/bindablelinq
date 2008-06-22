@@ -1,12 +1,7 @@
+using System;
+
 namespace Bindable.Linq.Helpers
 {
-    using System;
-
-    /// <summary>
-    /// Empty delegate used when a StateScope has been entered or left. 
-    /// </summary>
-    public delegate void StateScopeChangedCallback();
-
     /// <summary>
     /// This class is used to suppress events and to temporarily set property values. It is necessary 
     /// because when suppressing things like events using simple boolean flags, if one thread 
@@ -29,20 +24,23 @@ namespace Bindable.Linq.Helpers
     /// </remarks>
     public sealed class StateScope : IDisposable
     {
-        private readonly StateScopeChangedCallback _callback;
+        private readonly Action _callback;
         private readonly object _stateScopeLock = new object();
         private int _childrenCount;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="StateScope"/> class.
         /// </summary>
-        public StateScope() {}
+        public StateScope()
+        {
+            
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="StateScope"/> class.
         /// </summary>
         /// <param name="callback">A callback called when the state's IsWithin property changes.</param>
-        public StateScope(StateScopeChangedCallback callback)
+        public StateScope(Action callback)
         {
             _callback = callback;
         }
@@ -54,16 +52,6 @@ namespace Bindable.Linq.Helpers
         {
             get { return _childrenCount > 0; }
         }
-
-        #region IDisposable Members
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        void IDisposable.Dispose()
-        {
-            Leave();
-        }
-        #endregion
 
         /// <summary>
         /// Enters this state scope.
@@ -109,6 +97,14 @@ namespace Bindable.Linq.Helpers
             {
                 _callback();
             }
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        void IDisposable.Dispose()
+        {
+            Leave();
         }
     }
 }

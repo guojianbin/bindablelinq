@@ -1,8 +1,8 @@
-namespace Bindable.Linq.Dependencies.ExpressionAnalysis.Extractors
-{
-    using System.Linq.Expressions;
-    using Definitions;
+using System.Linq.Expressions;
+using Bindable.Linq.Dependencies.Definitions;
 
+namespace Bindable.Linq.Dependencies.ExpressionAnalysis.Extractors
+{    
     /// <summary>
     /// Extracts dependencies placed on child items within a query by looking for uses of <see cref="ParameterExpression"/>.
     /// </summary>

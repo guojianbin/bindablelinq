@@ -1,9 +1,9 @@
+using System;
+using System.ComponentModel;
+using System.Windows;
+
 namespace Bindable.Linq.Dependencies.PathNavigation.Tokens
 {
-    using System;
-    using System.ComponentModel;
-    using System.Windows;
-
 #if !SILVERLIGHT
     /// <summary>
     /// A property monitor for WPF DependencyProperties.

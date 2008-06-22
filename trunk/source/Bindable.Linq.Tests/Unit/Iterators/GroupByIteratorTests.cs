@@ -1,7 +1,7 @@
+using NUnit.Framework;
+
 namespace Bindable.Linq.Tests.Unit.Iterators
 {
-    using NUnit.Framework;
-
     [TestFixture]
     public class GroupByIteratorTests
     {

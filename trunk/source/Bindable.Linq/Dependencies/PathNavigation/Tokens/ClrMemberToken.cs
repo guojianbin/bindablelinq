@@ -1,9 +1,9 @@
+using System;
+using System.ComponentModel;
+using Bindable.Linq.Helpers;
+
 namespace Bindable.Linq.Dependencies.PathNavigation.Tokens
 {
-    using System;
-    using System.ComponentModel;
-    using Helpers;
-
     /// <summary>
     /// A property monitor for CLR based properties.
     /// </summary>
@@ -84,10 +84,6 @@ namespace Bindable.Linq.Dependencies.PathNavigation.Tokens
         protected override void DisposeOverride()
         {
             DiscardCurrentTargetOverride();
-            if (_weakHandler != null)
-            {
-                _weakHandler.Dispose();
-            }
         }
     }
 }

@@ -1,10 +1,10 @@
+using System;
+using System.Reflection;
+using Bindable.Linq.Collections;
+using Bindable.Linq.Dependencies.PathNavigation;
+
 namespace Bindable.Linq.Dependencies.Definitions
 {
-    using System;
-    using System.Reflection;
-    using Collections;
-    using PathNavigation;
-
     /// <summary>
     /// Defines a dependency on a static property or member.
     /// </summary>

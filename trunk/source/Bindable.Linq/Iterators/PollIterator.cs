@@ -1,10 +1,10 @@
+using System;
+using System.Collections.Generic;
+using Bindable.Linq.Helpers;
+using Bindable.Linq.Threading;
+
 namespace Bindable.Linq.Iterators
 {
-    using System;
-    using System.Collections.Generic;
-    using Helpers;
-    using Threading;
-
     /// <summary>
     /// An Iterator that reads items from the source collection directly into the results collection, 
     /// and then continues to poll the source collection for changes at a given interval.

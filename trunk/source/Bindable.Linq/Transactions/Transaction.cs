@@ -1,12 +1,12 @@
+using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Diagnostics;
+using System.Linq;
+using Bindable.Linq.Helpers;
+
 namespace Bindable.Linq.Transactions
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Collections.Specialized;
-    using System.Diagnostics;
-    using System.Linq;
-    using Helpers;
-
     /// <summary>
     /// This class abstracts recording of collection changed events and raising them when complete. Events can be 
     /// recorded whilst locks are held, and then raised at once. It automatically figures out whether events are 

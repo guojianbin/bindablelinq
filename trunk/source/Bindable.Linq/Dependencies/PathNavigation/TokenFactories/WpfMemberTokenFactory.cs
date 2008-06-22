@@ -1,10 +1,10 @@
+using System;
+using System.Reflection;
+using System.Windows;
+using Bindable.Linq.Dependencies.PathNavigation.Tokens;
+
 namespace Bindable.Linq.Dependencies.PathNavigation.TokenFactories
 {
-    using System;
-    using System.Reflection;
-    using System.Windows;
-    using Tokens;
-
     /// <summary>
     /// A property parser for WPF Dependency Properties.
     /// </summary>

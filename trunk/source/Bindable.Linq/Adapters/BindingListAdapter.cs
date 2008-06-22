@@ -1,15 +1,15 @@
-namespace Bindable.Linq.Adapters
-{
-    using System;
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.Collections.Specialized;
-    using System.ComponentModel;
-    using System.Linq.Expressions;
-    using Collections;
-    using Dependencies;
-    using Helpers;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.ComponentModel;
+using System.Linq.Expressions;
+using Bindable.Linq.Collections;
+using Bindable.Linq.Dependencies;
+using Bindable.Linq.Helpers;
 
+namespace Bindable.Linq.Adapters
+{    
 #if !SILVERLIGHT
     // Silverlight does not provide an IBindingList interface. This class is unnecessary.
     /// <summary>
@@ -460,7 +460,6 @@ namespace Bindable.Linq.Adapters
         {
             _addActioner.Dispose();
             _propertyChangeObserver.Dispose();
-            _weakHandler.Dispose();
         }
         #endregion
 

@@ -1,8 +1,8 @@
+using System.Collections.Generic;
+using System.Linq.Expressions;
+
 namespace Bindable.Linq.Dependencies.ExpressionAnalysis.Extractors
 {
-    using System.Collections.Generic;
-    using System.Linq.Expressions;
-
     /// <summary>
     /// Serves as a base class for dependency extractors that create dependencies against properties. 
     /// These dependencies have one thing in common: They only look for MemberAccess expressions, and 
@@ -10,7 +10,6 @@ namespace Bindable.Linq.Dependencies.ExpressionAnalysis.Extractors
     /// </summary>
     internal abstract class DependencyExtractor : IDependencyExtractor
     {
-        #region IDependencyExtractor Members
         /// <summary>
         /// Extracts any dependencies within the specified LINQ expression.
         /// </summary>
@@ -68,7 +67,6 @@ namespace Bindable.Linq.Dependencies.ExpressionAnalysis.Extractors
             }
             return results;
         }
-        #endregion
 
         /// <summary>
         /// When overridden in a derived class, extracts the appropriate dependency from the root of the expression.

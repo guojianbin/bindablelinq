@@ -1,25 +1,25 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.ComponentModel;
+using System.Linq.Expressions;
+using System.Windows;
+using System.Windows.Threading;
+using Bindable.Linq.Adapters;
+using Bindable.Linq.Aggregators;
+using Bindable.Linq.Aggregators.Numerics;
+using Bindable.Linq.Collections;
+using Bindable.Linq.Configuration;
+using Bindable.Linq.Dependencies;
+using Bindable.Linq.Dependencies.Definitions;
+using Bindable.Linq.Helpers;
+using Bindable.Linq.Iterators;
+using Bindable.Linq.Operators;
+using Bindable.Linq.Threading;
+
 namespace Bindable.Linq
 {
-    using System;
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.Collections.Specialized;
-    using System.ComponentModel;
-    using System.Linq.Expressions;
-    using System.Windows;
-    using System.Windows.Threading;
-    using Adapters;
-    using Aggregators;
-    using Bindable.Linq.Aggregators.Numerics;
-    using Bindable.Linq.Dependencies.Definitions;
-    using Collections;
-    using Configuration;
-    using Dependencies;
-    using Helpers;
-    using Iterators;
-    using Operators;
-    using Threading;
-
     /// <summary>
     /// This class contains all of the extension method implementations provided by Bindable LINQ. 
     /// </summary>
@@ -29,29 +29,33 @@ namespace Bindable.Linq
 
         #region AsBindable (DONE)
         /// <summary>
-        /// Converts any <see cref="T:IEnumerable`1"/> into a Bindable LINQ <see cref="T:ISyncLinqCollection`1"/>.
+        /// Converts any <see cref="T:IEnumerable`1"/> into a Bindable LINQ <see cref="T:IBindableCollection`1"/>. The <see cref="T:IBindableCollection`1"/>
+        /// interface is what allows the Bindable LINQ extensions to know whether to apply Bindable LINQ operations or the standard LINQ to Objects operations.
         /// </summary>
         /// <typeparam name="TSource">The type of source item.</typeparam>
         /// <param name="source">The source Iterator.</param>
         /// <returns>
-        /// An <see cref="T:ISyncLinqCollection`1"/> containing the items.
+        /// An <see cref="T:IBindableCollection`1"/> containing the items.
         /// </returns>
         /// <exception cref="T:ArgumentNullException"><paramref name="source"/> or <paramref name="selector"/> is null.</exception>
+        /// <differences>This method is specific to Bindable LINQ and is not available in LINQ to Objects.</differences>
+        /// <notimplemented>This method is not implemented yet.</notimplemented>
         public static IBindableCollection<TSource> AsBindable<TSource>(this IEnumerable source) where TSource : class
         {
             return source.AsBindable<TSource>(BindingConfigurations.Default);
         }
 
         /// <summary>
-        /// Converts any <see cref="T:IEnumerable`1"/> into a Bindable LINQ <see cref="T:ISyncLinqCollection`1"/>.
+        /// Converts any <see cref="T:IEnumerable`1"/> into a Bindable LINQ <see cref="T:IBindableCollection`1"/>.
         /// </summary>
         /// <typeparam name="TSource">The type of source item.</typeparam>
         /// <param name="source">The source Iterator.</param>
         /// <param name="bindingConfiguration">The binding configuration.</param>
         /// <returns>
-        /// An <see cref="T:ISyncLinqCollection`1"/> containing the items.
+        /// An <see cref="T:IBindableCollection`1"/> containing the items.
         /// </returns>
         /// <exception cref="T:ArgumentNullException"><paramref name="source"/> or <paramref name="selector"/> is null.</exception>
+        /// <differences>This method is specific to Bindable LINQ and is not available in LINQ to Objects.</differences>
         public static IBindableCollection<TSource> AsBindable<TSource>(this IEnumerable source, IBindingConfiguration bindingConfiguration) where TSource : class
         {
             source.ShouldNotBeNull("source");
@@ -66,42 +70,43 @@ namespace Bindable.Linq
         }
 
         /// <summary>
-        /// Converts any <see cref="T:IEnumerable`1"/> into a Bindable LINQ <see cref="T:ISyncLinqCollection`1"/>.
+        /// Converts any <see cref="T:IEnumerable`1"/> into a Bindable LINQ <see cref="T:IBindableCollection`1"/>.
         /// </summary>
         /// <typeparam name="TSource">The type of source item.</typeparam>
         /// <param name="source">The source Iterator.</param>
         /// <param name="bindingConfiguration">The binding configuration.</param>
         /// <returns>
-        /// An <see cref="T:ISyncLinqCollection`1"/> containing the items.
+        /// An <see cref="T:IBindableCollection`1"/> containing the items.
         /// </returns>
         /// <exception cref="T:ArgumentNullException"><paramref name="source"/> or <paramref name="selector"/> is null.</exception>
+        /// <differences>This method is specific to Bindable LINQ and is not available in LINQ to Objects.</differences>
         public static IBindableCollection<TSource> AsBindable<TSource>(this IEnumerable<TSource> source, IBindingConfiguration bindingConfiguration) where TSource : class
         {
             return ((IEnumerable)source).AsBindable<TSource>(bindingConfiguration);
         }
 
         /// <summary>
-        /// Converts any <see cref="T:IEnumerable`1"/> into a Bindable LINQ <see cref="T:ISyncLinqCollection`1"/>.
+        /// Converts any <see cref="T:IEnumerable`1"/> into a Bindable LINQ <see cref="T:IBindableCollection`1"/>.
         /// </summary>
         /// <typeparam name="TSource">The type of source item.</typeparam>
         /// <param name="source">The source Iterator.</param>
         /// <returns>
-        /// An <see cref="T:ISyncLinqCollection`1"/> containing the items.
+        /// An <see cref="T:IBindableCollection`1"/> containing the items.
         /// </returns>
-        /// <exception cref="T:ArgumentNullException"><paramref name="source"/> or <paramref name="selector"/> is null.</exception>
+        /// <differences>This method is specific to Bindable LINQ and is not available in LINQ to Objects.</differences>
         public static IBindableCollection<TSource> AsBindable<TSource>(this IEnumerable<TSource> source) where TSource : class
         {
             return ((IEnumerable)source).AsBindable<TSource>();
         }
 
         /// <summary>
-        /// Converts any <see cref="T:IEnumerable`1"/> into a Bindable LINQ <see cref="T:ISyncLinqCollection`1"/>.
+        /// Converts any <see cref="T:IEnumerable`1"/> into a Bindable LINQ <see cref="T:IBindableCollection`1"/>.
         /// </summary>
         /// <typeparam name="TSource">The type of source item.</typeparam>
         /// <typeparam name="TResult">The type of the result.</typeparam>
         /// <param name="source">The source Iterator.</param>
         /// <returns>
-        /// An <see cref="T:ISyncLinqCollection`1"/> containing the items.
+        /// An <see cref="T:IBindableCollection`1"/> containing the items.
         /// </returns>
         /// <exception cref="T:ArgumentNullException"><paramref name="source"/> or <paramref name="selector"/> is null.</exception>
         public static IBindableQuery<TResult> AsBindable<TSource, TResult>(this IEnumerable<TSource> source)
@@ -116,13 +121,13 @@ namespace Bindable.Linq
         #region Asynchronous (DONE)
 #if !SILVERLIGHT
         /// <summary>
-        /// Converts any <see cref="T:IEnumerable`1"/> into a Bindable LINQ <see cref="T:ISyncLinqCollection`1"/>, 
+        /// Converts any <see cref="T:IEnumerable`1"/> into a Bindable LINQ <see cref="T:IBindableCollection`1"/>, 
         /// and executes the enumerator for the source collection on a background thread. 
         /// </summary>
         /// <typeparam name="TSource">The type of source item.</typeparam>
         /// <param name="source">The source Iterator.</param>
         /// <returns>
-        /// A <see cref="T:ISyncLinqCollection`1"/> containing the items, which will be added 
+        /// A <see cref="T:IBindableCollection`1"/> containing the items, which will be added 
         /// asynchronously.
         /// </returns>
         /// <exception cref="T:ArgumentNullException"><paramref name="source"/> or <paramref name="selector"/> is null.</exception>
@@ -133,14 +138,14 @@ namespace Bindable.Linq
 #endif
 
         /// <summary>
-        /// Converts any <see cref="T:IEnumerable`1"/> into a Bindable LINQ <see cref="T:ISyncLinqCollection`1"/>,
+        /// Converts any <see cref="T:IEnumerable`1"/> into a Bindable LINQ <see cref="T:IBindableCollection`1"/>,
         /// and executes the enumerator for the source collection on a background thread.
         /// </summary>
         /// <typeparam name="TSource">The type of source item.</typeparam>
         /// <param name="source">The source Iterator.</param>
         /// <param name="dispatcher">The dispatcher.</param>
         /// <returns>
-        /// A <see cref="T:ISyncLinqCollection`1"/> containing the items, which will be added
+        /// A <see cref="T:IBindableCollection`1"/> containing the items, which will be added
         /// asynchronously.
         /// </returns>
         /// <exception cref="T:ArgumentNullException"><paramref name="source"/> or <paramref name="selector"/> is null.</exception>
@@ -150,14 +155,14 @@ namespace Bindable.Linq
         }
 
         /// <summary>
-        /// Converts any <see cref="T:IEnumerable`1"/> into a Bindable LINQ <see cref="T:ISyncLinqCollection`1"/>,
+        /// Converts any <see cref="T:IEnumerable`1"/> into a Bindable LINQ <see cref="T:IBindableCollection`1"/>,
         /// and executes the enumerator for the source collection on a background thread.
         /// </summary>
         /// <typeparam name="TSource">The type of source item.</typeparam>
         /// <param name="source">The source Iterator.</param>
         /// <param name="dispatcher">The dispatcher.</param>
         /// <returns>
-        /// A <see cref="T:ISyncLinqCollection`1"/> containing the items, which will be added
+        /// A <see cref="T:IBindableCollection`1"/> containing the items, which will be added
         /// asynchronously.
         /// </returns>
         /// <exception cref="T:ArgumentNullException"><paramref name="source"/> or <paramref name="selector"/> is null.</exception>
@@ -586,7 +591,8 @@ namespace Bindable.Linq
         {
             source.ShouldNotBeNull("source");
             keySelector.ShouldNotBeNull("keySelector");
-            return new OrderByIterator<TSource, TKey>(source, new ItemSorter<TSource, TKey>(null, keySelector.Compile(), comparer, true)).WithDependencyExpression(keySelector.Body, keySelector.Parameters[0]);
+            return new OrderByIterator<TSource, TKey>(source, new ItemSorter<TSource, TKey>(null, keySelector.Compile(), comparer, true))
+                .WithDependencyExpression(keySelector.Body, keySelector.Parameters[0]);
         }
         #endregion
 
@@ -625,14 +631,14 @@ namespace Bindable.Linq
 #if !SILVERLIGHT
 
         /// <summary>
-        /// Converts any <see cref="T:IEnumerable`1"/> into a Bindable LINQ <see cref="T:ISyncLinqCollection`1"/>. 
+        /// Converts any <see cref="T:IEnumerable`1"/> into a Bindable LINQ <see cref="T:IBindableCollection`1"/>. 
         /// Bindable LINQ will automatically poll the collection for changes everytime a given 
         /// timespan elapses.
         /// </summary>
         /// <typeparam name="TSource">The type of source item.</typeparam>
         /// <param name="source">The source Iterator.</param>
         /// <param name="time">The time to wait between polling.</param>
-        /// <returns>A <see cref="T:ISyncLinqCollection`1"/> containing the items.</returns>
+        /// <returns>A <see cref="T:IBindableCollection`1"/> containing the items.</returns>
         public static IBindableQuery<TSource> Polling<TSource>(this IBindableCollection<TSource> source, TimeSpan time) where TSource : class
         {
             return source.Polling(DispatcherFactory.Create(Dispatcher.CurrentDispatcher), time);
@@ -641,7 +647,7 @@ namespace Bindable.Linq
 #endif
 
         /// <summary>
-        /// Converts any <see cref="T:IEnumerable`1"/> into a Bindable LINQ <see cref="T:ISyncLinqCollection`1"/>.
+        /// Converts any <see cref="T:IEnumerable`1"/> into a Bindable LINQ <see cref="T:IBindableCollection`1"/>.
         /// Bindable LINQ will automatically poll the collection for changes everytime a given timespan elapses.
         /// </summary>
         /// <typeparam name="TSource">The type of source item.</typeparam>
@@ -649,7 +655,7 @@ namespace Bindable.Linq
         /// <param name="dispatcher">The dispatcher.</param>
         /// <param name="time">The time to wait between polling.</param>
         /// <returns>
-        /// A <see cref="T:ISyncLinqCollection`1"/> containing the items.
+        /// A <see cref="T:IBindableCollection`1"/> containing the items.
         /// </returns>
         public static IBindableQuery<TSource> Polling<TSource>(this IBindableCollection<TSource> source, Dispatcher dispatcher, TimeSpan time) where TSource : class
         {
@@ -657,7 +663,7 @@ namespace Bindable.Linq
         }
 
         /// <summary>
-        /// Converts any <see cref="T:IEnumerable`1"/> into a Bindable LINQ <see cref="T:ISyncLinqCollection`1"/>.
+        /// Converts any <see cref="T:IEnumerable`1"/> into a Bindable LINQ <see cref="T:IBindableCollection`1"/>.
         /// Bindable LINQ will automatically poll the collection for changes everytime a given
         /// timespan elapses.
         /// </summary>
@@ -666,7 +672,7 @@ namespace Bindable.Linq
         /// <param name="dispatcher">The dispatcher.</param>
         /// <param name="time">The time to wait between polling.</param>
         /// <returns>
-        /// A <see cref="T:ISyncLinqCollection`1"/> containing the items.
+        /// A <see cref="T:IBindableCollection`1"/> containing the items.
         /// </returns>
         public static IBindableQuery<TSource> Polling<TSource>(this IBindableCollection<TSource> source, IDispatcher dispatcher, TimeSpan time) where TSource : class
         {
@@ -2457,23 +2463,20 @@ namespace Bindable.Linq
         }
 
 #if SILVERLIGHT
-
-    /// <summary>
-    /// Adds a dependency on a Silverlight dependency object.
-    /// </summary>
-    /// <typeparam name="TResult">The type of the result.</typeparam>
-    /// <param name="query">The query.</param>
-    /// <param name="dependencyObject">A Silverlight dependency object.</param>
-    /// <param name="propertyPath">The name of a property on the dependency object.</param>
-    /// <returns></returns>
+        /// <summary>
+        /// Adds a dependency on a Silverlight dependency object.
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        /// <param name="query">The query.</param>
+        /// <param name="dependencyObject">A Silverlight dependency object.</param>
+        /// <param name="propertyPath">The name of a property on the dependency object.</param>
+        /// <returns></returns>
         public static TResult WithDependency<TResult>(this TResult query, System.Windows.DependencyObject dependencyObject, string propertyPath)
             where TResult : IAcceptsDependencies
         {
             return query.WithDependency(new ExternalDependencyDefinition(propertyPath, dependencyObject));
         }
-
 #else
-
         /// <summary>
         /// Adds a dependency on a WPF dependency object.
         /// </summary>
@@ -2482,11 +2485,11 @@ namespace Bindable.Linq
         /// <param name="dependencyObject">A WPF dependency object.</param>
         /// <param name="dependencyProperty">A WPF dependency property.</param>
         /// <returns></returns>
-        public static TResult WithDependency<TResult>(this TResult query, DependencyObject dependencyObject, DependencyProperty dependencyProperty) where TResult : IAcceptsDependencies
+        public static TResult WithDependency<TResult>(this TResult query, DependencyObject dependencyObject, DependencyProperty dependencyProperty) 
+            where TResult : IAcceptsDependencies
         {
             return query.WithDependency(new ExternalDependencyDefinition(dependencyProperty.Name, dependencyObject));
         }
-
 #endif
 
         /// <summary>

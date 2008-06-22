@@ -1,8 +1,8 @@
+using System.Collections.Generic;
+using System.Linq.Expressions;
+
 namespace Bindable.Linq.Dependencies.ExpressionAnalysis.Extractors
 {
-    using System.Collections.Generic;
-    using System.Linq.Expressions;
-
     /// <summary>
     /// Implemented by objects which analyse expressions and extract dependencies.
     /// </summary>
