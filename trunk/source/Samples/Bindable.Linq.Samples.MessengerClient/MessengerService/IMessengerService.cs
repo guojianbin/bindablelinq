@@ -13,7 +13,7 @@ namespace Bindable.Linq.Samples.MessengerClient.MessengerService
         /// <summary>
         /// Occurs when a user requests to be added to the current user's address list.
         /// </summary>
-        event EventHandler<AddContactEventArgs> AddRequestRecieved;
+        event EventHandler<AddContactEventArgs> AddRequestReceived;
 
         /// <summary>
         /// Gets all of the current user's contacts.

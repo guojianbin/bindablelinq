@@ -54,7 +54,7 @@ namespace Bindable.Linq.Samples.MessengerClient.MessengerService.Simulator
         /// <summary>
         /// Occurs when a user requests to be added to the current user's address list.
         /// </summary>
-        public event EventHandler<AddContactEventArgs> AddRequestRecieved;
+        public event EventHandler<AddContactEventArgs> AddRequestReceived;
         #endregion
     }
 }

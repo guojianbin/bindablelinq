@@ -139,29 +139,5 @@ namespace Bindable.Linq.Helpers
             }
         }
 
-        /// <summary>
-        /// Enables indexed item retrieval over IEnumerable. O(n).
-        /// </summary>
-        public static TElement Item<TElement>(this IEnumerable<TElement> collection, int index)
-        {
-            collection.ShouldNotBeNull("collection");
-
-            var query = collection as IBindableQuery<TElement>;
-            if (null != query) return query[index];
-
-            var list = collection as IList<TElement>;
-            if (null != list) return list[index];
-
-            if (index < 0) throw new ArgumentOutOfRangeException("index");
-
-            var remaining = index;
-            foreach (var item in collection)
-            {
-                if (0 == remaining) return item;
-                remaining--;
-            }
-
-            throw new ArgumentOutOfRangeException("index");
-        }
     }
 }

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Linq;
 using Bindable.Linq.Configuration;
 using Bindable.Linq.Dependencies;
 using Bindable.Linq.Helpers;
@@ -116,7 +117,10 @@ namespace Bindable.Linq.Collections
         {
             get
             {
-                return _inner.Item(index);
+                var query = _inner as IBindableQuery<TElement>;
+                if (null != query) return query[index];
+
+                return _inner.ElementAt(index);
             }
         }
 

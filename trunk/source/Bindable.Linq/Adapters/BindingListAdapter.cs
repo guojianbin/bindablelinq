@@ -3,8 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Linq;
 using System.Linq.Expressions;
-using Bindable.Linq.Collections;
 using Bindable.Linq.Dependencies;
 using Bindable.Linq.Helpers;
 
@@ -27,9 +27,8 @@ namespace Bindable.Linq.Adapters
         private PropertyChangeObserver _propertyChangeObserver;
 
         private ListSortDirection _sortDirection;
-        private IBindableCollection<TElement> _sortedSource;
         private PropertyDescriptor _sortProperty;
-        private IBindableCollectionInterceptor<TElement> _source;
+        private IBindableCollection<TElement> _source;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BindingListAdapter&lt;TElement&gt;"/> class.
@@ -122,11 +121,7 @@ namespace Bindable.Linq.Adapters
         {
             if (property == _sortProperty && direction == _sortDirection) return;
 
-            if (IsSorted)
-            {
-                UnwireInterceptor();
-                _sortedSource.Dispose();
-            }
+            if (IsSorted) UnwireInterceptor();
 
             _sortProperty = property;
             _sortDirection = direction;
@@ -135,9 +130,7 @@ namespace Bindable.Linq.Adapters
 
             var q = ListSortDirection.Ascending == _sortDirection ? _originalSource.OrderBy(selector) : _originalSource.OrderByDescending(selector);
 
-            _sortedSource = q.WithDependency(_sortProperty.Name);
-
-            WireInterceptor(_sortedSource);
+            WireInterceptor(q.WithDependency(_sortProperty.Name));
 
             OnListChanged(new ListChangedEventArgs(ListChangedType.Reset, -1));
         }
@@ -175,7 +168,7 @@ namespace Bindable.Linq.Adapters
         /// 	<see cref="P:System.ComponentModel.IBindingList.SupportsSorting"/> is false. </exception>
         public bool IsSorted
         {
-            get { return null != _sortedSource; }
+            get { return _source != _originalSource; }
         }
 
         /// <summary>
@@ -195,8 +188,6 @@ namespace Bindable.Linq.Adapters
 
             UnwireInterceptor();
 
-            _sortedSource.Dispose();
-            _sortedSource = null;
             _sortDirection = ListSortDirection.Ascending;
             _sortProperty = null;
 
@@ -377,7 +368,10 @@ namespace Bindable.Linq.Adapters
         {
             get
             {
-                return _source.Item(index);
+                var query = _source as IBindableQuery<TElement>;
+                if (null != query) return query[index];
+
+                return _source.ElementAt(index);
             }
             set { throw new NotSupportedException(); }
         }
@@ -465,7 +459,7 @@ namespace Bindable.Linq.Adapters
 
         private void WireInterceptor(IBindableCollection<TElement> source)
         {
-            _source = new BindableCollectionInterceptor<TElement>(source);
+            _source = source;
             _source.CollectionChanged += _weakHandler.WeakEventHandler;
 
             _propertyChangeObserver = new PropertyChangeObserver(Element_PropertyChanged);
@@ -477,7 +471,8 @@ namespace Bindable.Linq.Adapters
             _addActioner.Dispose();
             _propertyChangeObserver.Dispose();
             _source.CollectionChanged -= _weakHandler.WeakEventHandler;
-            _source.Dispose();
+            if (_source != _originalSource) _source.Dispose();
+            _source = null;
         }
 
         private object KeySelector(TElement item)
