@@ -12,7 +12,7 @@ namespace Bindable.Linq.Iterators
     internal sealed class ProjectionRegister<TSource, TResult> : IDisposable
     {
         private readonly object _projectionLock = new object();
-        private readonly Dictionary<TSource, TResult> _projections = new Dictionary<TSource, TResult>();
+        private readonly IDictionary<TSource, TResult> _projections = new Dictionary<TSource, TResult>(); // TODO replace with weak reference dictionary
         private readonly Func<TSource, TResult> _projector;
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace Bindable.Linq.Iterators
         /// <summary>
         /// Gets the projections store.
         /// </summary>
-        private Dictionary<TSource, TResult> Projections
+        private IDictionary<TSource, TResult> Projections
         {
             get { return _projections; }
         }
