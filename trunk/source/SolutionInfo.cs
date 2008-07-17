@@ -1,3 +1,4 @@
+using System;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -16,3 +17,4 @@ using System.Runtime.InteropServices;
 
 [assembly: InternalsVisibleTo("Bindable.Linq.Tests")]
 [assembly: InternalsVisibleTo("Bindable.Linq.Debugging")]
+[assembly: CLSCompliant(true)]
