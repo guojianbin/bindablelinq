@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using System.Runtime.CompilerServices;
 
 namespace Bindable.Linq.Helpers
 {
@@ -139,5 +140,42 @@ namespace Bindable.Linq.Helpers
             }
         }
 
+        /// <summary>
+        /// Evaluates the specified collection.
+        /// </summary>
+        /// <typeparam name="TElement">The type of the element.</typeparam>
+        /// <param name="collection">The collection.</param>
+        [MethodImpl(MethodImplOptions.NoOptimization)]
+        public static void Evaluate<TElement>(this IEnumerable<TElement> collection)
+        {
+            foreach (var element in collection)
+            {
+            }
+        }
+
+        /// <summary>
+        /// Enables indexed item retrieval over IEnumerable. O(n).
+        /// </summary>
+        public static TElement Item<TElement>(this IEnumerable<TElement> collection, int index)
+        {
+            collection.ShouldNotBeNull("collection");
+
+            var query = collection as IBindableQuery<TElement>;
+            if (null != query) return query[index];
+
+            var list = collection as IList<TElement>;
+            if (null != list) return list[index];
+
+            if (index < 0) throw new ArgumentOutOfRangeException("index");
+
+            var remaining = index;
+            foreach (var item in collection)
+            {
+                if (0 == remaining) return item;
+                remaining--;
+            }
+
+            throw new ArgumentOutOfRangeException("index");
+        }
     }
 }
