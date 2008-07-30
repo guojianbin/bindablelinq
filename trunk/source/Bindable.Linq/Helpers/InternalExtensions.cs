@@ -145,11 +145,11 @@ namespace Bindable.Linq.Helpers
         /// </summary>
         /// <typeparam name="TElement">The type of the element.</typeparam>
         /// <param name="collection">The collection.</param>
-        [MethodImpl(MethodImplOptions.NoOptimization)]
         public static void Evaluate<TElement>(this IEnumerable<TElement> collection)
         {
-            foreach (var element in collection)
+            foreach (var item in collection)
             {
+                // TODO: Will this be optimised out by the GC?
             }
         }
 

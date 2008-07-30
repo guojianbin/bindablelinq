@@ -10,6 +10,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
+using Bindable.Linq;
 
 namespace Bindable.Linq.Samples.Silverlight
 {
@@ -21,12 +22,12 @@ namespace Bindable.Linq.Samples.Silverlight
         {
             InitializeComponent();
             _contacts = new ObservableCollection<Contact>();
-            _contacts.Add(new Contact() {Name = "Paul Stovell", Company = "Readify", PhoneNumber = "0421 938 793"});
-            _contacts.Add(new Contact() {Name = "Omar Besiso", Company = "Readify", PhoneNumber = "0421 938 793"});
-            _contacts.Add(new Contact() {Name = "Darren Neimke", Company = "Readify", PhoneNumber = "0421 938 793"});
-            _contacts.Add(new Contact() {Name = "Mitch Denny", Company = "Readify", PhoneNumber = "0421 938 793"});
-            _contacts.Add(new Contact() {Name = "Richard Banks", Company = "Readify", PhoneNumber = "0421 938 793"});
-            _contacts.Add(new Contact() {Name = "Andrew Matthews", Company = "Readify", PhoneNumber = "0421 938 793"});
+            _contacts.Add(new Contact() { Name = "Paul Stovell", Company = "Readify", PhoneNumber = "0421 938 793" });
+            _contacts.Add(new Contact() { Name = "Omar Besiso", Company = "Readify", PhoneNumber = "0421 938 793" });
+            _contacts.Add(new Contact() { Name = "Darren Neimke", Company = "Readify", PhoneNumber = "0421 938 793" });
+            _contacts.Add(new Contact() { Name = "Mitch Denny", Company = "Readify", PhoneNumber = "0421 938 793" });
+            _contacts.Add(new Contact() { Name = "Richard Banks", Company = "Readify", PhoneNumber = "0421 938 793" });
+            _contacts.Add(new Contact() { Name = "Andrew Matthews", Company = "Readify", PhoneNumber = "0421 938 793" });
 
             _contactsList.ItemsSource = _contacts.AsBindable()
                                         .Where(c => c.Name.ToLower().StartsWith(this.FilterTextBox.Text.ToLower()))
