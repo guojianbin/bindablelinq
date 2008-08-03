@@ -3,17 +3,38 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     Title="Window1" Height="480" Width="640"
-    WindowState="Maximized"
+    WindowState="Maximized" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"
     >
     <DockPanel>
     	<TabControl Style="{DynamicResource TabPanel_OfficeOptions}" IsSynchronizedWithCurrentItem="True" Margin="7,7,7,7">
-    		<TabItem Header="TabItem">
+    		<TabItem Header="Popular">
     			<Grid/>
     		</TabItem>
-    		<TabItem Header="TabItem">
+    		<TabItem Header="Display">
     			<Grid/>
     		</TabItem>
-    	</TabControl>
+            <TabItem Header="Proofing">
+                <Grid/>
+            </TabItem>
+            <TabItem Header="Save">
+                <Grid/>
+            </TabItem>
+            <TabItem Header="Advanced">
+                <Grid/>
+            </TabItem>
+            <TabItem Header="Customize">
+                <Grid/>
+            </TabItem>
+            <TabItem Header="Add-Ins">
+                <Grid/>
+            </TabItem>
+            <TabItem Header="Trust Center">
+                <Grid/>
+            </TabItem>
+            <TabItem Header="Resources">
+                <Grid/>
+            </TabItem>
+        </TabControl>
         
     </DockPanel>
 </Window>

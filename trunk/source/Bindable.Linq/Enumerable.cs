@@ -6,7 +6,8 @@ using System.ComponentModel;
 using System.Linq.Expressions;
 using System.Windows;
 using System.Windows.Threading;
-using Bindable.Linq.Adapters;
+using Bindable.Linq.Adapters.Incoming;
+using Bindable.Linq.Adapters.Outgoing;
 using Bindable.Linq.Aggregators;
 using Bindable.Linq.Aggregators.Numerics;
 using Bindable.Linq.Collections;
@@ -23,7 +24,7 @@ namespace Bindable.Linq
     /// <summary>
     /// This class contains all of the extension method implementations provided by Bindable LINQ. 
     /// </summary>
-    public static class Extensions
+    public static class Enumerable
     {
         #region Iterators
 

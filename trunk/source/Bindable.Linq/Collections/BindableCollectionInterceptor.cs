@@ -7,6 +7,7 @@ using System.Linq;
 using Bindable.Linq.Configuration;
 using Bindable.Linq.Dependencies;
 using Bindable.Linq.Helpers;
+using Bindable.Linq.Interfaces;
 
 namespace Bindable.Linq.Collections
 {
@@ -173,19 +174,6 @@ namespace Bindable.Linq.Collections
             }
         }
 
-        public bool IsLoading
-        {
-            get
-            {
-                var result = false;
-                var loadable = _inner as ILoadable;
-                if (loadable != null)
-                {
-                    result = loadable.IsLoading;
-                }
-                return result;
-            }
-        }
         #endregion
 
         /// <summary>

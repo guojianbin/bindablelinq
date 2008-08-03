@@ -196,7 +196,6 @@ namespace Bindable.Linq.Tests.Unit.Iterators
             DoesNotForceLoad(With.Inputs(Tom, Sam, Sally), iterator => iterator.IndexOf(new object()));
             DoesNotForceLoad(With.Inputs(Tom, Sam, Sally), iterator => iterator.CurrentCount);
             DoesNotForceLoad(With.Inputs(Tom, Sam, Sally), iterator => iterator.IsReadOnly);
-            DoesNotForceLoad(With.Inputs(Tom, Sam, Sally), iterator => iterator.IsLoading);
             DoesNotForceLoad(With.Inputs(Tom, Sam, Sally), iterator => iterator.IsSynchronized);
             DoesNotForceLoad(With.Inputs(Tom, Sam, Sally), iterator => iterator.IsFixedSize);
             DoesNotForceLoad(With.Inputs(Tom, Sam, Sally), iterator => iterator.SyncRoot);

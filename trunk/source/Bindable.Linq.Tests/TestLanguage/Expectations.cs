@@ -33,6 +33,15 @@ namespace Bindable.Linq.Tests.TestLanguage
         }
 
         /// <summary>
+        /// No events should be raised.
+        /// </summary>
+        /// <returns>The original step.</returns>
+        public TStep NotRaiseAnything()
+        {
+            return Raise(null);
+        }
+
+        /// <summary>
         /// The CurrentCount property will be of a specified value.
         /// </summary>
         /// <param name="count">The count.</param>

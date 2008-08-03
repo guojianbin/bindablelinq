@@ -64,7 +64,8 @@
     <Compile Include="..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
-    <Compile Include="Adapters\BindingListAdapter.cs" />
+    <Compile Include="Adapters\Incoming\InternalCollectionAdapterBase.cs" />
+    <Compile Include="Adapters\Outgoing\BindingListAdapter.cs" />
     <Compile Include="Aggregators\AverageAggregator.cs" />
     <Compile Include="Aggregators\CountAggregator.cs" />
     <Compile Include="Aggregators\CustomAggregator.cs" />
@@ -73,6 +74,8 @@
     <Compile Include="Aggregators\MinAggregator.cs" />
     <Compile Include="Collections\BindableCollectionInterceptor.cs" />
     <Compile Include="Collections\IBindableCollectionInterceptor.cs" />
+    <Compile Include="Collections\SourceCollectionView.cs" />
+    <Compile Include="Collections\SourceElementDescriptor.cs" />
     <Compile Include="Configuration\BindingConfigurations.cs" />
     <Compile Include="Configuration\DefaultBindingConfiguration.cs" />
     <Compile Include="Configuration\ExplicitBindingConfiguration.cs" />
@@ -109,16 +112,22 @@
     <Compile Include="Dependencies\PathNavigation\Tokens\MemberToken.cs" />
     <Compile Include="Dependencies\PathNavigation\PathNavigator.cs" />
     <Compile Include="Dependencies\PathNavigation\Tokens\WpfMemberToken.cs" />
-    <Compile Include="Adapters\BindableCollectionAdapter.cs" />
+    <Compile Include="Adapters\Incoming\BindableCollectionAdapter.cs" />
     <Compile Include="Helpers\ElementActioner.cs" />
     <Compile Include="Helpers\ElementComparerFactory.cs" />
     <Compile Include="Dependencies\IPropertyReader.cs" />
     <Compile Include="Dependencies\PropertyReaderFactory.cs" />
     <Compile Include="Helpers\PropertyChangedCache.cs" />
     <Compile Include="Helpers\WeakTimer.cs" />
-    <Compile Include="IEditableBindableGrouping.cs" />
+    <Compile Include="Interfaces\Internal\Events\AddedEventArgs.cs" />
+    <Compile Include="Interfaces\Internal\Events\EvaluatingEventArgs.cs" />
+    <Compile Include="Interfaces\Internal\IEditableBindableGrouping.cs" />
     <Compile Include="Helpers\InternalExtensions.cs" />
-    <Compile Include="ILoadable.cs" />
+    <Compile Include="Interfaces\Internal\IInternalCollection.cs" />
+    <Compile Include="Interfaces\Internal\Events\MovedEventArgs.cs" />
+    <Compile Include="Interfaces\Internal\Events\RemovedEventArgs.cs" />
+    <Compile Include="Interfaces\Internal\Events\ReplacedEventArgs.cs" />
+    <Compile Include="Interfaces\Internal\ResetEventArgs.cs" />
     <Compile Include="Iterators\LoadState.cs" />
     <Compile Include="Collections\SnapshotManager.cs" />
     <Compile Include="Iterators\StateManager.cs" />
@@ -130,7 +139,7 @@
     <Compile Include="Aggregators\Numerics\Int32Numeric.cs" />
     <Compile Include="Aggregators\Aggregator.cs" />
     <Compile Include="Aggregators\SumAggregator.cs" />
-    <Compile Include="Extensions.cs">
+    <Compile Include="Enumerable.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Dependencies\Observers\CollectionChangeObserver.cs" />
@@ -143,12 +152,12 @@
     <Compile Include="Dependencies\Observers\PropertyChangeObserver.cs" />
     <Compile Include="Helpers\StateScope.cs" />
     <Compile Include="Helpers\WeakEventReference.cs" />
-    <Compile Include="IBindableCollection.cs" />
-    <Compile Include="IBindable.cs" />
-    <Compile Include="IOrderedBindableQuery.cs" />
-    <Compile Include="IRefreshable.cs" />
-    <Compile Include="IBindableQuery.cs" />
-    <Compile Include="IBindableGrouping.cs" />
+    <Compile Include="Interfaces\IBindableCollection.cs" />
+    <Compile Include="Interfaces\IBindable.cs" />
+    <Compile Include="Interfaces\IOrderedBindableQuery.cs" />
+    <Compile Include="Interfaces\IRefreshable.cs" />
+    <Compile Include="Interfaces\IBindableQuery.cs" />
+    <Compile Include="Interfaces\IBindableGrouping.cs" />
     <Compile Include="Iterators\AsynchronousIterator.cs" />
     <Compile Include="Iterators\Iterator.cs" />
     <Compile Include="Iterators\GroupByIterator.cs" />

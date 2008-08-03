@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Bindable.Linq
+namespace Bindable.Linq.Interfaces.Internal
 {
     internal interface IEditableBindableGrouping<TKey, TElement> : IBindableGrouping<TKey, TElement>
     {

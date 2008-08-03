@@ -1,4 +1,4 @@
-namespace Bindable.Linq
+namespace Bindable.Linq.Interfaces
 {
     /// <summary>
     /// Implemented by objects that provide a Refresh method.

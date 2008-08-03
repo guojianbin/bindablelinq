@@ -11,17 +11,17 @@ namespace Bindable.Linq.Tests.TestLanguage.Helpers
         /// <summary>
         /// Compares the Bindable LINQ query with the equivalent LINQ query.
         /// </summary>
-        /// <param name="syncLinqQuery">The Bindable LINQ query.</param>
-        /// <param name="linqQuery">The LINQ query.</param>
-        public static void CompareWithLinq(CompatabilityLevel expectations, IEnumerable syncLinqQuery, IEnumerable linqQuery)
+        /// <param name="bindableLinqQuery">The Bindable LINQ query.</param>
+        /// <param name="standardLinqQuery">The LINQ query.</param>
+        public static void CompareWithLinq(CompatabilityLevel expectations, IEnumerable bindableLinqQuery, IEnumerable standardLinqQuery)
         {
             switch (expectations)
             {
                 case CompatabilityLevel.FullyCompatible:
-                    CompareWithLinqOrdered(syncLinqQuery, linqQuery);
+                    CompareWithLinqOrdered(bindableLinqQuery, standardLinqQuery);
                     break;
                 case CompatabilityLevel.FullyCompatibleExceptOrdering:
-                    CompareWithLinqUnordered(syncLinqQuery, linqQuery);
+                    CompareWithLinqUnordered(bindableLinqQuery, standardLinqQuery);
                     break;
             }
         }
@@ -29,11 +29,11 @@ namespace Bindable.Linq.Tests.TestLanguage.Helpers
         /// <summary>
         /// Compares a Bindable LINQ query with a LINQ query.
         /// </summary>
-        /// <param name="syncLinqCollection">The sync linq collection.</param>
-        /// <param name="linqQuery">The linq query.</param>
-        private static void CompareWithLinqOrdered(IEnumerable syncLinqCollection, IEnumerable linqQuery)
+        /// <param name="bindableLinqQuery">The sync linq collection.</param>
+        /// <param name="standardLinqQuery">The linq query.</param>
+        private static void CompareWithLinqOrdered(IEnumerable bindableLinqQuery, IEnumerable standardLinqQuery)
         {
-            InnerCompareOrderedRecursively(syncLinqCollection, linqQuery);
+            InnerCompareOrderedRecursively(bindableLinqQuery, standardLinqQuery);
         }
 
         /// <summary>

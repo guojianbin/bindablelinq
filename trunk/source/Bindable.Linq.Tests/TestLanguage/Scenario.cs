@@ -114,7 +114,11 @@ namespace Bindable.Linq.Tests.TestLanguage
 
                 // Ensure no additional events are in the queue
                 Tracer.WriteLine("Finalizing: Verifying additional events were not raised.");
-                Assert.IsNull(this.EventMonitor.DequeueNextEvent(), "The test has completed, but there are still events in the queue that were not expected.");
+                Assert.IsNull(EventMonitor.DequeueNextEvent(), "The test has completed, but there are still events in the queue that were not expected.");
+
+                // Compare with LINQ to Objects
+                Tracer.WriteLine("Finalizing: Comparing final results to LINQ to Objects");
+                CompatibilityValidator.CompareWithLinq(CompatabilityLevel.FullyCompatible, BindableLinqQuery, StandardLinqQuery);
 
                 // Forget all references to the query and ensure it is garbage collected
                 Tracer.WriteLine("Finalizing: Detecting memory leaks and event handlers that have not been unhooked.");

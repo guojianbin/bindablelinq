@@ -8,10 +8,9 @@ using System.Linq.Expressions;
 using Bindable.Linq.Dependencies;
 using Bindable.Linq.Helpers;
 
-namespace Bindable.Linq.Adapters
-{    
+namespace Bindable.Linq.Adapters.Outgoing
+{
 #if !SILVERLIGHT
-    // Silverlight does not provide an IBindingList interface. This class is unnecessary.
     /// <summary>
     /// Converts Bindable LINQ bindable collection result sets into IBindingList implementations compatible with 
     /// Windows Forms.
@@ -499,54 +498,54 @@ namespace Bindable.Linq.Adapters
             switch (e.Action)
             {
                 case NotifyCollectionChangedAction.Add:
-                {
-                    var index = e.NewStartingIndex;
-                    foreach (var item in e.NewItems)
                     {
-                        var listEvent = new ListChangedEventArgs(ListChangedType.ItemAdded, index);
-                        OnListChanged(listEvent);
-                        index++;
+                        var index = e.NewStartingIndex;
+                        foreach (var item in e.NewItems)
+                        {
+                            var listEvent = new ListChangedEventArgs(ListChangedType.ItemAdded, index);
+                            OnListChanged(listEvent);
+                            index++;
+                        }
                     }
-                }
                     break;
                 case NotifyCollectionChangedAction.Move:
-                {
-                    var newIndex = e.NewStartingIndex;
-                    var oldIndex = e.OldStartingIndex;
-                    foreach (var item in e.NewItems)
                     {
-                        var listEvent = new ListChangedEventArgs(ListChangedType.ItemMoved, newIndex, oldIndex);
-                        OnListChanged(listEvent);
+                        var newIndex = e.NewStartingIndex;
+                        var oldIndex = e.OldStartingIndex;
+                        foreach (var item in e.NewItems)
+                        {
+                            var listEvent = new ListChangedEventArgs(ListChangedType.ItemMoved, newIndex, oldIndex);
+                            OnListChanged(listEvent);
+                        }
                     }
-                }
                     break;
                 case NotifyCollectionChangedAction.Remove:
-                {
-                    var index = e.OldStartingIndex;
-                    foreach (var item in e.OldItems)
                     {
-                        var listEvent = new ListChangedEventArgs(ListChangedType.ItemDeleted, index);
-                        OnListChanged(listEvent);
-                        index++;
+                        var index = e.OldStartingIndex;
+                        foreach (var item in e.OldItems)
+                        {
+                            var listEvent = new ListChangedEventArgs(ListChangedType.ItemDeleted, index);
+                            OnListChanged(listEvent);
+                            index++;
+                        }
                     }
-                }
                     break;
                 case NotifyCollectionChangedAction.Replace:
-                {
-                    var index = e.NewStartingIndex;
-                    foreach (var item in e.NewItems)
                     {
-                        var listEvent = new ListChangedEventArgs(ListChangedType.ItemChanged, index);
-                        OnListChanged(listEvent);
-                        index++;
+                        var index = e.NewStartingIndex;
+                        foreach (var item in e.NewItems)
+                        {
+                            var listEvent = new ListChangedEventArgs(ListChangedType.ItemChanged, index);
+                            OnListChanged(listEvent);
+                            index++;
+                        }
                     }
-                }
                     break;
                 case NotifyCollectionChangedAction.Reset:
-                {
-                    var listEvent = new ListChangedEventArgs(ListChangedType.Reset, -1);
-                    OnListChanged(listEvent);
-                }
+                    {
+                        var listEvent = new ListChangedEventArgs(ListChangedType.Reset, -1);
+                        OnListChanged(listEvent);
+                    }
                     break;
                 default:
                     break;

@@ -6,7 +6,7 @@ using System.ComponentModel;
 using Bindable.Linq.Configuration;
 using Bindable.Linq.Helpers;
 
-namespace Bindable.Linq.Adapters
+namespace Bindable.Linq.Adapters.Incoming
 {
     /// <summary>
     /// Turns any kind of collection into a bindable collection.
@@ -176,37 +176,37 @@ namespace Bindable.Linq.Adapters
                 switch (e.ListChangedType)
                 {
                     case ListChangedType.ItemAdded:
-                    {
-                        var array = new object[list.Count];
-                        list.CopyTo(array, 0);
-                        if (e.NewIndex >= 0 && e.NewIndex < array.Length)
                         {
-                            var itemAtIndex = list[e.NewIndex];
-                            argumentsToRaise = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, itemAtIndex, e.NewIndex);
+                            var array = new object[list.Count];
+                            list.CopyTo(array, 0);
+                            if (e.NewIndex >= 0 && e.NewIndex < array.Length)
+                            {
+                                var itemAtIndex = list[e.NewIndex];
+                                argumentsToRaise = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, itemAtIndex, e.NewIndex);
+                            }
                         }
-                    }
                         break;
                     case ListChangedType.ItemDeleted:
-                    {
-                        var array = new object[list.Count];
-                        list.CopyTo(array, 0);
-                        if (e.OldIndex >= 0 && e.OldIndex < array.Length)
                         {
-                            var itemAtIndex = list[e.OldIndex];
-                            argumentsToRaise = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, itemAtIndex, e.NewIndex);
+                            var array = new object[list.Count];
+                            list.CopyTo(array, 0);
+                            if (e.OldIndex >= 0 && e.OldIndex < array.Length)
+                            {
+                                var itemAtIndex = list[e.OldIndex];
+                                argumentsToRaise = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, itemAtIndex, e.NewIndex);
+                            }
                         }
-                    }
                         break;
                     case ListChangedType.ItemMoved:
-                    {
-                        var array = new object[list.Count];
-                        list.CopyTo(array, 0);
-                        if (e.OldIndex >= 0 && e.OldIndex < array.Length)
                         {
-                            var itemAtIndex = list[e.NewIndex];
-                            argumentsToRaise = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Move, itemAtIndex, e.NewIndex, e.OldIndex);
+                            var array = new object[list.Count];
+                            list.CopyTo(array, 0);
+                            if (e.OldIndex >= 0 && e.OldIndex < array.Length)
+                            {
+                                var itemAtIndex = list[e.NewIndex];
+                                argumentsToRaise = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Move, itemAtIndex, e.NewIndex, e.OldIndex);
+                            }
                         }
-                    }
                         break;
                     case ListChangedType.ItemChanged:
                     case ListChangedType.Reset:

@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel;
+using Bindable.Linq.Interfaces;
 
 namespace Bindable.Linq
 {

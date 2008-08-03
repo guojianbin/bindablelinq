@@ -9,6 +9,7 @@ using Bindable.Linq.Collections;
 using Bindable.Linq.Configuration;
 using Bindable.Linq.Dependencies;
 using Bindable.Linq.Helpers;
+using Bindable.Linq.Interfaces;
 
 namespace Bindable.Linq.Iterators
 {
@@ -134,30 +135,6 @@ namespace Bindable.Linq.Iterators
                 }
             }
             _sourceCollection.Dispose();
-        }
-
-        /// <summary>
-        /// Gets a value indicating whether this Iterator is currently retrieving items from any of its
-        /// source collections.
-        /// </summary>
-        public bool IsLoading
-        {
-            get
-            {
-                var loading = IsLoadingState.IsWithin;
-                if (!loading)
-                {
-                    var loadable = SourceCollection as ILoadable;
-                    if (loadable != null)
-                    {
-                        if (loadable.IsLoading)
-                        {
-                            loading = true;
-                        }
-                    }
-                }
-                return loading;
-            }
         }
 
         /// <summary>

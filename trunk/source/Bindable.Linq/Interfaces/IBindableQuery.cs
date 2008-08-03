@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Bindable.Linq.Configuration;
 using Bindable.Linq.Dependencies;
+using Bindable.Linq.Interfaces;
 
 namespace Bindable.Linq
 {
@@ -10,7 +11,7 @@ namespace Bindable.Linq
     /// it provides a number of other properties and methods which take advantage of Bindable LINQ's data 
     /// binding and delayed execution features.
     /// </summary>
-    public interface IBindableQuery : IBindableCollection, IAcceptsDependencies, IRefreshable, IConfigurable, ILoadable, IDisposable
+    public interface IBindableQuery : IBindableCollection, IAcceptsDependencies, IRefreshable, IConfigurable, IDisposable
     {
         /// <summary>
         /// Gets the number of items that are currently available in the result set.
