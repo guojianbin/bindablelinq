@@ -23,7 +23,7 @@ namespace Bindable.Linq.Samples.MessengerClient
 
             _messengerService.SignIn("paul", "foo");
 
-            _contactsListBox.ItemsSource = (from c in _messengerService.Contacts.AsBindable().Asynchronous()
+            _contactsListBox.ItemsSource = (from c in _messengerService.Contacts.AsBindable()
                                             where c.Name.ToLower(CultureInfo.CurrentUICulture).Contains(_filterTextBox.Text.ToLower(CultureInfo.CurrentUICulture))
                                             orderby c.Name
                                             select c);

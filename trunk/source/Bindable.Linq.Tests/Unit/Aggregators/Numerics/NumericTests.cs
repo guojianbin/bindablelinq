@@ -1,5 +1,7 @@
 using System;
+using Bindable.Linq.Interfaces;
 using NUnit.Framework;
+using Bindable.Linq.Tests.TestLanguage.Helpers;
 
 namespace Bindable.Linq.Tests.Unit.NumericAggregates
 {
@@ -13,67 +15,67 @@ namespace Bindable.Linq.Tests.Unit.NumericAggregates
         private void Test<T, A>(Func<int, T> c, Func<int, A> a, Func<IBindableCollection<T>, IBindable<T>> sum, Func<IBindableCollection<T>, IBindable<A>> average, Func<IBindableCollection<T>, IBindable<T>> min, Func<IBindableCollection<T>, IBindable<T>> max)
         {
             // Test the Sum operations
-            Assert.AreEqual(c(27), sum(new object[] { c(7), c(8), c(12) }.AsBindable<object, T>()).Current);
-            Assert.AreEqual(c(-78), sum(new object[] { c(13), c(9), c(-100) }.AsBindable<object, T>()).Current);
-            Assert.AreEqual(c(15), sum(new object[] { c(14), c(1), c(0) }.AsBindable<object, T>()).Current);
-            Assert.AreEqual(c(0), sum(new object[] { c(0), c(0) }.AsBindable<object, T>()).Current);
-            Assert.AreEqual(c(0), sum(new object[] { }.AsBindable<object, T>()).Current);
+            Assert.AreEqual(c(27), sum(new object[] { c(7), c(8), c(12) }.AsBindable<object, T>(new TestDispatcher())).Current);
+            Assert.AreEqual(c(-78), sum(new object[] { c(13), c(9), c(-100) }.AsBindable<object, T>(new TestDispatcher())).Current);
+            Assert.AreEqual(c(15), sum(new object[] { c(14), c(1), c(0) }.AsBindable<object, T>(new TestDispatcher())).Current);
+            Assert.AreEqual(c(0), sum(new object[] { c(0), c(0) }.AsBindable<object, T>(new TestDispatcher())).Current);
+            Assert.AreEqual(c(0), sum(new object[] { }.AsBindable<object, T>(new TestDispatcher())).Current);
             if (typeof(T).Name.Contains("Nulla"))
             {
-                Assert.AreEqual(c(0), sum(new object[] { (T)(object)null, (T)(object)null }.AsBindable<object, T>()).Current);
-                Assert.AreEqual(c(-14), sum(new object[] { (T)(object)null, c(-14) }.AsBindable<object, T>()).Current);
-                Assert.AreEqual(c(14), sum(new object[] { (T)(object)null, c(14) }.AsBindable<object, T>()).Current);
+                Assert.AreEqual(c(0), sum(new object[] { (T)(object)null, (T)(object)null }.AsBindable<object, T>(new TestDispatcher())).Current);
+                Assert.AreEqual(c(-14), sum(new object[] { (T)(object)null, c(-14) }.AsBindable<object, T>(new TestDispatcher())).Current);
+                Assert.AreEqual(c(14), sum(new object[] { (T)(object)null, c(14) }.AsBindable<object, T>(new TestDispatcher())).Current);
             }
 
             // Test the Average operations
-            Assert.AreEqual(a(8), average(new object[] { c(7), c(8), c(9) }.AsBindable<object, T>()).Current);
-            Assert.AreEqual(a(-10), average(new object[] { c(-20), c(-10), c(0) }.AsBindable<object, T>()).Current);
-            Assert.AreEqual(a(0), average(new object[] { c(-14), c(0), c(14) }.AsBindable<object, T>()).Current);
-            Assert.AreEqual(a(0), average(new object[] { c(0), c(0) }.AsBindable<object, T>()).Current);
+            Assert.AreEqual(a(8), average(new object[] { c(7), c(8), c(9) }.AsBindable<object, T>(new TestDispatcher())).Current);
+            Assert.AreEqual(a(-10), average(new object[] { c(-20), c(-10), c(0) }.AsBindable<object, T>(new TestDispatcher())).Current);
+            Assert.AreEqual(a(0), average(new object[] { c(-14), c(0), c(14) }.AsBindable<object, T>(new TestDispatcher())).Current);
+            Assert.AreEqual(a(0), average(new object[] { c(0), c(0) }.AsBindable<object, T>(new TestDispatcher())).Current);
             if (typeof(T).Name.Contains("Nulla"))
             {
-                Assert.AreEqual((T)(object)null, average(new object[] { }.AsBindable<object, T>()).Current);
-                Assert.AreEqual((T)(object)null, average(new object[] { (T)(object)null, (T)(object)null }.AsBindable<object, T>()).Current);
-                Assert.AreEqual(a(-14), average(new object[] { (T)(object)null, c(-14) }.AsBindable<object, T>()).Current);
-                Assert.AreEqual(a(14), average(new object[] { (T)(object)null, c(14) }.AsBindable<object, T>()).Current);
+                Assert.AreEqual((T)(object)null, average(new object[] { }.AsBindable<object, T>(new TestDispatcher())).Current);
+                Assert.AreEqual((T)(object)null, average(new object[] { (T)(object)null, (T)(object)null }.AsBindable<object, T>(new TestDispatcher())).Current);
+                Assert.AreEqual(a(-14), average(new object[] { (T)(object)null, c(-14) }.AsBindable<object, T>(new TestDispatcher())).Current);
+                Assert.AreEqual(a(14), average(new object[] { (T)(object)null, c(14) }.AsBindable<object, T>(new TestDispatcher())).Current);
             }
             else
             {
-                Assert.AreEqual(a(0), average(new object[] { }.AsBindable<object, T>()).Current);
+                Assert.AreEqual(a(0), average(new object[] { }.AsBindable<object, T>(new TestDispatcher())).Current);
             }
 
             // Test the Min operations
-            Assert.AreEqual(c(7), min(new object[] { c(7), c(8), c(9) }.AsBindable<object, T>()).Current);
-            Assert.AreEqual(c(-20), min(new object[] { c(-20), c(-10), c(0) }.AsBindable<object, T>()).Current);
-            Assert.AreEqual(c(-14), min(new object[] { c(-14), c(0), c(14) }.AsBindable<object, T>()).Current);
-            Assert.AreEqual(c(0), min(new object[] { c(0), c(0) }.AsBindable<object, T>()).Current);
+            Assert.AreEqual(c(7), min(new object[] { c(7), c(8), c(9) }.AsBindable<object, T>(new TestDispatcher())).Current);
+            Assert.AreEqual(c(-20), min(new object[] { c(-20), c(-10), c(0) }.AsBindable<object, T>(new TestDispatcher())).Current);
+            Assert.AreEqual(c(-14), min(new object[] { c(-14), c(0), c(14) }.AsBindable<object, T>(new TestDispatcher())).Current);
+            Assert.AreEqual(c(0), min(new object[] { c(0), c(0) }.AsBindable<object, T>(new TestDispatcher())).Current);
             if (typeof(T).Name.Contains("Nulla"))
             {
-                Assert.AreEqual((T)(object)null, min(new object[] { }.AsBindable<object, T>()).Current);
-                Assert.AreEqual((T)(object)null, min(new object[] { (T)(object)null, (T)(object)null }.AsBindable<object, T>()).Current);
-                Assert.AreEqual(c(-14), min(new object[] { (T)(object)null, c(-14) }.AsBindable<object, T>()).Current);
-                Assert.AreEqual(c(14), min(new object[] { (T)(object)null, c(14) }.AsBindable<object, T>()).Current);
+                Assert.AreEqual((T)(object)null, min(new object[] { }.AsBindable<object, T>(new TestDispatcher())).Current);
+                Assert.AreEqual((T)(object)null, min(new object[] { (T)(object)null, (T)(object)null }.AsBindable<object, T>(new TestDispatcher())).Current);
+                Assert.AreEqual(c(-14), min(new object[] { (T)(object)null, c(-14) }.AsBindable<object, T>(new TestDispatcher())).Current);
+                Assert.AreEqual(c(14), min(new object[] { (T)(object)null, c(14) }.AsBindable<object, T>(new TestDispatcher())).Current);
             }
             else
             {
-                Assert.AreEqual(c(0), min(new object[] { }.AsBindable<object, T>()).Current);
+                Assert.AreEqual(c(0), min(new object[] { }.AsBindable<object, T>(new TestDispatcher())).Current);
             }
 
             // Test the Max operations
-            Assert.AreEqual(c(9), max(new object[] { c(7), c(8), c(9) }.AsBindable<object, T>()).Current);
-            Assert.AreEqual(c(0), max(new object[] { c(-20), c(-10), c(0) }.AsBindable<object, T>()).Current);
-            Assert.AreEqual(c(14), max(new object[] { c(-14), c(0), c(14) }.AsBindable<object, T>()).Current);
-            Assert.AreEqual(c(0), max(new object[] { c(0), c(0) }.AsBindable<object, T>()).Current);
+            Assert.AreEqual(c(9), max(new object[] { c(7), c(8), c(9) }.AsBindable<object, T>(new TestDispatcher())).Current);
+            Assert.AreEqual(c(0), max(new object[] { c(-20), c(-10), c(0) }.AsBindable<object, T>(new TestDispatcher())).Current);
+            Assert.AreEqual(c(14), max(new object[] { c(-14), c(0), c(14) }.AsBindable<object, T>(new TestDispatcher())).Current);
+            Assert.AreEqual(c(0), max(new object[] { c(0), c(0) }.AsBindable<object, T>(new TestDispatcher())).Current);
             if (typeof(T).Name.Contains("Nulla"))
             {
-                Assert.AreEqual((T)(object)null, max(new object[] { }.AsBindable<object, T>()).Current);
-                Assert.AreEqual((T)(object)null, max(new object[] { (T)(object)null, (T)(object)null }.AsBindable<object, T>()).Current);
-                Assert.AreEqual(c(-14), max(new object[] { (T)(object)null, c(-14) }.AsBindable<object, T>()).Current);
-                Assert.AreEqual(c(14), max(new object[] { (T)(object)null, c(14) }.AsBindable<object, T>()).Current);
+                Assert.AreEqual((T)(object)null, max(new object[] { }.AsBindable<object, T>(new TestDispatcher())).Current);
+                Assert.AreEqual((T)(object)null, max(new object[] { (T)(object)null, (T)(object)null }.AsBindable<object, T>(new TestDispatcher())).Current);
+                Assert.AreEqual(c(-14), max(new object[] { (T)(object)null, c(-14) }.AsBindable<object, T>(new TestDispatcher())).Current);
+                Assert.AreEqual(c(14), max(new object[] { (T)(object)null, c(14) }.AsBindable<object, T>(new TestDispatcher())).Current);
             }
             else
             {
-                Assert.AreEqual(c(0), max(new object[] { }.AsBindable<object, T>()).Current);
+                Assert.AreEqual(c(0), max(new object[] { }.AsBindable<object, T>(new TestDispatcher())).Current);
             }
         }
         #endregion

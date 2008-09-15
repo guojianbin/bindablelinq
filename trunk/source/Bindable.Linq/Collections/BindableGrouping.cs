@@ -1,19 +1,25 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using Bindable.Linq.Configuration;
+using Bindable.Linq.Dependencies;
+using Bindable.Linq.Helpers;
+using Bindable.Linq.Interfaces;
+using Bindable.Linq.Interfaces.Events;
+using Bindable.Linq.Iterators;
+using Bindable.Linq.Threading;
 
 namespace Bindable.Linq.Collections
 {
     /// <summary>
-    /// Used in the <see cref="T:GroupByIterator`2"/> as the result of a grouping.
+    /// Used in the <see cref="GroupByIterator{TKey,TSource,TElement}"/> as the result of a grouping.
     /// </summary>
     /// <typeparam name="TKey">The type of the key.</typeparam>
     /// <typeparam name="TElement">The type of the element.</typeparam>
-    internal sealed class BindableGrouping<TKey, TElement> : IBindableGrouping<TKey, TElement>
+    internal sealed class BindableGrouping<TKey, TElement> : DispatcherBound, IBindableGrouping<TKey, TElement>
     {
-        private readonly IBindableQuery<TElement> _groupWhereQuery;
+        private readonly IBindableCollection<TElement> _groupWhereQuery;
         private readonly TKey _key;
 
         /// <summary>
@@ -21,32 +27,49 @@ namespace Bindable.Linq.Collections
         /// </summary>
         /// <param name="key">The key.</param>
         /// <param name="groupWhereQuery">The group query.</param>
-        public BindableGrouping(TKey key, IBindableQuery<TElement> groupWhereQuery)
+        /// <param name="dispatcher">The dispatcher.</param>
+        public BindableGrouping(TKey key, IBindableCollection<TElement> groupWhereQuery, IDispatcher dispatcher)
+            : base(dispatcher)
         {
             _key = key;
             _groupWhereQuery = groupWhereQuery;
-            _groupWhereQuery.CollectionChanged += GroupWhereQuery_CollectionChanged;
-            _groupWhereQuery.PropertyChanged += GroupWhereQuery_PropertyChanged;
+            _groupWhereQuery.Evaluating += (sender, e) => OnEvaluating(e);
+            _groupWhereQuery.CollectionChanged += (sender, e) => OnCollectionChanged(e);
+            _groupWhereQuery.PropertyChanged += (sender, e) => OnPropertyChanged(e);
         }
 
-        /// <summary>
-        /// Gets the configuration.
-        /// </summary>
-        public IBindingConfiguration Configuration
-        {
-            get { return _groupWhereQuery.Configuration; }
-        }
-
-        #region IBindableGrouping<TKey,TElement> Members
         /// <summary>
         /// Occurs when a property value changes.
         /// </summary>
         public event PropertyChangedEventHandler PropertyChanged;
 
         /// <summary>
+        /// Occurs when the collection is being evaluated (GetEnumerator() is called) for the first time, just before it returns
+        /// the results, to provide insight into the items being evaluated. This allows consumers to iterate the items in a collection
+        /// just before they are returned to the caller, while still enabling delayed execution of queries.
+        /// </summary>
+        public event EvaluatingEventHandler<TElement> Evaluating;
+
+        /// <summary>
         /// Occurs when the collection changes.
         /// </summary>
         public event NotifyCollectionChangedEventHandler CollectionChanged;
+
+        /// <summary>
+        /// Gets a value indicating whether this instance has already evaluated.
+        /// </summary>
+        /// <value>
+        /// 	<c>true</c> if this instance has evaluated; otherwise, <c>false</c>.
+        /// </value>
+        public bool HasEvaluated
+        {
+            get { return true; }
+        }
+
+        public void Evaluate()
+        {
+            GetEnumerator();
+        }
 
         /// <summary>
         /// Gets the key of the <see cref="T:System.Linq.IGrouping`2"/>.
@@ -90,50 +113,56 @@ namespace Bindable.Linq.Collections
         }
 
         /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// Refreshes the object.
         /// </summary>
-        public void Dispose()
+        public void Refresh()
         {
-            _groupWhereQuery.CollectionChanged -= GroupWhereQuery_CollectionChanged;
-            _groupWhereQuery.PropertyChanged -= GroupWhereQuery_PropertyChanged;
-            _groupWhereQuery.Dispose();
-        }
-        #endregion
-
-        private void GroupWhereQuery_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            OnPropertyChanged(e);
-        }
-
-        private void GroupWhereQuery_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            OnCollectionChanged(e);
+            _groupWhereQuery.Refresh();
         }
 
         /// <summary>
-        /// Raises the <see cref="E:PropertyChanged"/> event.
+        /// Sets a new dependency on a Bindable LINQ operation.
+        /// </summary>
+        /// <param name="definition">A definition of the dependency.</param>
+        public void AcceptDependency(IDependencyDefinition definition)
+        {
+            throw new NotSupportedException("This object cannot accept dependencies directly");
+        }
+
+        /// <summary>
+        /// Raises the <see cref="PropertyChanged"/> event.
         /// </summary>
         /// <param name="e">The <see cref="System.ComponentModel.PropertyChangedEventArgs"/> instance containing the event data.</param>
         private void OnPropertyChanged(PropertyChangedEventArgs e)
         {
+            AssertDispatcherThread();
             var handler = PropertyChanged;
             if (handler != null)
-            {
                 handler(this, e);
-            }
         }
 
         /// <summary>
-        /// Raises the <see cref="E:CollectionChanged"/> event.
+        /// Raises the <see cref="Evaluating"/> event.
         /// </summary>
-        /// <param name="e">The <see cref="System.Collections.Specialized.NotifyCollectionChangedEventArgs"/> instance containing the event data.</param>
+        /// <param name="e">The <see cref="EvaluatingEventArgs{TElement}"/> instance containing the event data.</param>
+        private void OnEvaluating(EvaluatingEventArgs<TElement> e)
+        {
+            AssertDispatcherThread();
+            var handler = Evaluating;
+            if (handler != null)
+                handler(this, e);
+        }
+
+        /// <summary>
+        /// Raises the <see cref="CollectionChanged"/> event.
+        /// </summary>
+        /// <param name="e">The <see cref="NotifyCollectionChangedEventArgs"/> instance containing the event data.</param>
         private void OnCollectionChanged(NotifyCollectionChangedEventArgs e)
         {
+            AssertDispatcherThread();
             var handler = CollectionChanged;
             if (handler != null)
-            {
                 handler(this, e);
-            }
         }
     }
 }

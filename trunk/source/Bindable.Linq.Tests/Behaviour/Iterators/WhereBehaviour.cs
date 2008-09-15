@@ -22,8 +22,6 @@ namespace Bindable.Linq.Tests.Behaviour.Iterators
                 .Scenario("Delayed evaluation",
                     With.Inputs(Mike, Tom, Jack),
                     step => Upon.Construction().ItWill.NotHaveEvaluated(),
-                    step => Upon.Reading(q => q.CurrentCount).ItWill.NotHaveEvaluated(),
-                    step => Upon.Reading(q => q.Configuration).ItWill.NotHaveEvaluated(),
                     step => Upon.Evaluate().ItWill.HaveCount(2)
                     )
                 .Scenario("Adding items",

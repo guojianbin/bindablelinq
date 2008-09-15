@@ -1,4 +1,6 @@
-﻿namespace Bindable.Linq.Tests.TestLanguage.Steps
+﻿using Bindable.Linq.Tests.TestLanguage.Helpers;
+
+namespace Bindable.Linq.Tests.TestLanguage.Steps
 {
     using System;
     using Collections;

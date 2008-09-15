@@ -1,5 +1,6 @@
 using System;
-using System.Collections.Generic;
+using Bindable.Linq.Interfaces;
+using Bindable.Linq.Threading;
 
 namespace Bindable.Linq.Iterators
 {
@@ -18,8 +19,9 @@ namespace Bindable.Linq.Iterators
         /// </summary>
         /// <param name="sourceCollection">The source collection.</param>
         /// <param name="projector">The projector.</param>
-        public SelectIterator(IBindableCollection<TSource> sourceCollection, Func<TSource, TResult> projector)
-            : base(sourceCollection)
+        /// <param name="dispatcher">The dispatcher.</param>
+        public SelectIterator(IBindableCollection<TSource> sourceCollection, Func<TSource, TResult> projector, IDispatcher dispatcher)
+            : base(sourceCollection, dispatcher)
         {
             _projectionRegister = new ProjectionRegister<TSource, TResult>(projector);
         }
@@ -35,55 +37,57 @@ namespace Bindable.Linq.Iterators
         }
 
         /// <summary>
-        /// When implemented in a derived class, processes all items in the <see cref="P:SourceCollection"/>.
+        /// When implemented in a derived class, processes all items in a given source collection.
         /// </summary>
-        protected override void LoadSourceCollection()
+        /// <remarks>Warning: No locks should be held when invoking this method.</remarks>
+        protected override void EvaluateSourceCollection()
         {
-            ReactToAddRange(0, SourceCollection);
+            foreach (var item in SourceCollection)
+                ReactToAdd(-1, item);
         }
 
         /// <summary>
         /// When overridden in a derived class, processes an Add event over a range of items.
         /// </summary>
-        /// <param name="sourceStartingIndex">Index of the source starting.</param>
-        /// <param name="addedItems">The added items.</param>
-        protected override void ReactToAddRange(int sourceStartingIndex, IEnumerable<TSource> addedItems)
+        /// <param name="insertionIndex">Index of the insertion.</param>
+        /// <param name="addedItem">The added item.</param>
+        protected override void ReactToAdd(int insertionIndex, TSource addedItem)
         {
-            var projectedItems = ProjectionRegister.CreateOrGetProjections(addedItems);
-            ResultCollection.AddOrInsertRange(sourceStartingIndex, projectedItems);
+            var projectedItem = ProjectionRegister.Project(addedItem);
+            ResultCollection.Insert(insertionIndex, projectedItem);
         }
 
         /// <summary>
         /// When overridden in a derived class, processes a Move event over a range of items.
         /// </summary>
-        /// <param name="sourceStartingIndex">Index of the source starting.</param>
-        /// <param name="movedItems">The moved items.</param>
-        protected override void ReactToMoveRange(int sourceStartingIndex, IEnumerable<TSource> movedItems)
+        /// <param name="originalIndex">Index of the original.</param>
+        /// <param name="newIndex">The new index.</param>
+        /// <param name="movedItem">The moved item.</param>
+        protected override void ReactToMove(int originalIndex, int newIndex, TSource movedItem)
         {
-            var projectedItems = ProjectionRegister.CreateOrGetProjections(movedItems);
-            ResultCollection.MoveRange(sourceStartingIndex, projectedItems);
+            ResultCollection.Move(newIndex, ProjectionRegister.Project(movedItem));
         }
 
-        /// <summary>
-        /// When overridden in a derived class, processes a Remove event over a range of items.
-        /// </summary>
-        /// <param name="removedItems">The removed items.</param>
-        protected override void ReactToRemoveRange(IEnumerable<TSource> removedItems)
+        protected override void ReactToRemove(int index, TSource removedItem)
         {
-            var projectedItems = ProjectionRegister.GetProjections(removedItems);
-            ResultCollection.RemoveRange(projectedItems);
-            ProjectionRegister.RemoveRange(removedItems);
+            var projection = ProjectionRegister.GetExistingProjection(removedItem);
+            if (projection != null)
+            {
+                ResultCollection.Remove((TResult)projection);
+                ProjectionRegister.Remove(removedItem);
+            }
         }
 
         /// <summary>
         /// When overridden in a derived class, processes a Replace event over a range of items.
         /// </summary>
-        /// <param name="oldItems">The old items.</param>
-        /// <param name="newItems">The new items.</param>
-        protected override void ReactToReplaceRange(IEnumerable<TSource> oldItems, IEnumerable<TSource> newItems)
+        /// <param name="index">The index.</param>
+        /// <param name="oldItem">The old item.</param>
+        /// <param name="newItem">The new item.</param>
+        protected override void ReactToReplace(int index, TSource oldItem, TSource newItem)
         {
-            ResultCollection.ReplaceRange(ProjectionRegister.GetProjections(oldItems), ProjectionRegister.CreateOrGetProjections(newItems));
-            ProjectionRegister.RemoveRange(oldItems);
+            ResultCollection.Replace((TResult)ProjectionRegister.GetExistingProjection(oldItem), ProjectionRegister.Project(newItem));
+            ProjectionRegister.Remove(oldItem);
         }
 
         /// <summary>
@@ -105,18 +109,19 @@ namespace Bindable.Linq.Iterators
         /// the collection is reset, before the sources are re-loaded.
         /// </summary>
         /// <remarks>Warning: No locks should be held when invoking this method.</remarks>
-        protected override void ResetOverride()
+        protected override void BeforeResetOverride()
         {
             ProjectionRegister.Clear();
-            base.ResetOverride();
+            base.BeforeResetOverride();
         }
 
         /// <summary>
         /// When overridden in a derived class, gives the class an opportunity to dispose any expensive components.
         /// </summary>
-        protected override void DisposeOverride()
+        protected override void BeforeDisposeOverride()
         {
             ProjectionRegister.Dispose();
+            base.BeforeDisposeOverride();
         }
     }
 }

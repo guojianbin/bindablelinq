@@ -3,6 +3,7 @@ namespace Bindable.Linq.SampleApplication
     using System.Collections.ObjectModel;
     using System.Windows;
     using System.Windows.Input;
+    using Bindable.Linq.Interfaces;
 
     public partial class SyncLinqWindow : Window
     {
@@ -17,7 +18,15 @@ namespace Bindable.Linq.SampleApplication
                 _contacts.Add(new Contact() {Name = "Person", Company = "ppppp" + i.ToString() + "Readify"});
             }
 
-            DataContext = _contacts.AsBindable().Where(c => c.Name.ToLower().Contains("p")).OrderBy(c => c.Name).Select(c => new {Name = c.Name.ToLower(), Company = c.Company, Original = c});
+            DataContext = _contacts.AsBindable()
+                                   .Where(c => c.Name.ToLower().Contains("p"))
+                                   .OrderBy(c => c.Name)
+                                   .Select(c => new
+                                                    {
+                                                        Name = c.Name.ToLower(), 
+                                                        Company = c.Company, 
+                                                        Original = c
+                                                    });
         }
 
         private void AddCommand_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -27,7 +36,7 @@ namespace Bindable.Linq.SampleApplication
 
         private void RefreshCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            ((IBindableQuery) DataContext).Refresh();
+            ((IBindableCollection) DataContext).Refresh();
         }
 
         private void DeleteCommand_Executed(object sender, ExecutedRoutedEventArgs e)

@@ -12,6 +12,18 @@ namespace Bindable.Linq.Threading
         /// Dispatches the specified action to the thread.
         /// </summary>
         /// <param name="actionToInvoke">The action to invoke.</param>
-        void Invoke(Action actionToInvoke);
+        void Dispatch(Action actionToInvoke);
+
+        /// <summary>
+        /// Dispatches the specified action to the thread.
+        /// </summary>
+        /// <param name="actionToInvoke">The action to invoke.</param>
+        TResult Dispatch<TResult>(Func<TResult> actionToInvoke);
+
+        /// <summary>
+        /// Checks whether the thread invoking the method .
+        /// </summary>
+        /// <returns></returns>
+        bool DispatchRequired();
     }
 }

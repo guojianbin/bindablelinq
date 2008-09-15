@@ -10,7 +10,7 @@ namespace Bindable.Linq.Dependencies.PathNavigation.Tokens
     internal sealed class ClrMemberToken : MemberToken
     {
         private readonly EventHandler<PropertyChangedEventArgs> _actualHandler;
-        private readonly WeakEventReference<PropertyChangedEventArgs> _weakHandler;
+        private readonly WeakEventProxy<PropertyChangedEventArgs> _weakHandler;
         private readonly PropertyChangedEventHandler _weakHandlerWrapper;
         private IPropertyReader<object> _propertyReader;
 
@@ -26,8 +26,8 @@ namespace Bindable.Linq.Dependencies.PathNavigation.Tokens
             : base(objectToObserve, propertyName, remainingPath, callback, pathNavigator)
         {
             _actualHandler = CurrentTarget_PropertyChanged;
-            _weakHandler = new WeakEventReference<PropertyChangedEventArgs>(_actualHandler);
-            _weakHandlerWrapper = _weakHandler.WeakEventHandler;
+            _weakHandler = new WeakEventProxy<PropertyChangedEventArgs>(_actualHandler);
+            _weakHandlerWrapper = _weakHandler.Handler;
 
             AcquireTarget(objectToObserve);
         }

@@ -3,10 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Bindable.Linq.Collections;
+using Bindable.Linq.Interfaces;
 using Bindable.Linq.Tests.TestLanguage.EventMonitoring;
 using Bindable.Linq.Tests.TestLanguage.Helpers;
 using Bindable.Linq.Tests.TestLanguage.Steps;
 using NUnit.Framework;
+using System.Collections.ObjectModel;
 
 namespace Bindable.Linq.Tests.TestLanguage
 {
@@ -17,7 +19,7 @@ namespace Bindable.Linq.Tests.TestLanguage
     internal class Scenario<TInput> : IScenario<TInput>
     {
         private string _title;
-        private BindableCollection<TInput> _inputs;
+        private ObservableCollection<TInput> _inputs;
         private IBindableCollection _bindableLinqQuery;
         private IEnumerable _standardLinqQuery;
         private IEnumerable<Step> _steps;
@@ -31,7 +33,7 @@ namespace Bindable.Linq.Tests.TestLanguage
         /// <param name="steps">The steps.</param>
         /// <param name="bindableLinqQuery">The bindable linq query.</param>
         /// <param name="standardLinqQuery">The standard linq query.</param>
-        public Scenario(string title, BindableCollection<TInput> inputs, IEnumerable<Step> steps, IBindableCollection bindableLinqQuery, IEnumerable standardLinqQuery)
+        public Scenario(string title, ObservableCollection<TInput> inputs, IEnumerable<Step> steps, IBindableCollection bindableLinqQuery, IEnumerable standardLinqQuery)
         {
             _title = title;
             _inputs = inputs;
@@ -48,7 +50,7 @@ namespace Bindable.Linq.Tests.TestLanguage
         /// <summary>
         /// Gets the inputs to the scenario.
         /// </summary>
-        public BindableCollection<TInput> Inputs
+        public ObservableCollection<TInput> Inputs
         {
             get { return _inputs; }
         }

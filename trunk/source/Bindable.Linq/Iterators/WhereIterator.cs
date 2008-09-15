@@ -1,6 +1,6 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
+using Bindable.Linq.Interfaces;
+using Bindable.Linq.Threading;
 
 namespace Bindable.Linq.Iterators
 {
@@ -14,22 +14,24 @@ namespace Bindable.Linq.Iterators
         private readonly Func<TElement, bool> _predicate;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:WhereIterator`1"/> class.
+        /// Initializes a new instance of the <see cref="WhereIterator&lt;TElement&gt;"/> class.
         /// </summary>
         /// <param name="sourceCollection">The source collection.</param>
         /// <param name="predicate">The predicate.</param>
-        public WhereIterator(IBindableCollection<TElement> sourceCollection, Func<TElement, bool> predicate)
-            : base(sourceCollection)
+        public WhereIterator(IBindableCollection<TElement> sourceCollection, Func<TElement, bool> predicate, IDispatcher dispatcher)
+            : base(sourceCollection, dispatcher)
         {
             _predicate = predicate;
         }
 
         /// <summary>
-        /// When implemented in a derived class, processes all items in the <see cref="P:SourceCollection"/>.
+        /// When implemented in a derived class, processes all items in a given source collection.
         /// </summary>
-        protected override void LoadSourceCollection()
+        /// <remarks>Warning: No locks should be held when invoking this method.</remarks>
+        protected override void EvaluateSourceCollection()
         {
-            ReactToAddRange(0, SourceCollection);
+            foreach (var item in SourceCollection)
+                ReactToAdd(-1, item);
         }
 
         /// <summary>
@@ -46,52 +48,56 @@ namespace Bindable.Linq.Iterators
         /// <summary>
         /// When overridden in a derived class, processes an Add event over a range of items.
         /// </summary>
-        /// <param name="sourceStartingIndex">Index of the source starting.</param>
-        /// <param name="addedItems">The added items.</param>
-        protected override void ReactToAddRange(int sourceStartingIndex, IEnumerable<TElement> addedItems)
+        /// <param name="insertionIndex">Index of the insertion.</param>
+        /// <param name="addedItem">The added item.</param>
+        protected override void ReactToAdd(int insertionIndex, TElement addedItem)
         {
-            ResultCollection.AddOrInsertRange(sourceStartingIndex, addedItems.Where(Filter));
+            if (Filter(addedItem))
+            {
+                ResultCollection.Insert(insertionIndex, addedItem);
+            }
         }
 
         /// <summary>
-        /// When overridden in a derived class, processes a Move event over a range of items.
+        /// Reacts to move.
         /// </summary>
-        /// <param name="sourceStartingIndex">Index of the source starting.</param>
-        /// <param name="movedItems">The moved items.</param>
-        protected override void ReactToMoveRange(int sourceStartingIndex, IEnumerable<TElement> movedItems)
+        /// <param name="oldIndex">The old index.</param>
+        /// <param name="newIndex">The new index.</param>
+        /// <param name="movedItem">The moved item.</param>
+        protected override void ReactToMove(int oldIndex, int newIndex, TElement movedItem)
         {
-            ResultCollection.MoveRange(sourceStartingIndex, movedItems.Where(Filter));
+            if (Filter(movedItem))
+            {
+                ResultCollection.Move(newIndex, movedItem);    
+            }
         }
 
         /// <summary>
         /// When overridden in a derived class, processes a Remove event over a range of items.
         /// </summary>
-        /// <param name="removedItems">The removed items.</param>
-        protected override void ReactToRemoveRange(IEnumerable<TElement> removedItems)
+        /// <param name="index">The index.</param>
+        /// <param name="removedItem">The removed item.</param>
+        protected override void ReactToRemove(int index, TElement removedItem)
         {
-            ResultCollection.RemoveRange(removedItems);
+            ResultCollection.Remove(removedItem);
         }
 
         /// <summary>
         /// When overridden in a derived class, processes a Replace event over a range of items.
         /// </summary>
-        /// <param name="oldItems">The old items.</param>
-        /// <param name="newItems">The new items.</param>
-        protected override void ReactToReplaceRange(IEnumerable<TElement> oldItems, IEnumerable<TElement> newItems)
+        /// <param name="oldIndex">The old index.</param>
+        /// <param name="oldItem">The old item.</param>
+        /// <param name="newItem">The new item.</param>
+        protected override void ReactToReplace(int oldIndex, TElement oldItem, TElement newItem)
         {
-            var indexesToSkip = new List<int>();
-
-            var relativeIndex = 0;
-            foreach (var element in newItems)
+            if (Filter(newItem))
             {
-                if (!Filter(element))
-                {
-                    indexesToSkip.Add(relativeIndex);
-                }
-                relativeIndex++;
+                ResultCollection.Replace(oldItem, newItem);
             }
-
-            ResultCollection.ReplaceRange(oldItems, newItems, indexesToSkip);
+            else
+            {
+                ResultCollection.Remove(oldItem);
+            }
         }
 
         /// <summary>

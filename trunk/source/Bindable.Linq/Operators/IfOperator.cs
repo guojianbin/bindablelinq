@@ -1,4 +1,6 @@
 using System;
+using Bindable.Linq.Interfaces;
+using Bindable.Linq.Threading;
 
 namespace Bindable.Linq.Operators
 {
@@ -22,8 +24,8 @@ namespace Bindable.Linq.Operators
         /// <param name="trueValue">The true value.</param>
         /// <param name="falseValue">The false value.</param>
         /// <param name="nullValue">The null value.</param>
-        public IfOperator(IBindable<TSource> source, Func<TSource, bool> condition, Func<TSource, TResult> trueValue, Func<TSource, TResult> falseValue, Func<TResult> nullValue)
-            : base(source)
+        public IfOperator(IBindable<TSource> source, Func<TSource, bool> condition, Func<TSource, TResult> trueValue, Func<TSource, TResult> falseValue, Func<TResult> nullValue, IDispatcher dispatcher)
+            : base(source, dispatcher)
         {
             _condition = condition;
             _valueIfTrue = trueValue;

@@ -1,5 +1,6 @@
-using Bindable.Linq.Collections;
 using Bindable.Linq.Dependencies.PathNavigation;
+using Bindable.Linq.Interfaces.Internal;
+using Bindable.Linq.Interfaces;
 
 namespace Bindable.Linq.Dependencies
 {
@@ -32,7 +33,7 @@ namespace Bindable.Linq.Dependencies
         /// <param name="sourceElements">The source elements.</param>
         /// <param name="pathNavigator">The path navigator.</param>
         /// <returns></returns>
-        IDependency ConstructForCollection<TElement>(IBindableCollectionInterceptor<TElement> sourceElements, IPathNavigator pathNavigator);
+        IDependency ConstructForCollection<TElement>(IBindableCollection<TElement> sourceElements, IPathNavigator pathNavigator);
 
         /// <summary>
         /// Constructs a dependency for a single element.

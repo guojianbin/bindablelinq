@@ -1,4 +1,6 @@
 using System;
+using Bindable.Linq.Interfaces;
+using Bindable.Linq.Threading;
 
 namespace Bindable.Linq.Operators
 {
@@ -16,8 +18,8 @@ namespace Bindable.Linq.Operators
         /// </summary>
         /// <param name="source">The source.</param>
         /// <param name="projector">The projector.</param>
-        public ProjectOperator(IBindable<TSource> source, Func<TSource, TResult> projector)
-            : base(source)
+        public ProjectOperator(IBindable<TSource> source, Func<TSource, TResult> projector, IDispatcher dispatcher)
+            : base(source, dispatcher)
         {
             _projector = projector;
         }

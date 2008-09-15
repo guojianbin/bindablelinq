@@ -1,6 +1,9 @@
+using Bindable.Linq.Interfaces;
+
 namespace Bindable.Linq.Samples.PizzaHaven.Binders
 {
     using Domain;
+    using Bindable.Linq.Operators;
 
     public class PizzaCustomizer
     {
@@ -8,6 +11,7 @@ namespace Bindable.Linq.Samples.PizzaHaven.Binders
         private readonly Pizza _pizza;
         private readonly IBindableCollection<Topping> _selectedToppings;
         private readonly IBindable<decimal> _totalPrice;
+        private readonly IBindable<string> _healthWarningMessage;
 
         public PizzaCustomizer(Pizza pizza)
         {
@@ -16,6 +20,18 @@ namespace Bindable.Linq.Samples.PizzaHaven.Binders
             _availableToppings = _pizza.AvailableToppings.AsBindable().Select(topping => new SelectableTopping(topping));
 
             _selectedToppings = _availableToppings.Where(selectableTopping => selectableTopping.IsSelected).Select(selectableTopping => selectableTopping.Topping);
+
+            _healthWarningMessage = _selectedToppings.Count().Switch(
+                Case.When<int, string>(toppings => toppings < 1,
+                    "Surely you would like more toppings?"
+                    ),
+                Case.When<int, string>(toppings => toppings >= 3,
+                    "You have too many toppings!"
+                    ),
+                Case.Default<int, string>(
+                    "Just right!"
+                    )
+                );
 
             _totalPrice = _selectedToppings.Sum(topping => topping.Price).Project(toppingsTotal => toppingsTotal + pizza.BasePrice);
         }
@@ -33,6 +49,11 @@ namespace Bindable.Linq.Samples.PizzaHaven.Binders
         public IBindableCollection<Topping> SelectedToppings
         {
             get { return _selectedToppings; }
+        }
+
+        public IBindable<string> HealthWarningMessage
+        {
+            get { return _healthWarningMessage; }
         }
 
         public IBindable<decimal> TotalPrice

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq.Expressions;
 using Bindable.Linq.Collections;
+using Bindable.Linq.Interfaces;
+using Bindable.Linq.Threading;
 
 namespace Bindable.Linq.Iterators
 {
@@ -24,8 +26,8 @@ namespace Bindable.Linq.Iterators
         /// <param name="keySelector">The key selector.</param>
         /// <param name="elementSelector">The element selector.</param>
         /// <param name="keyComparer">The key comparer.</param>
-        public GroupByIterator(IBindableCollection<TSource> sourceCollection, Expression<Func<TSource, TKey>> keySelector, Expression<Func<TSource, TElement>> elementSelector, IEqualityComparer<TKey> keyComparer)
-            : base(sourceCollection)
+        public GroupByIterator(IBindableCollection<TSource> sourceCollection, Expression<Func<TSource, TKey>> keySelector, Expression<Func<TSource, TElement>> elementSelector, IEqualityComparer<TKey> keyComparer, IDispatcher dispatcher)
+            : base(sourceCollection, dispatcher)
         {
             _keySelector = keySelector;
             _keySelectorCompiled = keySelector.Compile();
@@ -37,9 +39,12 @@ namespace Bindable.Linq.Iterators
         /// When implemented in a derived class, processes all items in a given source collection.
         /// </summary>
         /// <remarks>Warning: No locks should be held when invoking this method.</remarks>
-        protected override void LoadSourceCollection()
+        protected override void EvaluateSourceCollection()
         {
-            ReactToAddRange(0, SourceCollection);
+            foreach (var item in SourceCollection)
+            {
+                ReactToAdd(-1, item);
+            }
         }
 
         /// <summary>
@@ -74,27 +79,15 @@ namespace Bindable.Linq.Iterators
             return false;
         }
 
-        private void EnsureGroupsExists(IEnumerable<TSource> range)
+        private void EnsureGroupsExists(TSource element)
         {
-            var itemsToCreateGroupsFor = new List<TSource>();
-            foreach (var element in range)
+            var key = _keySelectorCompiled(element);
+            var groupExists = FindGroup(key, ResultCollection);
+            if (!groupExists)
             {
-                itemsToCreateGroupsFor.Add(element);
-            }
-
-            using (var transaction = ResultCollection.BeginTransaction())
-            {
-                foreach (var element in itemsToCreateGroupsFor)
-                {
-                    var key = _keySelectorCompiled(element);
-                    var groupExists = FindGroup(key, ResultCollection);
-                    if (!groupExists)
-                    {
-                        IBindableGrouping<TKey, TElement> newGroup = new BindableGrouping<TKey, TElement>(key, SourceCollection.Where(e => CompareKeys(_keySelectorCompiled(e), key)).WithDependencyExpression(_keySelector.Body, _keySelector.Parameters[0]).Select(_elementSelector));
-                        newGroup.CollectionChanged += Group_CollectionChanged;
-                        ResultCollection.Add(newGroup, transaction);
-                    }
-                }
+                IBindableGrouping<TKey, TElement> newGroup = new BindableGrouping<TKey, TElement>(key, SourceCollection.Where(e => CompareKeys(_keySelectorCompiled(e), key)).WithDependencyExpression(_keySelector.Body, _keySelector.Parameters[0]).Select(_elementSelector), Dispatcher);
+                newGroup.CollectionChanged += Group_CollectionChanged;
+                ResultCollection.Add(newGroup);
             }
         }
 
@@ -102,18 +95,19 @@ namespace Bindable.Linq.Iterators
         /// When overridden in a derived class, processes an Add event over a range of items.
         /// </summary>
         /// <param name="sourceStartingIndex">Index of the source starting.</param>
-        /// <param name="addedItems">The added items.</param>
-        protected override void ReactToAddRange(int sourceStartingIndex, IEnumerable<TSource> addedItems)
+        /// <param name="addedItem">The added item.</param>
+        protected override void ReactToAdd(int sourceStartingIndex, TSource addedItem)
         {
-            EnsureGroupsExists(addedItems);
+            EnsureGroupsExists(addedItem);
         }
 
         /// <summary>
         /// When overridden in a derived class, processes a Move event over a range of items.
         /// </summary>
-        /// <param name="sourceStartingIndex">Index of the source starting.</param>
-        /// <param name="movedItems">The moved items.</param>
-        protected override void ReactToMoveRange(int sourceStartingIndex, IEnumerable<TSource> movedItems)
+        /// <param name="oldIndex">The old index.</param>
+        /// <param name="newIndex">The new index.</param>
+        /// <param name="movedItem">The moved item.</param>
+        protected override void ReactToMove(int oldIndex, int newIndex, TSource movedItem)
         {
             // Nothing to do here
         }
@@ -121,8 +115,9 @@ namespace Bindable.Linq.Iterators
         /// <summary>
         /// When overridden in a derived class, processes a Remove event over a range of items.
         /// </summary>
-        /// <param name="removedItems">The removed items.</param>
-        protected override void ReactToRemoveRange(IEnumerable<TSource> removedItems)
+        /// <param name="oldIndex">The old index.</param>
+        /// <param name="removedItem">The removed item.</param>
+        protected override void ReactToRemove(int oldIndex, TSource removedItem)
         {
             // Nothing to do here
         }
@@ -130,11 +125,12 @@ namespace Bindable.Linq.Iterators
         /// <summary>
         /// When overridden in a derived class, processes a Replace event over a range of items.
         /// </summary>
-        /// <param name="oldItems">The old items.</param>
-        /// <param name="newItems">The new items.</param>
-        protected override void ReactToReplaceRange(IEnumerable<TSource> oldItems, IEnumerable<TSource> newItems)
+        /// <param name="oldIndex">The old index.</param>
+        /// <param name="oldItem">The old item.</param>
+        /// <param name="newItem">The new item.</param>
+        protected override void ReactToReplace(int oldIndex, TSource oldItem, TSource newItem)
         {
-            EnsureGroupsExists(newItems);
+            EnsureGroupsExists(newItem);
         }
 
         /// <summary>
@@ -146,7 +142,7 @@ namespace Bindable.Linq.Iterators
         {
             if (SourceCollection.Contains(item).Current)
             {
-                EnsureGroupsExists(new[] {item});
+                EnsureGroupsExists(item);
             }
         }
 
@@ -155,7 +151,7 @@ namespace Bindable.Linq.Iterators
             if (e.Action == NotifyCollectionChangedAction.Remove)
             {
                 var group = sender as IBindableGrouping<TKey, TElement>;
-                if (group.Count == 0)
+                if (group != null && group.Count == 0)
                 {
                     ResultCollection.Remove(group);
                 }

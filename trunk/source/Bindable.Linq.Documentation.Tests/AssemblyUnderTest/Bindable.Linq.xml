@@ -268,7 +268,7 @@
             Resets the result collection of the Iterator and re-reads all of the source collections.
             </summary>
         </member>
-        <member name="M:Bindable.Linq.Iterators.Iterator`2.LoadSourceCollection">
+        <member name="M:Bindable.Linq.Iterators.Iterator`2.EvaluateSourceCollection">
             <summary>
             When implemented in a derived class, processes all items in a given source collection.
             </summary>
@@ -442,7 +442,7 @@
             <param name="dispatcher">The dispatcher.</param>
             <param name="pollTime">The poll time.</param>
         </member>
-        <member name="M:Bindable.Linq.Iterators.PollIterator`1.LoadSourceCollection">
+        <member name="M:Bindable.Linq.Iterators.PollIterator`1.EvaluateSourceCollection">
             <summary>
             When implemented in a derived class, processes all items in the source collection.
             </summary>
@@ -1038,7 +1038,7 @@
             <param name="sourceCollection">The source collection.</param>
             <param name="predicate">The predicate.</param>
         </member>
-        <member name="M:Bindable.Linq.Iterators.WhereIterator`1.LoadSourceCollection">
+        <member name="M:Bindable.Linq.Iterators.WhereIterator`1.EvaluateSourceCollection">
             <summary>
             When implemented in a derived class, processes all items in the <see cref="P:SourceCollection"/>.
             </summary>
@@ -2192,7 +2192,7 @@
             Resets the result collection of the Iterator and re-reads all of the source collections.
             </summary>
         </member>
-        <member name="M:Bindable.Linq.Iterators.UnionIterator`1.LoadSourceCollection(System.Collections.Generic.IEnumerable{`0})">
+        <member name="M:Bindable.Linq.Iterators.UnionIterator`1.EvaluateSourceCollection(System.Collections.Generic.IEnumerable{`0})">
             <summary>
             When implemented in a derived class, processes all items in a given source collection.
             </summary>
@@ -4710,7 +4710,7 @@
             <param name="elementSelector">The element selector.</param>
             <param name="keyComparer">The key comparer.</param>
         </member>
-        <member name="M:Bindable.Linq.Iterators.GroupByIterator`3.LoadSourceCollection">
+        <member name="M:Bindable.Linq.Iterators.GroupByIterator`3.EvaluateSourceCollection">
             <summary>
             When implemented in a derived class, processes all items in a given source collection.
             </summary>
@@ -5137,7 +5137,7 @@
             <param name="descending">if set to <c>true</c> [descending].</param>
             <returns></returns>
         </member>
-        <member name="M:Bindable.Linq.Iterators.OrderByIterator`2.LoadSourceCollection">
+        <member name="M:Bindable.Linq.Iterators.OrderByIterator`2.EvaluateSourceCollection">
             <summary>
             When implemented in a derived class, processes all items in the <see cref="P:SourceCollection"/>.
             </summary>
@@ -5362,7 +5362,7 @@
             <param name="source">The source.</param>
             <param name="dispatcher">The dispatcher.</param>
         </member>
-        <member name="M:Bindable.Linq.Iterators.AsynchronousIterator`1.LoadSourceCollection">
+        <member name="M:Bindable.Linq.Iterators.AsynchronousIterator`1.EvaluateSourceCollection">
             <summary>
             When implemented in a derived class, processes all items in the <see cref="P:SourceCollection"/>.
             </summary>
@@ -5401,7 +5401,7 @@
             <param name="item">The item.</param>
             <param name="propertyName">Name of the property.</param>
         </member>
-        <member name="T:Bindable.Linq.Helpers.WeakEventReference`1">
+        <member name="T:Bindable.Linq.Helpers.WeakEventProxy`1">
             <summary>
             An event handler wrapper used to create weak-reference event handlers, so that event subscribers 
             can be garbage collected without the event publisher interfering. 
@@ -5411,21 +5411,21 @@
             To understand why this class is needed, see this page: 
                 http://www.paulstovell.net/blog/index.php/wpf-binding-bug-leads-to-possible-memory-issues/
             For examples on how this is used, it is best to look at the unit test: 
-                WeakEventReferenceTests.cs
+                WeakEventProxyTests.cs
             </remarks>
         </member>
-        <member name="M:Bindable.Linq.Helpers.WeakEventReference`1.#ctor(System.EventHandler{`0})">
+        <member name="M:Bindable.Linq.Helpers.WeakEventProxy`1.#ctor(System.EventHandler{`0})">
             <summary>
-            Initializes a new instance of the <see cref="T:Bindable.Linq.Helpers.WeakEventReference`1"/> class.
+            Initializes a new instance of the <see cref="T:Bindable.Linq.Helpers.WeakEventProxy`1"/> class.
             </summary>
             <param name="callback">The callback.</param>
         </member>
-        <member name="M:Bindable.Linq.Helpers.WeakEventReference`1.Dispose">
+        <member name="M:Bindable.Linq.Helpers.WeakEventProxy`1.Dispose">
             <summary>
             Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
             </summary>
         </member>
-        <member name="M:Bindable.Linq.Helpers.WeakEventReference`1.WeakEventHandler(System.Object,`0)">
+        <member name="M:Bindable.Linq.Helpers.WeakEventProxy`1.WeakEventHandler(System.Object,`0)">
             <summary>
             Used as the event handler which should be subscribed to source collections.
             </summary>
@@ -5802,7 +5802,7 @@
             <param name="sourceCollection">The source collection.</param>
             <param name="projector">The projector.</param>
         </member>
-        <member name="M:Bindable.Linq.Iterators.SelectIterator`2.LoadSourceCollection">
+        <member name="M:Bindable.Linq.Iterators.SelectIterator`2.EvaluateSourceCollection">
             <summary>
             When implemented in a derived class, processes all items in the <see cref="P:SourceCollection"/>.
             </summary>

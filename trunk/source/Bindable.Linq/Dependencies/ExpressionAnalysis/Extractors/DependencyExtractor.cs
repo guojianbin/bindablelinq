@@ -21,8 +21,7 @@ namespace Bindable.Linq.Dependencies.ExpressionAnalysis.Extractors
 
             // Find the root member access expressions
             var analyser = new ExpressionFlattener(expression, ExpressionType.MemberAccess);
-            var memberExpressions = analyser.Expressions;
-
+            
             // Turn each one into the appropriate dependency
             foreach (var childExpression in analyser.Expressions)
             {

@@ -2,6 +2,7 @@ using Bindable.Linq.Collections;
 using Bindable.Linq.Tests.TestLanguage.EventMonitoring;
 using Bindable.Linq.Tests.TestLanguage.Helpers;
 using NUnit.Framework;
+using System.Collections.ObjectModel;
 
 namespace Bindable.Linq.Tests.Behaviour.Aggregators
 {
@@ -30,7 +31,7 @@ namespace Bindable.Linq.Tests.Behaviour.Aggregators
         [Test]
         public void SumAggregatorCollectionChangeCausesRefresh()
         {
-            var numbers = new BindableCollection<object>();
+            var numbers = new ObservableCollection<object>();
             numbers.AddRange(1, 2, 4);
             var aggregator = numbers.AsBindable<object, int>().Sum();
             var eventCatcher = new PropertyEventMonitor(aggregator);

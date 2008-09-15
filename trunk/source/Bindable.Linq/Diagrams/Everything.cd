@@ -461,14 +461,14 @@
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
-  <Class Name="Bindable.Linq.Helpers.WeakEventReference&lt;A&gt;" BaseTypeListCollapsed="true">
+  <Class Name="Bindable.Linq.Helpers.WeakEventProxy&lt;A&gt;" BaseTypeListCollapsed="true">
     <Position X="17.25" Y="43.25" Width="2.5" />
     <Compartments>
       <Compartment Name="Private" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAgAAAAAAEAAAAAAAAAAAAAgAAAAAA=</HashCode>
-      <FileName>Helpers\WeakEventReference.cs</FileName>
+      <FileName>Helpers\WeakEventProxy.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Bindable.Linq.Collections.BindableCollection&lt;TElement&gt;">

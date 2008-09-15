@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using Bindable.Linq.Interfaces;
+using Bindable.Linq.Threading;
 
 namespace Bindable.Linq.Iterators
 {    
@@ -8,7 +10,7 @@ namespace Bindable.Linq.Iterators
     /// </summary>
     /// <typeparam name="TElement">The source collection type.</typeparam>
     /// <typeparam name="TKey">The type of key used to determine which properties to sort by.</typeparam>
-    internal sealed class OrderByIterator<TElement, TKey> : Iterator<TElement, TElement>, IOrderedBindableQuery<TElement>
+    internal sealed class OrderByIterator<TElement, TKey> : Iterator<TElement, TElement>, IOrderedBindableCollection<TElement>
         where TElement : class
     {
         private readonly ItemSorter<TElement, TKey> _itemSorter;
@@ -18,34 +20,21 @@ namespace Bindable.Linq.Iterators
         /// </summary>
         /// <param name="source">The source.</param>
         /// <param name="itemSorter">The item sorter.</param>
-        public OrderByIterator(IBindableCollection<TElement> source, ItemSorter<TElement, TKey> itemSorter)
-            : base(source)
+        /// <param name="dispatcher">The dispatcher.</param>
+        public OrderByIterator(IBindableCollection<TElement> source, ItemSorter<TElement, TKey> itemSorter, IDispatcher dispatcher)
+            : base(source, dispatcher)
         {
             _itemSorter = itemSorter;
         }
 
-        #region IOrderedBindableQuery<TElement> Members
         /// <summary>
-        /// Performs a subsequent ordering on the elements of an <see cref="T:IOrderedIterator[TElement]"/>
-        /// according to a key.
+        /// When implemented in a derived class, processes all items in a given source collection.
         /// </summary>
-        /// <typeparam name="TNewKey">The type of the key.</typeparam>
-        /// <param name="keySelector">The key selector.</param>
-        /// <param name="comparer">The comparer.</param>
-        /// <param name="descending">if set to <c>true</c> [descending].</param>
-        /// <returns></returns>
-        public IOrderedBindableQuery<TElement> CreateOrderedIterator<TNewKey>(Func<TElement, TNewKey> keySelector, IComparer<TNewKey> comparer, bool descending)
+        /// <remarks>Warning: No locks should be held when invoking this method.</remarks>
+        protected override void EvaluateSourceCollection()
         {
-            return new OrderByIterator<TElement, TNewKey>(SourceCollection, new ItemSorter<TElement, TNewKey>(_itemSorter, keySelector, comparer, !descending));
-        }
-        #endregion
-
-        /// <summary>
-        /// When implemented in a derived class, processes all items in the <see cref="P:SourceCollection"/>.
-        /// </summary>
-        protected override void LoadSourceCollection()
-        {
-            ReactToAddRange(0, SourceCollection);
+            foreach (var item in SourceCollection)
+                ReactToAdd(-1, item);
         }
 
         /// <summary>
@@ -62,38 +51,44 @@ namespace Bindable.Linq.Iterators
         /// <summary>
         /// When overridden in a derived class, processes an Add event over a range of items.
         /// </summary>
-        /// <param name="sourceStartingIndex">Index of the source starting.</param>
-        /// <param name="addedItems">The added items.</param>
-        protected override void ReactToAddRange(int sourceStartingIndex, IEnumerable<TElement> addedItems)
+        /// <param name="insertionIndex">Index of the insertion.</param>
+        /// <param name="addedItem">The added item.</param>
+        protected override void ReactToAdd(int insertionIndex, TElement addedItem)
         {
-            ResultCollection.InsertRangeOrder(addedItems, Compare);
+            ResultCollection.InsertOrderd(addedItem, Compare);
         }
 
         /// <summary>
         /// When overridden in a derived class, processes a Move event over a range of items.
         /// </summary>
-        /// <param name="sourceStartingIndex">Index of the source starting.</param>
-        /// <param name="movedItems">The moved items.</param>
-        protected override void ReactToMoveRange(int sourceStartingIndex, IEnumerable<TElement> movedItems) {}
+        /// <param name="oldIndex">The old index.</param>
+        /// <param name="newIndex">The new index.</param>
+        /// <param name="movedItem">The moved item.</param>
+        protected override void ReactToMove(int oldIndex, int newIndex, TElement movedItem)
+        {
+            // Nothing to do here
+        }
 
         /// <summary>
         /// When overridden in a derived class, processes a Remove event over a range of items.
         /// </summary>
-        /// <param name="removedItems">The removed items.</param>
-        protected override void ReactToRemoveRange(IEnumerable<TElement> removedItems)
+        /// <param name="oldIndex">The old index.</param>
+        /// <param name="removedItem">The removed item.</param>
+        protected override void ReactToRemove(int oldIndex, TElement removedItem)
         {
-            ResultCollection.RemoveRange(removedItems);
+            ResultCollection.Remove(removedItem);
         }
 
         /// <summary>
         /// When overridden in a derived class, processes a Replace event over a range of items.
         /// </summary>
-        /// <param name="oldItems">The old items.</param>
-        /// <param name="newItems">The new items.</param>
-        protected override void ReactToReplaceRange(IEnumerable<TElement> oldItems, IEnumerable<TElement> newItems)
+        /// <param name="oldIndex">The old index.</param>
+        /// <param name="oldItem">The old item.</param>
+        /// <param name="newItem">The new item.</param>
+        protected override void ReactToReplace(int oldIndex, TElement oldItem, TElement newItem)
         {
-            ReactToRemoveRange(oldItems);
-            ReactToAddRange(-1, newItems);
+            ReactToRemove(oldIndex, oldItem);
+            ReactToAdd(-1, newItem);
         }
 
         /// <summary>
@@ -103,7 +98,21 @@ namespace Bindable.Linq.Iterators
         /// <param name="propertyName">Name of the property.</param>
         protected override void ReactToItemPropertyChanged(TElement item, string propertyName)
         {
-            ResultCollection.MoveItemOrdered(item, Compare);
+            ResultCollection.MoveOrdered(item, Compare);
+        }
+
+        /// <summary>
+        /// Performs a subsequent ordering on the elements of an <see cref="IOrderedBindableCollection{TElement}"/>
+        /// according to a key.
+        /// </summary>
+        /// <typeparam name="TNewKey">The type of the key.</typeparam>
+        /// <param name="keySelector">The key selector.</param>
+        /// <param name="comparer">The comparer.</param>
+        /// <param name="descending">if set to <c>true</c> [descending].</param>
+        /// <returns></returns>
+        public IOrderedBindableCollection<TElement> CreateOrderedIterator<TNewKey>(Func<TElement, TNewKey> keySelector, IComparer<TNewKey> comparer, bool descending)
+        {
+            return new OrderByIterator<TElement, TNewKey>(SourceCollection, new ItemSorter<TElement, TNewKey>(_itemSorter, keySelector, comparer, !descending), Dispatcher);
         }
     }
 }

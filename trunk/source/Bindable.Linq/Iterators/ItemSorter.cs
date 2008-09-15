@@ -11,7 +11,7 @@ namespace Bindable.Linq.Iterators
     /// <remarks>
     /// This base class is used so that we can enable strong typing without the comparers 
     /// needing to know the key types (K) used by the subsequent ItemSorters. 
-    /// See the remarks for <see cref="T:ItemSorter[S,K]"/> for details.
+    /// See the remarks for <see cref="ItemSorter{S,K}"/> for details.
     /// </remarks>
     internal abstract class ItemSorter<S>
     {

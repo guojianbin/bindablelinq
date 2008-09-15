@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using Bindable.Linq.Collections;
+using Bindable.Linq.Interfaces;
 using Bindable.Linq.Tests.TestLanguage.Helpers;
 using Bindable.Linq.Tests.TestLanguage.Steps;
+using System.Collections.ObjectModel;
 
 namespace Bindable.Linq.Tests.TestLanguage.Specifications
 {
@@ -48,7 +50,7 @@ namespace Bindable.Linq.Tests.TestLanguage.Specifications
         /// <param name="inputs">The inputs.</param>
         /// <param name="steps">The steps to perform.</param>
         /// <returns></returns>
-        public FullyTypedSpecification<TInput, TResult> Scenario(string title, BindableCollection<TInput> inputs, params Func<object, Step>[] steps)
+        public FullyTypedSpecification<TInput, TResult> Scenario(string title, ObservableCollection<TInput> inputs, params Func<object, Step>[] steps)
         {
             var scenario = new Scenario<TInput>(
                 title,

@@ -1,4 +1,5 @@
-using Bindable.Linq.Collections;
+using System.Collections.ObjectModel;
+using Bindable.Linq.Aggregators;
 using Bindable.Linq.Tests.TestLanguage.EventMonitoring;
 using Bindable.Linq.Tests.TestLanguage.Helpers;
 using NUnit.Framework;
@@ -6,7 +7,7 @@ using NUnit.Framework;
 namespace Bindable.Linq.Tests.Behaviour.Aggregators
 {
     /// <summary>
-    /// Contains unit tests for the <see cref="T:CustomAggregator`2"/> class.
+    /// Contains unit tests for the <see cref="CustomAggregator{TSource,TAccumulate}"/> class.
     /// </summary>
     [TestFixture]
     public class CustomAggregatorTests
@@ -31,7 +32,7 @@ namespace Bindable.Linq.Tests.Behaviour.Aggregators
         public void CustomAggregatorCalculate()
         {
             var numbers = new object[] {1, 2, 4};
-            var aggregator = numbers.AsBindable<object, int>().Aggregate((i, result) => result + i);
+            var aggregator = numbers.AsBindable<object, int>().Aggregate(0, (i, result) => result + i);
             var eventCatcher = new PropertyEventMonitor(aggregator);
             Assert.AreEqual(1 + 2 + 4, aggregator.Current);
             Assert.AreEqual(1, eventCatcher.Count);
@@ -43,9 +44,9 @@ namespace Bindable.Linq.Tests.Behaviour.Aggregators
         [Test]
         public void CustomAggregatorCollectionChangeCausesRefresh()
         {
-            var numbers = new BindableCollection<object>();
+            var numbers = new ObservableCollection<object>();
             numbers.AddRange(1, 2, 4);
-            var aggregator = numbers.AsBindable<object, int>().Aggregate((i, result) => result + i);
+            var aggregator = numbers.AsBindable<object, int>().Aggregate(0, (i, result) => result + i);
             var eventCatcher = new PropertyEventMonitor(aggregator);
             Assert.AreEqual(1 + 2 + 4, aggregator.Current);
             Assert.AreEqual(1, eventCatcher.Count);

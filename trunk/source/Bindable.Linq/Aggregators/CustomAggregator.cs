@@ -1,4 +1,6 @@
 using System;
+using Bindable.Linq.Interfaces;
+using Bindable.Linq.Threading;
 
 namespace Bindable.Linq.Aggregators
 {    
@@ -9,31 +11,27 @@ namespace Bindable.Linq.Aggregators
     /// <typeparam name="TAccumulate">The type of the accumulate.</typeparam>
     internal sealed class CustomAggregator<TSource, TAccumulate> : Aggregator<TSource, TAccumulate>
     {
-        private readonly Func<TAccumulate, TSource, TAccumulate> _aggregator;
-        private readonly TAccumulate _seed;
+        private readonly Func<IBindableCollection<TSource>, TAccumulate> _aggregator;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CustomAggregator&lt;TSource, TAccumulate&gt;"/> class.
         /// </summary>
-        public CustomAggregator(IBindableCollection<TSource> source, TAccumulate seed, Func<TAccumulate, TSource, TAccumulate> aggregator)
-            : base(source)
+        /// <param name="source">The source.</param>
+        /// <param name="aggregator">The aggregator.</param>
+        /// <param name="dispatcher">The dispatcher.</param>
+        public CustomAggregator(IBindableCollection<TSource> source, Func<IBindableCollection<TSource>, TAccumulate> aggregator, IDispatcher dispatcher)
+            : base(source, dispatcher)
         {
             _aggregator = aggregator;
-            _seed = seed;
         }
 
         /// <summary>
         /// When overridden in a derived class, provides the aggregator the opportunity to calculate the
         /// value.
         /// </summary>
-        protected override void AggregateOverride()
+        protected override void RefreshOverride()
         {
-            var result = _seed;
-            foreach (var sourceItem in SourceCollection)
-            {
-                result = _aggregator(result, sourceItem);
-            }
-            Current = result;
+            Current = _aggregator(SourceCollection);
         }
     }
 }

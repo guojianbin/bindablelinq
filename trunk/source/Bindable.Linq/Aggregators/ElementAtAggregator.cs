@@ -1,3 +1,6 @@
+using Bindable.Linq.Interfaces;
+using Bindable.Linq.Threading;
+
 namespace Bindable.Linq.Aggregators
 {
     /// <summary>
@@ -14,8 +17,9 @@ namespace Bindable.Linq.Aggregators
         /// </summary>
         /// <param name="source">The source.</param>
         /// <param name="index">The index.</param>
-        public ElementAtAggregator(IBindableCollection<TElement> source, int index)
-            : base(source)
+        /// <param name="dispatcher">The dispatcher.</param>
+        public ElementAtAggregator(IBindableCollection<TElement> source, int index, IDispatcher dispatcher)
+            : base(source, dispatcher)
         {
             _index = index;
             _default = default(TElement);
@@ -25,7 +29,7 @@ namespace Bindable.Linq.Aggregators
         /// When overridden in a derived class, provides the aggregator the opportunity to calculate the
         /// value.
         /// </summary>
-        protected override void AggregateOverride()
+        protected override void RefreshOverride()
         {
             var currentIndex = 0;
             var found = false;

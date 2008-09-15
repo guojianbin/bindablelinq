@@ -3,7 +3,6 @@ using System.Collections.Specialized;
 using Bindable.Linq.Tests.TestLanguage;
 using Bindable.Linq.Tests.TestLanguage.Expectations;
 using Bindable.Linq.Tests.TestLanguage.Helpers;
-using Bindable.Linq.Transactions;
 using NUnit.Framework;
 
 namespace Bindable.Linq.Tests.Unit.Eventing

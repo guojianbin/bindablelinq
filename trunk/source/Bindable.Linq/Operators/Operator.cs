@@ -1,52 +1,44 @@
-using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using Bindable.Linq.Configuration;
 using Bindable.Linq.Dependencies;
+using Bindable.Linq.Helpers;
+using Bindable.Linq.Interfaces;
+using Bindable.Linq.Threading;
 
 namespace Bindable.Linq.Operators
 {
     /// <summary>
-    /// Serves as a base class for all operator functions. From Bindable LINQ's perspective,
-    /// an <see cref="T:Operator`2"/> is a LINQ operation which tranforms a single source items
-    /// into single result item. This makes it different to an <see cref="T:Iterator`2"/> which
-    /// transforms a collection into another collection, or an <see cref="T:Aggregator`2"/>
-    /// which transforms a collection into a single element.
+    /// Serves as a base class for all operator functions. From Bindable LINQ's perspective, an Operator is a LINQ 
+    /// operation which tranforms a single source items into single result item. This makes it different to an Iterator 
+    /// which transforms a collection into another collection, or an Aggregator which transforms a collection into a 
+    /// single element.
     /// </summary>
     /// <typeparam name="TSource">The type of the source.</typeparam>
     /// <typeparam name="TResult">The type of the result.</typeparam>
-    public abstract class Operator<TSource, TResult> : IBindable<TResult>, IConfigurable, IAcceptsDependencies
+    public abstract class Operator<TSource, TResult> : DispatcherBound, IBindable<TResult>, IAcceptsDependencies
     {
-        private static readonly PropertyChangedEventArgs CurrentPropertyChangedEventArgs = new PropertyChangedEventArgs("Current");
-        private readonly List<IDependency> _dependencies;
-        private readonly EventHandler<PropertyChangedEventArgs> _eventHandler;
-        private readonly object _operatorLock = new object();
+        private readonly List<IDependency> _dependencies = new List<IDependency>();
         private readonly IBindable<TSource> _source;
-        private readonly PropertyChangeObserver _sourcePropertyChangeObserver;
         private TResult _current;
-        private bool _isSourceLoaded;
+        private bool _hasEvaluated;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Operator&lt;TSource, TResult&gt;"/> class.
         /// </summary>
+        /// <param name="dispatcher">The dispatcher.</param>
         /// <param name="source">The source.</param>
-        public Operator(IBindable<TSource> source)
+        protected Operator(IBindable<TSource> source, IDispatcher dispatcher)
+            : base(dispatcher)
         {
-            _dependencies = new List<IDependency>();
-            _eventHandler = Source_PropertyChanged;
-            _sourcePropertyChangeObserver = new PropertyChangeObserver(_eventHandler);
             _source = source;
-            _sourcePropertyChangeObserver.Attach(_source);
+            _source.PropertyChanged += Weak.Event<PropertyChangedEventArgs>((sender, e) => Dispatcher.Dispatch(Refresh)).KeepAlive(InstanceLifetime).HandlerProxy.Handler;
         }
 
         /// <summary>
-        /// Gets the operator lock.
+        /// Occurs when a property value changes.
         /// </summary>
-        /// <value>The operator lock.</value>
-        protected object OperatorLock
-        {
-            get { return _operatorLock; }
-        }
+        public event PropertyChangedEventHandler PropertyChanged;
 
         /// <summary>
         /// Gets the source.
@@ -56,7 +48,64 @@ namespace Bindable.Linq.Operators
             get { return _source; }
         }
 
-        #region IAcceptsDependencies Members
+        /// <summary>
+        /// The resulting value. Rather than being returned directly, the value is housed
+        /// within the <see cref="IBindable{TElement}"/> container so that it can be updated when
+        /// the source it was created from changes.
+        /// </summary>
+        /// <value></value>
+        public TResult Current
+        {
+            get
+            {
+                AssertDispatcherThread();
+                Evaluate();
+                return _current;
+            }
+            protected set
+            {
+                AssertDispatcherThread();
+                _current = value;
+                OnPropertyChanged(PropertyChangedCache.Current);
+            }
+        }
+
+        /// <summary>
+        /// When overridden in a derived class, refreshes the operator.
+        /// </summary>
+        protected abstract void RefreshOverride();
+
+        /// <summary>
+        /// Gets or sets a value indicating whether this instance has evaluated.
+        /// </summary>
+        /// <value>
+        /// 	<c>true</c> if this instance has evaluated; otherwise, <c>false</c>.
+        /// </value>
+        public bool HasEvaluated
+        {
+            get
+            {
+                return _hasEvaluated;
+            }
+            set
+            {
+                AssertDispatcherThread();
+                _hasEvaluated = value;
+                OnPropertyChanged(PropertyChangedCache.HasEvaluated);
+            }
+        }
+
+        /// <summary>
+        /// Refreshes the object.
+        /// </summary>
+        public void Refresh()
+        {
+            AssertDispatcherThread();
+
+            HasEvaluated = false;
+            Evaluate();
+        }
+
         /// <summary>
         /// Sets a new dependency on a Bindable LINQ operation.
         /// </summary>
@@ -65,118 +114,47 @@ namespace Bindable.Linq.Operators
         {
             if (definition.AppliesToSingleElement())
             {
-                var dependency = definition.ConstructForElement(_source, Configuration.CreatePathNavigator());
+                var dependency = definition.ConstructForElement(_source, BindingConfigurations.Default.CreatePathNavigator());
                 dependency.SetReevaluateCallback(o => Refresh());
                 _dependencies.Add(dependency);
             }
         }
-        #endregion
 
-        #region IBindable<TResult> Members
         /// <summary>
-        /// The resulting value. Rather than being returned directly, the value is housed
-        /// within the <see cref="T:IBindable`1"/> container so that it can be updated when
-        /// the source it was created from changes.
+        /// Evaluates the operator.
         /// </summary>
-        /// <value></value>
-        public TResult Current
+        public void Evaluate()
         {
-            get
+            AssertDispatcherThread();
+            Seal();
+
+            if (!HasEvaluated)
             {
-                EnsureLoaded();
-                return _current;
-            }
-            set
-            {
-                _current = value;
-                OnPropertyChanged(CurrentPropertyChangedEventArgs);
+                HasEvaluated = true;
+                RefreshOverride();
             }
         }
 
         /// <summary>
-        /// Occurs when a property value changes.
-        /// </summary>
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        /// <summary>
-        /// Refreshes the object.
-        /// </summary>
-        public void Refresh()
-        {
-            RefreshOverride();
-        }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            _sourcePropertyChangeObserver.Dispose();
-            foreach (var dependency in _dependencies)
-            {
-                dependency.Dispose();
-            }
-        }
-        #endregion
-
-        #region IConfigurable Members
-        /// <summary>
-        /// Gets the configuration.
-        /// </summary>
-        public IBindingConfiguration Configuration
-        {
-            get
-            {
-                var result = BindingConfigurations.Default;
-                if (Source is IConfigurable)
-                {
-                    result = ((IConfigurable) Source).Configuration;
-                }
-                return result;
-            }
-        }
-        #endregion
-
-        private void EnsureLoaded()
-        {
-            var refreshNeeded = false;
-
-            lock (OperatorLock)
-            {
-                if (_isSourceLoaded == false)
-                {
-                    _isSourceLoaded = true;
-                    refreshNeeded = true;
-                }
-            }
-
-            if (refreshNeeded)
-            {
-                Refresh();
-            }
-        }
-
-        private void Source_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            Refresh();
-        }
-
-        /// <summary>
-        /// When overridden in a derived class, refreshes the object.
-        /// </summary>
-        protected abstract void RefreshOverride();
-
-        /// <summary>
-        /// Raises the <see cref="E:PropertyChanged"/> event.
+        /// Raises the <see cref="PropertyChanged"/> event.
         /// </summary>
         /// <param name="e">The <see cref="System.ComponentModel.PropertyChangedEventArgs"/> instance containing the event data.</param>
         protected virtual void OnPropertyChanged(PropertyChangedEventArgs e)
         {
+            AssertDispatcherThread();
             var handler = PropertyChanged;
             if (handler != null)
-            {
                 handler(this, e);
-            }
+        }
+
+        /// <summary>
+        /// Called just before the object is disposed and all event subscriptions are released.
+        /// </summary>
+        protected override void BeforeDisposeOverride()
+        {
+            base.BeforeDisposeOverride();
+            foreach (var dependency in _dependencies) 
+                dependency.Dispose();
         }
     }
 }

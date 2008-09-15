@@ -42,23 +42,12 @@ namespace Bindable.Linq.Tests.TestLanguage
         }
 
         /// <summary>
-        /// The CurrentCount property will be of a specified value.
-        /// </summary>
-        /// <param name="count">The count.</param>
-        /// <returns>The original step.</returns>
-        public TStep HaveCurrentCount(int count)
-        {
-            _owningStep.AddExpectation(new CurrentCountExpectation(count));
-            return _owningStep;
-        }
-
-        /// <summary>
         /// The query will not have evaluated yet.
         /// </summary>
         /// <returns>The original step.</returns>
         public TStep NotHaveEvaluated()
         {
-            _owningStep.AddExpectation(new CurrentCountExpectation(0));
+            _owningStep.AddExpectation(new PropertyValueExpectation(query => query.HasEvaluated == false));
             _owningStep.AddExpectation(new RaiseEventExpectation() { Action = null });
             return _owningStep;
         }

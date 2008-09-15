@@ -27,16 +27,45 @@ namespace Bindable.Linq.Threading
             _dispatcher = dispatcher;
         }
 
-        #region IDispatcher Members
         /// <summary>
         /// Dispatches the specified action to the thread.
         /// </summary>
         /// <param name="actionToInvoke">The action to invoke.</param>
-        public void Invoke(Action actionToInvoke)
+        public void Dispatch(Action actionToInvoke)
         {
-            _dispatcher.Invoke(DispatcherPriority.DataBind, actionToInvoke);
+            if (!DispatchRequired())
+            {
+                actionToInvoke();
+            }
+            else
+            {
+                _dispatcher.Invoke(DispatcherPriority.Normal, actionToInvoke);   
+            }
         }
-        #endregion
+
+        /// <summary>
+        /// Dispatches the specified action to the thread.
+        /// </summary>
+        /// <typeparam name="TResult"></typeparam>
+        /// <param name="actionToInvoke">The action to invoke.</param>
+        /// <returns></returns>
+        public TResult Dispatch<TResult>(Func<TResult> actionToInvoke)
+        {
+            if (_dispatcher.CheckAccess())
+            {
+                return actionToInvoke();
+            }
+            return (TResult)_dispatcher.Invoke(DispatcherPriority.Normal, actionToInvoke);
+        }
+
+        /// <summary>
+        /// Checks whether the thread invoking the method.
+        /// </summary>
+        /// <returns></returns>
+        public bool DispatchRequired()
+        {
+            return !_dispatcher.CheckAccess();
+        }
     }
 #endif
 }

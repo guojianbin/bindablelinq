@@ -8,6 +8,7 @@ namespace Bindable.Linq.Helpers
     internal static class PropertyChangedCache
     {
         public static readonly PropertyChangedEventArgs Count = new PropertyChangedEventArgs("Count");
-        public static readonly PropertyChangedEventArgs IsLoading = new PropertyChangedEventArgs("IsLoading");
+        public static readonly PropertyChangedEventArgs Current = new PropertyChangedEventArgs("Current");
+        public static readonly PropertyChangedEventArgs HasEvaluated = new PropertyChangedEventArgs("HasEvaluated");
     }
 }

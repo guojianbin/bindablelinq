@@ -5,6 +5,7 @@
     xmlns:binders="clr-namespace:Bindable.Linq.Samples.PizzaHaven.Binders"
     xmlns:domain="clr-namespace:Bindable.Linq.Samples.PizzaHaven.Domain"
     Title="Pizza Haven" Height="477" Width="770"
+    FontSize="12pt"
     >
     <Window.Resources>
         <DataTemplate DataType="{x:Type binders:SelectableTopping}">
@@ -30,23 +31,29 @@
             </Border>
         </DataTemplate>
     </Window.Resources>
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="3*" />
-            <ColumnDefinition Width="1*" />
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" MinHeight="26" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
-        <Label>Select your toppings:</Label>
-        <Label Grid.Column="1">Summary</Label>
-
-        <ListBox ItemsSource="{Binding Path=AvailableToppings}" Grid.Row="1" />
+    <DockPanel>
+        <Border DockPanel.Dock="Bottom" Background="Yellow">
+            <TextBlock Text="{Binding Path=HealthWarningMessage.Current}" />
+        </Border>
         
-        <StackPanel Grid.Column="1" Grid.Row="1">
-            <ItemsControl ItemsSource="{Binding Path=SelectedToppings}" />
-            <Label Content="{Binding Path=TotalPrice.Current}"></Label>
-        </StackPanel>
-    </Grid>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="3*" />
+                <ColumnDefinition Width="1*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" MinHeight="26" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Label>Select your toppings:</Label>
+            <Label Grid.Column="1">Summary</Label>
+
+            <ListBox ItemsSource="{Binding Path=AvailableToppings}" Grid.Row="1" />
+            
+            <StackPanel Grid.Column="1" Grid.Row="1">
+                <ItemsControl ItemsSource="{Binding Path=SelectedToppings}" />
+                <Label Content="{Binding Path=TotalPrice.Current}"></Label>
+            </StackPanel>
+        </Grid>
+    </DockPanel>
 </Window>

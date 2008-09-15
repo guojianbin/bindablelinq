@@ -8,7 +8,7 @@ namespace Bindable.Linq.Tests.Unit.Helpers
     /// This class contains tests for the Bindable LINQ Weak Event implementation.
     /// </summary>
     [TestFixture]
-    public sealed class WeakEventReferenceTests
+    public sealed class WeakEventProxyTests
     {
         #region Test Helpers
         private sealed class EventPublisher
@@ -53,29 +53,29 @@ namespace Bindable.Linq.Tests.Unit.Helpers
         {
             private readonly EventHandler<EventArgs> _eventHandler;
             private readonly EventPublisher _publisher;
-            private readonly WeakEventReference<EventArgs> _weakEventReference;
+            private readonly WeakEventProxy<EventArgs> _WeakEventProxy;
 
             public WeakEventSubscriber(EventPublisher publisher)
             {
                 _publisher = publisher;
                 // Create the event handlers. Note that these must be kept as member-level references,
                 // so that they are coupled to the class lifetime rather than the current scope - or else
-                // no one would reference the event handler (since the WeakEventReference just keeps 
+                // no one would reference the event handler (since the WeakEventProxy just keeps 
                 // a weak reference to it)!
                 _eventHandler = EventPublisher_EventRaised;
-                _weakEventReference = new WeakEventReference<EventArgs>(_eventHandler);
-                _publisher.EventRaised += _weakEventReference.WeakEventHandler;
+                _WeakEventProxy = new WeakEventProxy<EventArgs>(_eventHandler);
+                _publisher.EventRaised += _WeakEventProxy.Handler;
             }
 
             private void EventPublisher_EventRaised(object sender, EventArgs e) { }
 
             ~WeakEventSubscriber()
             {
-                // Unhook the event. The publisher will then no longer reference the WeakEventReference
+                // Unhook the event. The publisher will then no longer reference the WeakEventProxy
                 // either, and so that object will also be cleared - the end result is that we have cleaned 
                 // after ourselves completely. NB: In a standard implementation you should also 
                 // put this call in a Dispose() method.
-                _publisher.EventRaised -= _weakEventReference.WeakEventHandler;
+                _publisher.EventRaised -= _WeakEventProxy.Handler;
             }
         }
 
@@ -99,7 +99,7 @@ namespace Bindable.Linq.Tests.Unit.Helpers
         /// short-lived objects subscribing to events on long-lived objects.
         /// </summary>
         [Test]
-        public void WeakEventReferenceStandardEventIntroducesLeaks()
+        public void WeakEventProxyStandardEventIntroducesLeaks()
         {
             // Create an event publisher (a long-lived object) and an event subscriber
             // using standard .NET events. We only have a weak reference to the subscriber, 
@@ -122,7 +122,7 @@ namespace Bindable.Linq.Tests.Unit.Helpers
         /// shown in the above test.
         /// </summary>
         [Test]
-        public void WeakEventReferenceWeakEventsFixLeaks()
+        public void WeakEventProxyWeakEventsFixLeaks()
         {
             // Create an event publisher (a long-lived object) and an event subscriber
             // using our custom weak event handler code. We will only have a weak reference 

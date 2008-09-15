@@ -160,9 +160,6 @@ namespace Bindable.Linq.Helpers
         {
             collection.ShouldNotBeNull("collection");
 
-            var query = collection as IBindableQuery<TElement>;
-            if (null != query) return query[index];
-
             var list = collection as IList<TElement>;
             if (null != list) return list[index];
 

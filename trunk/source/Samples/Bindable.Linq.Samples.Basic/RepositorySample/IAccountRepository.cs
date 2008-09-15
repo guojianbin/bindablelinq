@@ -1,3 +1,5 @@
+using Bindable.Linq.Interfaces;
+
 namespace Bindable.Linq.SampleApplication.RepositorySample
 {
     public interface IAccountRepository

@@ -156,7 +156,9 @@ namespace Bindable.Linq.Dependencies.ExpressionAnalysis
         /// Traverses the constant expression.
         /// </summary>
         /// <param name="constantExpression">The constant expression.</param>
-        private void TraverseConstantExpression(ConstantExpression constantExpression) {}
+        private void TraverseConstantExpression(ConstantExpression constantExpression)
+        {
+        }
 
         /// <summary>
         /// Traverses the invocation expression.
@@ -241,7 +243,10 @@ namespace Bindable.Linq.Dependencies.ExpressionAnalysis
         /// Traverses the parameter expression.
         /// </summary>
         /// <param name="parameterExpression">The parameter expression.</param>
-        private void TraverseParameterExpression(ParameterExpression parameterExpression) {}
+        private void TraverseParameterExpression(ParameterExpression parameterExpression)
+        {
+            
+        }
 
         /// <summary>
         /// Traverses the type binary expression.

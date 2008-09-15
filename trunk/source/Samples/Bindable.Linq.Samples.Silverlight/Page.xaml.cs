@@ -29,7 +29,7 @@ namespace Bindable.Linq.Samples.Silverlight
             _contacts.Add(new Contact() { Name = "Richard Banks", Company = "Readify", PhoneNumber = "0421 938 793" });
             _contacts.Add(new Contact() { Name = "Andrew Matthews", Company = "Readify", PhoneNumber = "0421 938 793" });
 
-            _contactsList.ItemsSource = _contacts.AsBindable()
+            _contactsList.ItemsSource = _contacts.AsBindable(Dispatcher)
                                         .Where(c => c.Name.ToLower().StartsWith(this.FilterTextBox.Text.ToLower()))
                                         .OrderBy(c => c.Name.ToLower());
 

@@ -1,5 +1,7 @@
 ﻿using System;
+using Bindable.Linq.Tests.TestLanguage.Helpers;
 using Bindable.Linq.Tests.TestLanguage.Steps;
+using Bindable.Linq.Interfaces;
 
 namespace Bindable.Linq.Tests.TestLanguage
 {
@@ -116,9 +118,9 @@ namespace Bindable.Linq.Tests.TestLanguage
         /// <typeparam name="TReturn">The type of the return.</typeparam>
         /// <param name="callback">The callback.</param>
         /// <returns></returns>
-        public static SimpleStep Reading<TReturn>(Func<IBindableQuery, TReturn> callback)
+        public static SimpleStep Reading<TReturn>(Func<IBindableCollection, TReturn> callback)
         {
-            var result = new SimpleStep(source => callback(source.BindableLinqQuery as IBindableQuery));
+            var result = new SimpleStep(source => callback(source.BindableLinqQuery as IBindableCollection));
             return result;
         }
     }

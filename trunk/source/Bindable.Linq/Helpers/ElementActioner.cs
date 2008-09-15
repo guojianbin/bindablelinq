@@ -2,6 +2,9 @@ using System;
 using System.Collections.Specialized;
 using System.Linq;
 using Bindable.Linq.Collections;
+using Bindable.Linq.Interfaces;
+using Bindable.Linq.Interfaces.Internal;
+using Bindable.Linq.Threading;
 
 namespace Bindable.Linq.Helpers
 {
@@ -15,41 +18,44 @@ namespace Bindable.Linq.Helpers
     /// unhook the event handler.
     /// </remarks>
     /// <typeparam name="TElement">The type of the element.</typeparam>
-    internal sealed class ElementActioner<TElement> : IDisposable
+    internal sealed class ElementActioner<TElement> : DispatcherBound, IDisposable
     {
+        private readonly WeakEvent<NotifyCollectionChangedEventArgs> _collection_CollectionChangedHandler;
         private readonly Action<TElement> _addAction;
         private readonly IBindableCollection<TElement> _collection;
         private readonly BindableCollection<TElement> _copy;
-        private readonly EventHandler<NotifyCollectionChangedEventArgs> _eventHandler;
         private readonly object _object = new object();
         private readonly Action<TElement> _removeAction;
-        private readonly WeakEventReference<NotifyCollectionChangedEventArgs> _weakEventHandler;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ElementActioner&lt;TElement&gt;"/> class.
         /// </summary>
+        /// <param name="dispatcher">The dispatcher.</param>
         /// <param name="collection">The collection.</param>
         /// <param name="addAction">The add action.</param>
         /// <param name="removeAction">The remove action.</param>
-        public ElementActioner(IBindableCollection<TElement> collection, Action<TElement> addAction, Action<TElement> removeAction)
+        public ElementActioner(IBindableCollection<TElement> collection, Action<TElement> addAction, Action<TElement> removeAction, IDispatcher dispatcher)
+            : base(dispatcher)
         {
             _addAction = addAction;
             _removeAction = removeAction;
             _collection = collection;
 
-            _copy = new BindableCollection<TElement>();
-            _eventHandler = Collection_CollectionChanged;
-            _weakEventHandler = new WeakEventReference<NotifyCollectionChangedEventArgs>(_eventHandler);
-            _collection.CollectionChanged += _weakEventHandler.WeakEventHandler;
+            _copy = new BindableCollection<TElement>(dispatcher);
+            _collection_CollectionChangedHandler = Weak.Event<NotifyCollectionChangedEventArgs>(Collection_CollectionChanged);
+            _collection.CollectionChanged += _collection_CollectionChangedHandler.HandlerProxy.Handler;
 
-            var interceptor = collection as IBindableCollectionInterceptor<TElement>;
-            if (interceptor != null)
+            var internalBindableCollection = collection as IBindableCollection<TElement>;
+            if (internalBindableCollection != null && !internalBindableCollection.HasEvaluated)
             {
-                interceptor.AddPreYieldStep(element =>
+                internalBindableCollection.Evaluating += (sender, e) =>
                 {
-                    HandleElement(NotifyCollectionChangedAction.Add, element);
-                    _copy.Add(element);
-                });
+                    foreach (var element in e.ItemsYieldedFromEvaluation)
+                    {
+                        HandleElement(NotifyCollectionChangedAction.Add, element);
+                        _copy.Add(element);
+                    }
+                };
             }
             else
             {
@@ -70,7 +76,7 @@ namespace Bindable.Linq.Helpers
             if (_collection != null)
             {
                 _copy.ForEach(e => HandleElement(NotifyCollectionChangedAction.Remove, e));
-                _collection.CollectionChanged -= _weakEventHandler.WeakEventHandler;
+                _collection.CollectionChanged -= _collection_CollectionChangedHandler.HandlerProxy.Handler;
             }
         }
         #endregion
@@ -112,12 +118,13 @@ namespace Bindable.Linq.Helpers
                     foreach (TElement element in e.OldItems)
                     {
                         HandleElement(NotifyCollectionChangedAction.Remove, element);
+                        _copy.Remove(element);
                     }
                     foreach (TElement element in e.NewItems)
                     {
                         HandleElement(NotifyCollectionChangedAction.Add, element);
+                        _copy.Add(element);
                     }
-                    _copy.ReplaceRange(e.OldItems.Cast<TElement>(), e.NewItems.Cast<TElement>());
                     break;
                 case NotifyCollectionChangedAction.Reset:
                     HandleReset();

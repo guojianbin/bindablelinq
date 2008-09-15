@@ -4,6 +4,7 @@ namespace Bindable.Linq.SampleApplication.Samples
     using System.Linq;
     using System.Windows;
     using System.Windows.Input;
+    using Bindable.Linq.Interfaces;
 
     public partial class SyncLinqGroupedWindow : Window
     {
@@ -22,7 +23,14 @@ namespace Bindable.Linq.SampleApplication.Samples
 
             DataContext = from c in _contacts
                           group c by c.Company
-                          into g orderby g.Key select new {Company = g.Key, Contacts = g.OrderBy(c => c.Name), NameLengths = g.Sum(c => c.Name.Length)};
+                          into g 
+                          orderby g.Key 
+                          select new
+                                     {
+                                         Company = g.Key, 
+                                         Contacts = g.OrderBy(c => c.Name), 
+                                         NameLengths = g.Sum(c => c.Name.Length)
+                                     };
 
             NewContact = new Contact();
         }
@@ -41,7 +49,7 @@ namespace Bindable.Linq.SampleApplication.Samples
 
         private void RefreshCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            ((IBindableQuery) DataContext).Refresh();
+            ((IBindableCollection) DataContext).Refresh();
         }
 
         private void DeleteCommand_Executed(object sender, ExecutedRoutedEventArgs e)

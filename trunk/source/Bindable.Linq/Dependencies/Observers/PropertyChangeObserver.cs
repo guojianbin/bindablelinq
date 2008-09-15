@@ -10,7 +10,7 @@ namespace Bindable.Linq.Dependencies
     internal sealed class PropertyChangeObserver : EventDependency<INotifyPropertyChanged, PropertyChangedEventArgs>
     {
         private readonly EventHandler<PropertyChangedEventArgs> _callback;
-        private readonly WeakEventReference<PropertyChangedEventArgs> _weakHandler;
+        private readonly WeakEventProxy<PropertyChangedEventArgs> _weakHandler;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PropertyChangeObserver"/> class.
@@ -19,7 +19,7 @@ namespace Bindable.Linq.Dependencies
         public PropertyChangeObserver(EventHandler<PropertyChangedEventArgs> callback)
         {
             _callback = callback;
-            _weakHandler = new WeakEventReference<PropertyChangedEventArgs>(callback);
+            _weakHandler = new WeakEventProxy<PropertyChangedEventArgs>(callback);
         }
 
         /// <summary>
@@ -29,7 +29,7 @@ namespace Bindable.Linq.Dependencies
         /// <param name="publisher">The event publisher.</param>
         protected override void AttachOverride(INotifyPropertyChanged publisher)
         {
-            publisher.PropertyChanged += _weakHandler.WeakEventHandler;
+            publisher.PropertyChanged += _weakHandler.Handler;
         }
 
         /// <summary>
@@ -39,7 +39,7 @@ namespace Bindable.Linq.Dependencies
         /// <param name="publisher">The event publisher.</param>
         protected override void DetachOverride(INotifyPropertyChanged publisher)
         {
-            publisher.PropertyChanged -= _weakHandler.WeakEventHandler;
+            publisher.PropertyChanged -= _weakHandler.Handler;
         }
 
         /// <summary>

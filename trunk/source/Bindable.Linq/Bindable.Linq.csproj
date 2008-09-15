@@ -64,23 +64,21 @@
     <Compile Include="..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
-    <Compile Include="Adapters\Incoming\InternalCollectionAdapterBase.cs" />
+    <Compile Include="Adapters\Incoming\BindableCollectionAdapterBase.cs" />
+    <Compile Include="Adapters\Incoming\BindingListToBindableCollectionAdapter.cs" />
+    <Compile Include="Adapters\Incoming\ObservableCollectionToBindableCollectionAdapter.cs" />
     <Compile Include="Adapters\Outgoing\BindingListAdapter.cs" />
-    <Compile Include="Aggregators\AverageAggregator.cs" />
-    <Compile Include="Aggregators\CountAggregator.cs" />
     <Compile Include="Aggregators\CustomAggregator.cs" />
     <Compile Include="Aggregators\ElementAtAggregator.cs" />
-    <Compile Include="Aggregators\MaxAggregator.cs" />
-    <Compile Include="Aggregators\MinAggregator.cs" />
-    <Compile Include="Collections\BindableCollectionInterceptor.cs" />
-    <Compile Include="Collections\IBindableCollectionInterceptor.cs" />
-    <Compile Include="Collections\SourceCollectionView.cs" />
-    <Compile Include="Collections\SourceElementDescriptor.cs" />
+    <Compile Include="Aggregators\Numerics\DecimalNullNumeric.cs" />
+    <Compile Include="Aggregators\Numerics\DoubleNullNumeric.cs" />
+    <Compile Include="Aggregators\Numerics\FloatNullNumeric.cs" />
+    <Compile Include="Aggregators\Numerics\Int32NullNumeric.cs" />
+    <Compile Include="Aggregators\Numerics\Int64NullNumeric.cs" />
     <Compile Include="Configuration\BindingConfigurations.cs" />
     <Compile Include="Configuration\DefaultBindingConfiguration.cs" />
     <Compile Include="Configuration\ExplicitBindingConfiguration.cs" />
     <Compile Include="Configuration\IBindingConfiguration.cs" />
-    <Compile Include="Configuration\IConfigurable.cs" />
     <Compile Include="Dependencies\Definitions\ItemDependencyDefinition.cs" />
     <Compile Include="Dependencies\Definitions\ExternalDependencyDefinition.cs" />
     <Compile Include="Dependencies\ExpressionAnalysis\IExpressionAnalyzer.cs" />
@@ -112,25 +110,20 @@
     <Compile Include="Dependencies\PathNavigation\Tokens\MemberToken.cs" />
     <Compile Include="Dependencies\PathNavigation\PathNavigator.cs" />
     <Compile Include="Dependencies\PathNavigation\Tokens\WpfMemberToken.cs" />
-    <Compile Include="Adapters\Incoming\BindableCollectionAdapter.cs" />
+    <Compile Include="Helpers\CollectionChangedCache.cs" />
     <Compile Include="Helpers\ElementActioner.cs" />
     <Compile Include="Helpers\ElementComparerFactory.cs" />
     <Compile Include="Dependencies\IPropertyReader.cs" />
     <Compile Include="Dependencies\PropertyReaderFactory.cs" />
+    <Compile Include="Helpers\DispatcherBound.cs" />
+    <Compile Include="Helpers\LifetimeCouplings.cs" />
+    <Compile Include="Helpers\LifetimeExtensions.cs" />
     <Compile Include="Helpers\PropertyChangedCache.cs" />
+    <Compile Include="Helpers\WeakEvent.cs" />
     <Compile Include="Helpers\WeakTimer.cs" />
-    <Compile Include="Interfaces\Internal\Events\AddedEventArgs.cs" />
-    <Compile Include="Interfaces\Internal\Events\EvaluatingEventArgs.cs" />
+    <Compile Include="Interfaces\Events\EvaluatingEventArgs.cs" />
     <Compile Include="Interfaces\Internal\IEditableBindableGrouping.cs" />
     <Compile Include="Helpers\InternalExtensions.cs" />
-    <Compile Include="Interfaces\Internal\IInternalCollection.cs" />
-    <Compile Include="Interfaces\Internal\Events\MovedEventArgs.cs" />
-    <Compile Include="Interfaces\Internal\Events\RemovedEventArgs.cs" />
-    <Compile Include="Interfaces\Internal\Events\ReplacedEventArgs.cs" />
-    <Compile Include="Interfaces\Internal\ResetEventArgs.cs" />
-    <Compile Include="Iterators\LoadState.cs" />
-    <Compile Include="Collections\SnapshotManager.cs" />
-    <Compile Include="Iterators\StateManager.cs" />
     <Compile Include="Aggregators\Numerics\FloatNumeric.cs" />
     <Compile Include="Aggregators\Numerics\DoubleNumeric.cs" />
     <Compile Include="Aggregators\Numerics\Int64Numeric.cs" />
@@ -138,7 +131,6 @@
     <Compile Include="Aggregators\Numerics\INumeric.cs" />
     <Compile Include="Aggregators\Numerics\Int32Numeric.cs" />
     <Compile Include="Aggregators\Aggregator.cs" />
-    <Compile Include="Aggregators\SumAggregator.cs" />
     <Compile Include="Enumerable.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -151,31 +143,37 @@
     <Compile Include="Iterators\ProjectionRegister.cs" />
     <Compile Include="Dependencies\Observers\PropertyChangeObserver.cs" />
     <Compile Include="Helpers\StateScope.cs" />
-    <Compile Include="Helpers\WeakEventReference.cs" />
+    <Compile Include="Helpers\WeakEventProxy.cs" />
     <Compile Include="Interfaces\IBindableCollection.cs" />
     <Compile Include="Interfaces\IBindable.cs" />
-    <Compile Include="Interfaces\IOrderedBindableQuery.cs" />
+    <Compile Include="Interfaces\IOrderedBindableCollection.cs" />
     <Compile Include="Interfaces\IRefreshable.cs" />
-    <Compile Include="Interfaces\IBindableQuery.cs" />
     <Compile Include="Interfaces\IBindableGrouping.cs" />
-    <Compile Include="Iterators\AsynchronousIterator.cs" />
     <Compile Include="Iterators\Iterator.cs" />
     <Compile Include="Iterators\GroupByIterator.cs" />
     <Compile Include="Iterators\OrderByIterator.cs" />
-    <Compile Include="Iterators\PollIterator.cs" />
     <Compile Include="Iterators\SelectIterator.cs" />
     <Compile Include="Iterators\UnionIterator.cs" />
     <Compile Include="Iterators\WhereIterator.cs" />
-    <Compile Include="Operators\IfOperator.cs" />
-    <Compile Include="Operators\Operator.cs" />
-    <Compile Include="Operators\ProjectOperator.cs" />
+    <Compile Include="Operators\Case.cs" />
+    <Compile Include="Operators\IfOperator.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Operators\ISwitchCase.cs" />
+    <Compile Include="Operators\Operator.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Operators\ProjectOperator.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Operators\SwitchCase.cs" />
+    <Compile Include="Operators\SwitchOperator.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Threading\DispatcherFactory.cs" />
     <Compile Include="Threading\SilverlightDispatcher.cs" />
     <Compile Include="Threading\IDispatcher.cs" />
     <Compile Include="Threading\WpfDispatcher.cs" />
-    <Compile Include="Transactions\Transaction.cs" />
-    <Compile Include="Transactions\ITransaction.cs" />
-    <Compile Include="Transactions\TransactionLog.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Diagrams\Everything.cd" />

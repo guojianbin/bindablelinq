@@ -1,15 +1,15 @@
-﻿namespace Bindable.Linq.Tests.TestLanguage.Steps
-{
-    using System;
-    using Collections;
-    using System.Diagnostics;
+﻿using System;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
 
+namespace Bindable.Linq.Tests.TestLanguage.Steps
+{    
     internal sealed class InputAwareStep<TInput> : Step
     {
-        private readonly Action<BindableCollection<TInput>> _action;
+        private readonly Action<ObservableCollection<TInput>> _action;
         private readonly Expectations<InputAwareStep<TInput>> _itWill;
 
-        public InputAwareStep(Action<BindableCollection<TInput>> action)
+        public InputAwareStep(Action<ObservableCollection<TInput>> action)
         {
             _action = action;
             _itWill = new Expectations<InputAwareStep<TInput>>(this);

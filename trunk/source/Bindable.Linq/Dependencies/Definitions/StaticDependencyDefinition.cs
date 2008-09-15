@@ -1,7 +1,7 @@
 using System;
 using System.Reflection;
-using Bindable.Linq.Collections;
 using Bindable.Linq.Dependencies.PathNavigation;
+using Bindable.Linq.Interfaces;
 
 namespace Bindable.Linq.Dependencies.Definitions
 {
@@ -59,7 +59,7 @@ namespace Bindable.Linq.Dependencies.Definitions
         /// <param name="sourceElements">The source elements.</param>
         /// <param name="pathNavigator">The path navigator.</param>
         /// <returns></returns>
-        public IDependency ConstructForCollection<TElement>(IBindableCollectionInterceptor<TElement> sourceElements, IPathNavigator pathNavigator)
+        public IDependency ConstructForCollection<TElement>(IBindableCollection<TElement> sourceElements, IPathNavigator pathNavigator)
         {
             throw new NotImplementedException();
         }

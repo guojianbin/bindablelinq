@@ -1,5 +1,6 @@
 using System.Collections;
-using Bindable.Linq.Collections;
+using System.Collections.ObjectModel;
+using Bindable.Linq.Interfaces;
 using Bindable.Linq.Tests.TestLanguage.EventMonitoring;
 
 namespace Bindable.Linq.Tests.TestLanguage
@@ -22,6 +23,6 @@ namespace Bindable.Linq.Tests.TestLanguage
     /// <typeparam name="TInput">The type of the input.</typeparam>
     internal interface IScenario<TInput> : IScenario
     {
-        BindableCollection<TInput> Inputs { get; }
+        ObservableCollection<TInput> Inputs { get; }
     }
 }

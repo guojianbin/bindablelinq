@@ -1,4 +1,5 @@
-﻿using Bindable.Linq.Collections;
+﻿using System.Collections.ObjectModel;
+using Bindable.Linq.Tests.TestLanguage.Helpers;
 
 namespace Bindable.Linq.Tests.TestLanguage
 {
@@ -13,9 +14,9 @@ namespace Bindable.Linq.Tests.TestLanguage
         /// <typeparam name="TInput">The type of the input.</typeparam>
         /// <param name="items">The items.</param>
         /// <returns>A collection of inputs.</returns>
-        public static BindableCollection<TInput> Inputs<TInput>(params TInput[] items)
+        public static ObservableCollection<TInput> Inputs<TInput>(params TInput[] items)
         {
-            var results = new BindableCollection<TInput>();
+            var results = new ObservableCollection<TInput>();
             results.AddRange(items);
             return results;
         }

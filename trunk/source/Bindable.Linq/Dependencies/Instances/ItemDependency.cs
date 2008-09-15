@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using Bindable.Linq.Collections;
 using Bindable.Linq.Dependencies.PathNavigation;
 using Bindable.Linq.Dependencies.PathNavigation.Tokens;
 using Bindable.Linq.Helpers;
+using Bindable.Linq.Interfaces;
 
 namespace Bindable.Linq.Dependencies.Instances
 {
@@ -20,7 +20,7 @@ namespace Bindable.Linq.Dependencies.Instances
         private readonly string _propertyPath;
         private readonly Dictionary<TElement, IToken> _sourceElementObservers;
         private Action<object, string> _reevaluateElementCallback;
-        private IBindableCollectionInterceptor<TElement> _sourceElements;
+        private IBindableCollection<TElement> _sourceElements;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ItemDependency&lt;TElement&gt;"/> class.
@@ -28,13 +28,17 @@ namespace Bindable.Linq.Dependencies.Instances
         /// <param name="propertyPath">The property path.</param>
         /// <param name="sourceElements">The source elements.</param>
         /// <param name="pathNavigator">The path navigator.</param>
-        public ItemDependency(string propertyPath, IBindableCollectionInterceptor<TElement> sourceElements, IPathNavigator pathNavigator)
+        public ItemDependency(string propertyPath, IBindableCollection<TElement> sourceElements, IPathNavigator pathNavigator)
         {
             _pathNavigator = pathNavigator;
             _sourceElementObservers = new Dictionary<TElement, IToken>();
             _propertyPath = propertyPath;
             _sourceElements = sourceElements;
-            _actioner = new ElementActioner<TElement>(sourceElements, addedItem => AddItem(addedItem), removedItem => RemoveItem(removedItem));
+            _actioner = new ElementActioner<TElement>(
+                sourceElements, 
+                AddItem, 
+                RemoveItem,
+                sourceElements.Dispatcher);
         }
 
         /// <summary>

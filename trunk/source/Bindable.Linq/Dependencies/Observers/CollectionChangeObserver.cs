@@ -9,7 +9,7 @@ namespace Bindable.Linq.Dependencies
     /// </summary>
     internal sealed class CollectionChangeObserver : EventDependency<INotifyCollectionChanged, NotifyCollectionChangedEventArgs>
     {
-        private readonly WeakEventReference<NotifyCollectionChangedEventArgs> _weakEvent;
+        private readonly WeakEventProxy<NotifyCollectionChangedEventArgs> _weakEvent;
         private NotifyCollectionChangedEventHandler _callback;
 
         /// <summary>
@@ -18,7 +18,7 @@ namespace Bindable.Linq.Dependencies
         /// <param name="callback">The callback.</param>
         public CollectionChangeObserver(EventHandler<NotifyCollectionChangedEventArgs> callback)
         {
-            _weakEvent = new WeakEventReference<NotifyCollectionChangedEventArgs>(callback);
+            _weakEvent = new WeakEventProxy<NotifyCollectionChangedEventArgs>(callback);
             _callback = new NotifyCollectionChangedEventHandler(callback);
         }
 
@@ -29,7 +29,7 @@ namespace Bindable.Linq.Dependencies
         /// <param name="publisher">The event publisher.</param>
         protected override void AttachOverride(INotifyCollectionChanged publisher)
         {
-            publisher.CollectionChanged += _weakEvent.WeakEventHandler;
+            publisher.CollectionChanged += _weakEvent.Handler;
         }
 
         /// <summary>
@@ -39,7 +39,7 @@ namespace Bindable.Linq.Dependencies
         /// <param name="publisher">The event publisher.</param>
         protected override void DetachOverride(INotifyCollectionChanged publisher)
         {
-            publisher.CollectionChanged -= _weakEvent.WeakEventHandler;
+            publisher.CollectionChanged -= _weakEvent.Handler;
         }
 
         /// <summary>

@@ -19,13 +19,11 @@ namespace Bindable.Linq.Tests.Behaviour.Iterators
 
             Specification.Title("Union()")
                 .TestingOver<Contact>()
-                .UsingBindableLinq(inputs => inputs.AsBindable().Union(additionalContacts))
+                .UsingBindableLinq(inputs => inputs.AsBindable().Union(additionalContacts.AsBindable()))
                 .UsingStandardLinq(inputs => inputs.Union(additionalContacts))
                 .Scenario("Delayed evaluation",
                     With.Inputs(Mike, Tom, Jack),
                     step => Upon.Construction().ItWill.NotHaveEvaluated(),
-                    step => Upon.Reading(q => q.CurrentCount).ItWill.NotHaveEvaluated(),
-                    step => Upon.Reading(q => q.Configuration).ItWill.NotHaveEvaluated(),
                     step => Upon.Evaluate().ItWill.HaveCount(6)
                     )
                 .Scenario("Adding items",

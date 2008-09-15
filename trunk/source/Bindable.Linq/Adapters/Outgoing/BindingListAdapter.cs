@@ -7,6 +7,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using Bindable.Linq.Dependencies;
 using Bindable.Linq.Helpers;
+using Bindable.Linq.Interfaces;
 
 namespace Bindable.Linq.Adapters.Outgoing
 {
@@ -21,7 +22,7 @@ namespace Bindable.Linq.Adapters.Outgoing
         private readonly EventHandler<NotifyCollectionChangedEventArgs> _eventHandler;
         private readonly IBindableCollection<TElement> _originalSource;
         private readonly Dictionary<string, PropertyDescriptor> _propertyDescriptors;
-        private readonly WeakEventReference<NotifyCollectionChangedEventArgs> _weakHandler;
+        private readonly WeakEventProxy<NotifyCollectionChangedEventArgs> _weakHandler;
         private ElementActioner<TElement> _addActioner;
         private PropertyChangeObserver _propertyChangeObserver;
 
@@ -40,7 +41,7 @@ namespace Bindable.Linq.Adapters.Outgoing
             _originalSource = source;
 
             _eventHandler = Source_CollectionChanged;
-            _weakHandler = new WeakEventReference<NotifyCollectionChangedEventArgs>(_eventHandler);
+            _weakHandler = new WeakEventProxy<NotifyCollectionChangedEventArgs>(_eventHandler);
             _sortDirection = ListSortDirection.Ascending;
 
             WireInterceptor(_originalSource);
@@ -146,15 +147,16 @@ namespace Bindable.Linq.Adapters.Outgoing
         /// 	<see cref="P:System.ComponentModel.IBindingList.SupportsSearching"/> is false. </exception>
         public int Find(PropertyDescriptor property, object key)
         {
-            var query = _source as IBindableQuery<TElement>;
-            if (query == null) throw new NotSupportedException();
+            // TODO
+            //var query = _source as IBindableCollection<TElement>;
+            //if (query == null) throw new NotSupportedException();
 
-            for (var index = 0; index < query.Count; index++)
-            {
-                var item = query[index];
-                if (null == item) continue;
-                if (property.GetValue(item) == key) return index;
-            }
+            //for (var index = 0; index < query.Count; index++)
+            //{
+            //    var item = query[index];
+            //    if (null == item) continue;
+            //    if (property.GetValue(item) == key) return index;
+            //}
             return -1;
         }
 
@@ -367,9 +369,6 @@ namespace Bindable.Linq.Adapters.Outgoing
         {
             get
             {
-                var query = _source as IBindableQuery<TElement>;
-                if (null != query) return query[index];
-
                 return _source.ElementAt(index);
             }
             set { throw new NotSupportedException(); }
@@ -459,17 +458,17 @@ namespace Bindable.Linq.Adapters.Outgoing
         private void WireInterceptor(IBindableCollection<TElement> source)
         {
             _source = source;
-            _source.CollectionChanged += _weakHandler.WeakEventHandler;
+            _source.CollectionChanged += _weakHandler.Handler;
 
             _propertyChangeObserver = new PropertyChangeObserver(Element_PropertyChanged);
-            _addActioner = new ElementActioner<TElement>(_source, element => _propertyChangeObserver.Attach(element), element => _propertyChangeObserver.Detach(element));
+            // TODO: _addActioner = new ElementActioner<TElement>(_source, element => _propertyChangeObserver.Attach(element), element => _propertyChangeObserver.Detach(element));
         }
 
         private void UnwireInterceptor()
         {
             _addActioner.Dispose();
             _propertyChangeObserver.Dispose();
-            _source.CollectionChanged -= _weakHandler.WeakEventHandler;
+            _source.CollectionChanged -= _weakHandler.Handler;
             if (_source != _originalSource) _source.Dispose();
             _source = null;
         }

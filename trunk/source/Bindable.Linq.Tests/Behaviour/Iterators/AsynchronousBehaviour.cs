@@ -7,6 +7,7 @@ using Bindable.Linq.Collections;
 using Bindable.Linq.Tests.MockObjectModel;
 using Bindable.Linq.Tests.TestLanguage.Helpers;
 using NUnit.Framework;
+using System.Collections.ObjectModel;
 
 namespace Bindable.Linq.Tests.Behaviour.Iterators
 {
@@ -18,7 +19,7 @@ namespace Bindable.Linq.Tests.Behaviour.Iterators
     {
         internal class SlowCollection : IEnumerable<Contact>, INotifyCollectionChanged
         {
-            private readonly BindableCollection<Contact> _items = new BindableCollection<Contact>();
+            private readonly ObservableCollection<Contact> _items = new ObservableCollection<Contact>();
             private readonly object _lock = new object();
             private bool _paused = true;
 

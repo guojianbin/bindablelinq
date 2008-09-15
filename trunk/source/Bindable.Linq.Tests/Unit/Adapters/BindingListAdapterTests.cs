@@ -12,7 +12,7 @@ namespace Bindable.Linq.Tests.Unit.Adapters
         #region Test Helpers
         private IBindingList NewTestBindingList()
         {
-            return With.Inputs(Gordon, Brian, Harry).OrderBy(c => c.Name).ToBindingList();
+            return With.Inputs(Gordon, Brian, Harry).AsBindable().OrderBy(c => c.Name).ToBindingList();
         }
 
         private IBindingList NewTestBindingListSortedDescending()

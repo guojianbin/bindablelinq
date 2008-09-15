@@ -16,12 +16,22 @@ namespace Bindable.Linq.Threading
         public static IDispatcher Create(Dispatcher dispatcher)
         {
             IDispatcher result = null;
+            if (dispatcher != null)
+            {
 #if SILVERLIGHT
-            result = new SilverlightDispatcher(dispatcher);
+                result = new SilverlightDispatcher(dispatcher);
 #else
-            result = new WpfDispatcher(dispatcher);
+                result = new WpfDispatcher(dispatcher);
 #endif
+            }
             return result;
         }
+
+#if! SILVERLIGHT
+        public static IDispatcher Create()
+        {
+            return Create(Dispatcher.CurrentDispatcher);
+        }
+#endif
     }
 }

@@ -68,12 +68,13 @@
     <Compile Include="MockObjectModel\BindableObject.cs" />
     <Compile Include="MockObjectModel\Contact.cs" />
     <Compile Include="MockObjectModel\ContactSummary.cs" />
+    <Compile Include="TestLanguage\Expectations\PropertyValueExpectation.cs" />
     <Compile Include="TestLanguage\Helpers\CompatabilityLevel.cs" />
     <Compile Include="TestLanguage\Helpers\CompatabilityValidator.cs" />
+    <Compile Include="TestLanguage\Helpers\Extensions.cs" />
     <Compile Include="TestLanguage\Helpers\TestDispatcher.cs" />
     <Compile Include="TestLanguage\Helpers\TestFixture.cs" />
     <Compile Include="TestLanguage\EventSpecifications.cs" />
-    <Compile Include="TestLanguage\Expectations\CurrentCountExpectation.cs" />
     <Compile Include="TestLanguage\Expectations\CountExpectation.cs" />
     <Compile Include="TestLanguage\Expectations\RaiseEventExpectation.cs" />
     <Compile Include="TestLanguage\EventMonitoring\CapturedEvent.cs" />
@@ -114,7 +115,6 @@
     <Compile Include="Unit\Helpers\SnapshotEnumeratorTests.cs" />
     <Compile Include="Unit\Helpers\StateScopeTests.cs" />
     <Compile Include="Unit\Helpers\WeakEventReferenceTests.cs" />
-    <Compile Include="Behaviour\Iterators\AsynchronousBehaviour.cs" />
     <Compile Include="Behaviour\Iterators\GroupByBehaviour.cs" />
     <Compile Include="Behaviour\Iterators\OrderByBehaviour.cs" />
     <Compile Include="Behaviour\Iterators\PollBehaviour.cs" />
@@ -135,7 +135,6 @@
     <Compile Include="Unit\Operators\IfOperatorTests.cs" />
     <Compile Include="Unit\Operators\OperatorTests.cs" />
     <Compile Include="Unit\Operators\ProjectOperatorTests.cs" />
-    <Compile Include="Unit\Transactions\TransactionTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Bindable.Linq\Bindable.Linq.csproj">
@@ -146,6 +145,9 @@
   <ItemGroup>
     <None Include="Bindable.Linq.NCover.bat" />
     <None Include="Bindable.Linq.nunit" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Unit\Transactions\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
