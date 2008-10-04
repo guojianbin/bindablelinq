@@ -113,6 +113,15 @@ namespace Bindable.Linq.Collections
         }
 
         /// <summary>
+        /// Gets the <typeparamref name="TElement"/> at the specified index.
+        /// </summary>
+        /// <value></value>
+        public TElement this[int index]
+        {
+            get { return _groupWhereQuery[index]; }
+        }
+
+        /// <summary>
         /// Refreshes the object.
         /// </summary>
         public void Refresh()

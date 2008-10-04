@@ -18,6 +18,7 @@ namespace Bindable.Linq.Iterators
         /// Initializes a new instance of the <see cref="UnionIterator&lt;TElement&gt;"/> class.
         /// </summary>
         /// <param name="elements">The elements.</param>
+        /// <param name="dispatcher">The dispatcher.</param>
         public UnionIterator(IBindableCollection<IBindableCollection<TElement>> elements, IDispatcher dispatcher)
             : base(elements, dispatcher)
         {

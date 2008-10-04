@@ -18,6 +18,7 @@ namespace Bindable.Linq.Operators
         /// </summary>
         /// <param name="source">The source.</param>
         /// <param name="projector">The projector.</param>
+        /// <param name="dispatcher">The dispatcher.</param>
         public ProjectOperator(IBindable<TSource> source, Func<TSource, TResult> projector, IDispatcher dispatcher)
             : base(source, dispatcher)
         {

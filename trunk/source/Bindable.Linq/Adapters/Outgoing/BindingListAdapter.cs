@@ -8,6 +8,7 @@ using System.Linq.Expressions;
 using Bindable.Linq.Dependencies;
 using Bindable.Linq.Helpers;
 using Bindable.Linq.Interfaces;
+using Bindable.Linq.Threading;
 
 namespace Bindable.Linq.Adapters.Outgoing
 {
@@ -16,7 +17,7 @@ namespace Bindable.Linq.Adapters.Outgoing
     /// Converts Bindable LINQ bindable collection result sets into IBindingList implementations compatible with 
     /// Windows Forms.
     /// </summary>
-    internal sealed class BindingListAdapter<TElement> : IBindingList, IDisposable
+    internal sealed class BindingListAdapter<TElement> : DispatcherBound, IBindingList, IDisposable
         where TElement : class
     {
         private readonly EventHandler<NotifyCollectionChangedEventArgs> _eventHandler;
@@ -34,7 +35,8 @@ namespace Bindable.Linq.Adapters.Outgoing
         /// Initializes a new instance of the <see cref="BindingListAdapter&lt;TElement&gt;"/> class.
         /// </summary>
         /// <param name="source">The source.</param>
-        public BindingListAdapter(IBindableCollection<TElement> source)
+        /// <param name="dispatcher">The dispatcher.</param>
+        public BindingListAdapter(IBindableCollection<TElement> source, IDispatcher dispatcher) : base(dispatcher)
         {
             source.ShouldNotBeNull("source");
 
@@ -147,16 +149,15 @@ namespace Bindable.Linq.Adapters.Outgoing
         /// 	<see cref="P:System.ComponentModel.IBindingList.SupportsSearching"/> is false. </exception>
         public int Find(PropertyDescriptor property, object key)
         {
-            // TODO
-            //var query = _source as IBindableCollection<TElement>;
-            //if (query == null) throw new NotSupportedException();
+            var query = _source;
+            if (query == null) throw new NotSupportedException();
 
-            //for (var index = 0; index < query.Count; index++)
-            //{
-            //    var item = query[index];
-            //    if (null == item) continue;
-            //    if (property.GetValue(item) == key) return index;
-            //}
+            for (var index = 0; index < query.Count; index++)
+            {
+                var item = query[0];
+                if (null == item) continue;
+                if (property.GetValue(item) == key) return index;
+            }
             return -1;
         }
 
@@ -444,24 +445,13 @@ namespace Bindable.Linq.Adapters.Outgoing
         }
         #endregion
 
-        #region IDisposable Members
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            _addActioner.Dispose();
-            _propertyChangeObserver.Dispose();
-        }
-        #endregion
-
         private void WireInterceptor(IBindableCollection<TElement> source)
         {
             _source = source;
             _source.CollectionChanged += _weakHandler.Handler;
 
             _propertyChangeObserver = new PropertyChangeObserver(Element_PropertyChanged);
-            // TODO: _addActioner = new ElementActioner<TElement>(_source, element => _propertyChangeObserver.Attach(element), element => _propertyChangeObserver.Detach(element));
+            _addActioner = new ElementActioner<TElement>(_source, element => _propertyChangeObserver.Attach(element), element => _propertyChangeObserver.Detach(element), Dispatcher);
         }
 
         private void UnwireInterceptor()
@@ -562,6 +552,16 @@ namespace Bindable.Linq.Adapters.Outgoing
             {
                 handler(this, e);
             }
+        }
+
+        /// <summary>
+        /// Called just before the object is disposed and all event subscriptions are released.
+        /// </summary>
+        protected override void BeforeDisposeOverride()
+        {
+            _addActioner.Dispose();
+            _propertyChangeObserver.Dispose();
+            base.BeforeDisposeOverride();
         }
     }
 #endif

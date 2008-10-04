@@ -12,7 +12,7 @@ namespace Bindable.Linq.Iterators
     internal sealed class ProjectionRegister<TSource, TResult> : IDisposable
     {
         private readonly object _projectionLock = new object();
-        private readonly IDictionary<TSource, TResult> _projections = new Dictionary<TSource, TResult>(); // TODO replace with weak reference dictionary
+        private readonly IDictionary<TSource, TResult> _projections = new Dictionary<TSource, TResult>();
         private readonly Func<TSource, TResult> _projector;
 
         /// <summary>
@@ -39,16 +39,7 @@ namespace Bindable.Linq.Iterators
             get { return _projections; }
         }
 
-        #region IDisposable Members
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Clear();
-        }
-        #endregion
-
+        
         /// <summary>
         /// Remembers a projection from the source type to the result type.
         /// </summary>
@@ -217,6 +208,14 @@ namespace Bindable.Linq.Iterators
         public object GetExistingProjection(TSource item)
         {
             return InnerGetExistingProjection(item);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Clear();
         }
     }
 }

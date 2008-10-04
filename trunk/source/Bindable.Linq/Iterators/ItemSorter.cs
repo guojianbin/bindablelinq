@@ -60,7 +60,7 @@ namespace Bindable.Linq.Iterators
     {
         private readonly bool _ascending;
         private readonly IComparer<K> _comparer;
-        private readonly Func<S, K> _keySelector;
+        public readonly Func<S, K> _keySelector;
         private readonly ItemSorter<S> _superior;
 
         /// <summary>

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Bindable.Linq.Interfaces;
 using Bindable.Linq.Threading;
@@ -10,22 +11,49 @@ namespace Bindable.Linq.Operators
     /// </summary>
     /// <typeparam name="TSource">The type of the source.</typeparam>
     /// <typeparam name="TResult">The type of the result.</typeparam>
-    internal sealed class SwitchOperator<TSource, TResult> : Operator<TSource, TResult>
+    internal sealed class SwitchOperator<TSource, TResult> : Operator<TSource, TResult>, ISwitch<TSource, TResult>
     {
-        private readonly ISwitchCase<TSource, TResult>[] _conditionalCases;
-        private readonly ISwitchCase<TSource, TResult> _defaultCase;
+        private readonly List<ISwitchCase<TSource, TResult>> _conditionalCases = new List<ISwitchCase<TSource, TResult>>();
+        private ISwitchCase<TSource, TResult> _defaultCase;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SwitchOperator&lt;TSource, TResult&gt;"/> class.
         /// </summary>
         /// <param name="source">The source.</param>
-        /// <param name="conditionalCases">The conditional cases.</param>
         /// <param name="dispatcher">The dispatcher.</param>
-        public SwitchOperator(IBindable<TSource> source, IEnumerable<ISwitchCase<TSource, TResult>> conditionalCases, IDispatcher dispatcher)
+        public SwitchOperator(IBindable<TSource> source, IDispatcher dispatcher)
             : base(source, dispatcher)
         {
-            _conditionalCases = conditionalCases.Where(c => c.IsDefaultCase == false).ToArray();
-            _defaultCase = conditionalCases.Where(c => c.IsDefaultCase == true).FirstOrDefault();
+            
+        }
+
+        /// <summary>
+        /// Adds a case statement to the switch.
+        /// </summary>
+        /// <param name="customCase">The custom case.</param>
+        /// <returns></returns>
+        public ISwitch<TSource, TResult> AddCase(ISwitchCase<TSource, TResult> customCase)
+        {
+            _conditionalCases.Add(customCase);
+            return this;
+        }
+
+        /// <summary>
+        /// Adds the default case.
+        /// </summary>
+        /// <param name="defaultCase">The default case.</param>
+        /// <returns></returns>
+        public ISwitch<TSource, TResult> AddDefault(ISwitchCase<TSource, TResult> defaultCase)
+        {
+            if (_defaultCase != null)
+            {
+                _defaultCase = defaultCase;
+            }
+            else
+            {
+                throw new InvalidOperationException("A default state has already been defined for this switch statement.");
+            }
+            return this;
         }
 
         /// <summary>

@@ -66,7 +66,7 @@ namespace Bindable.Linq.Aggregators
             {
                 AssertDispatcherThread();
                 _current = value;
-                OnPropertyChanged(PropertyChangedCache.Current);
+                OnPropertyChanged(CommonEventArgsCache.Current);
             }
         }
 
@@ -86,7 +86,7 @@ namespace Bindable.Linq.Aggregators
             {
                 AssertDispatcherThread();
                 _hasEvaluated = value;
-                OnPropertyChanged(PropertyChangedCache.HasEvaluated);
+                OnPropertyChanged(CommonEventArgsCache.HasEvaluated);
             }
         }
 

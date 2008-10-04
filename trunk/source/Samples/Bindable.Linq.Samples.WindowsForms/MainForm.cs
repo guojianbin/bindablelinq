@@ -12,7 +12,7 @@ namespace Bindable.Linq.Samples.WindowsForms
         {
             InitializeComponent();
 
-            // TODO: _processWrapperBindingSource.DataSource = GetAllProcesses().AsBindable().Polling(new WpfDispatcher(), TimeSpan.FromMilliseconds(300)).OrderBy(p => p.ProcessName).Where(p => p.ProcessName.ToLower().Contains(_filterTextBox.Text.ToLower())).ToBindingList();
+            // _processWrapperBindingSource.DataSource = GetAllProcesses().AsBindable().Polling(new WpfDispatcher(), TimeSpan.FromMilliseconds(300)).OrderBy(p => p.ProcessName).Where(p => p.ProcessName.ToLower().Contains(_filterTextBox.Text.ToLower())).ToBindingList();
         }
 
         private IEnumerable<ProcessWrapper> GetAllProcesses()

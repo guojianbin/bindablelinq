@@ -30,6 +30,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentat
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bindable.Linq.Samples.Browser", "Samples\Bindable.Linq.Samples.Browser\Bindable.Linq.Samples.Browser.csproj", "{86125E0B-3A79-4533-9B91-DAE46B70614A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bindable.Linq.Samples.Performance", "Bindable.Linq.Samples.Performance\Bindable.Linq.Samples.Performance.csproj", "{B0AD058D-3DF0-4DD4-9232-1C8AEE660BD7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -76,6 +78,10 @@ Global
 		{86125E0B-3A79-4533-9B91-DAE46B70614A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{86125E0B-3A79-4533-9B91-DAE46B70614A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{86125E0B-3A79-4533-9B91-DAE46B70614A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B0AD058D-3DF0-4DD4-9232-1C8AEE660BD7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B0AD058D-3DF0-4DD4-9232-1C8AEE660BD7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B0AD058D-3DF0-4DD4-9232-1C8AEE660BD7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B0AD058D-3DF0-4DD4-9232-1C8AEE660BD7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -87,6 +93,7 @@ Global
 		{081046F4-5579-4049-9361-EA9EF2D6AD53} = {C7444154-BD26-469A-8176-1650F7B981F4}
 		{E7B21314-3BD3-421E-8333-C909D141A3BE} = {C7444154-BD26-469A-8176-1650F7B981F4}
 		{86125E0B-3A79-4533-9B91-DAE46B70614A} = {C7444154-BD26-469A-8176-1650F7B981F4}
+		{B0AD058D-3DF0-4DD4-9232-1C8AEE660BD7} = {C7444154-BD26-469A-8176-1650F7B981F4}
 		{F82D2DF8-1B33-40CB-9F44-FD57DD7C174C} = {0C19DFD3-6DAA-4A58-85D4-1C9016131CA3}
 		{24084113-8483-4D89-AB07-45573A2A701A} = {0C19DFD3-6DAA-4A58-85D4-1C9016131CA3}
 	EndGlobalSection

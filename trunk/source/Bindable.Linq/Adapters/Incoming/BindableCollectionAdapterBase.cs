@@ -60,7 +60,7 @@ namespace Bindable.Linq.Adapters.Incoming
             {
                 AssertDispatcherThread();
                 _hasEvaluated = value;
-                OnPropertyChanged(PropertyChangedCache.HasEvaluated);
+                OnPropertyChanged(CommonEventArgsCache.HasEvaluated);
             }
         }
 
@@ -79,6 +79,32 @@ namespace Bindable.Linq.Adapters.Incoming
         protected StateScope CollectionChangedSuspendedState
         {
             get { return _collectionChangedSuspendedState; }
+        }
+
+        /// <summary>
+        /// Gets the <typeparamref name="TElement"/> at the specified index.
+        /// </summary>
+        /// <value></value>
+        public TElement this[int index]
+        {
+            get
+            {
+                if (Dispatcher.DispatchRequired())
+                {
+                    return Dispatcher.Dispatch(() => this[index]);
+                }
+
+                var itemIndex = 0;
+                foreach (var item in this)
+                {
+                    if (index == itemIndex)
+                    {
+                        return item;
+                    }
+                    itemIndex++;
+                }
+                throw new IndexOutOfRangeException();
+            }
         }
 
         /// <summary>
@@ -198,7 +224,7 @@ namespace Bindable.Linq.Adapters.Incoming
             var handler = Evaluating;
             if (handler != null)
                 handler(this, e);
-            OnPropertyChanged(PropertyChangedCache.Count);
+            OnPropertyChanged(CommonEventArgsCache.Count);
         }
 
         /// <summary>
@@ -211,7 +237,7 @@ namespace Bindable.Linq.Adapters.Incoming
             var handler = CollectionChanged;
             if (handler != null && !CollectionChangedSuspendedState.IsWithin)
                 handler(this, e);
-            OnPropertyChanged(PropertyChangedCache.Count);
+            OnPropertyChanged(CommonEventArgsCache.Count);
         }
     }
 }

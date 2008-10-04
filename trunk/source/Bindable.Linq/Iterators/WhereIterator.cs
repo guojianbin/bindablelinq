@@ -18,6 +18,7 @@ namespace Bindable.Linq.Iterators
         /// </summary>
         /// <param name="sourceCollection">The source collection.</param>
         /// <param name="predicate">The predicate.</param>
+        /// <param name="dispatcher">The dispatcher.</param>
         public WhereIterator(IBindableCollection<TElement> sourceCollection, Func<TElement, bool> predicate, IDispatcher dispatcher)
             : base(sourceCollection, dispatcher)
         {

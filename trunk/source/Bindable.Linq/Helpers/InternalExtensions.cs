@@ -147,9 +147,9 @@ namespace Bindable.Linq.Helpers
         /// <param name="collection">The collection.</param>
         public static void Evaluate<TElement>(this IEnumerable<TElement> collection)
         {
-            foreach (var item in collection)
+            using (var enumerator = collection.GetEnumerator())
             {
-                // TODO: Will this be optimised out by the GC?
+                enumerator.MoveNext();
             }
         }
 

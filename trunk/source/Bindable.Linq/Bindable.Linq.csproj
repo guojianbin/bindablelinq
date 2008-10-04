@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{1BD32C0F-5FDE-4913-AEED-13840ACBF4E0}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -35,10 +35,13 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Release\Bindable.Linq.xml</DocumentationFile>
-    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+    <FileAlignment>512</FileAlignment>
+    <BaseAddress>4194304</BaseAddress>
+    <DebugSymbols>true</DebugSymbols>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.VisualStudio.DebuggerVisualizers, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="PresentationFramework">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
@@ -75,12 +78,14 @@
     <Compile Include="Aggregators\Numerics\FloatNullNumeric.cs" />
     <Compile Include="Aggregators\Numerics\Int32NullNumeric.cs" />
     <Compile Include="Aggregators\Numerics\Int64NullNumeric.cs" />
+    <Compile Include="BindableEnumerable.cs" />
     <Compile Include="Configuration\BindingConfigurations.cs" />
     <Compile Include="Configuration\DefaultBindingConfiguration.cs" />
     <Compile Include="Configuration\ExplicitBindingConfiguration.cs" />
     <Compile Include="Configuration\IBindingConfiguration.cs" />
     <Compile Include="Dependencies\Definitions\ItemDependencyDefinition.cs" />
     <Compile Include="Dependencies\Definitions\ExternalDependencyDefinition.cs" />
+    <Compile Include="DependencyAnalysis.cs" />
     <Compile Include="Dependencies\ExpressionAnalysis\IExpressionAnalyzer.cs" />
     <Compile Include="Dependencies\Instances\StaticDependency.cs" />
     <Compile Include="Dependencies\PathNavigation\IPathNavigator.cs" />
@@ -110,7 +115,48 @@
     <Compile Include="Dependencies\PathNavigation\Tokens\MemberToken.cs" />
     <Compile Include="Dependencies\PathNavigation\PathNavigator.cs" />
     <Compile Include="Dependencies\PathNavigation\Tokens\WpfMemberToken.cs" />
-    <Compile Include="Helpers\CollectionChangedCache.cs" />
+    <Compile Include="Extensions\Aggregators\BindableEnumerable.Aggregate.cs" />
+    <Compile Include="Extensions\Aggregators\BindableEnumerable.All.cs" />
+    <Compile Include="Extensions\Aggregators\BindableEnumerable.Any.cs" />
+    <Compile Include="Extensions\Aggregators\BindableEnumerable.Average.cs" />
+    <Compile Include="Extensions\Aggregators\BindableEnumerable.Contains.cs" />
+    <Compile Include="Extensions\Aggregators\BindableEnumerable.Count.cs" />
+    <Compile Include="Extensions\Aggregators\BindableEnumerable.ElementAtOrDefault.cs" />
+    <Compile Include="Extensions\Aggregators\BindableEnumerable.FirstOrDefault.cs" />
+    <Compile Include="Extensions\Aggregators\BindableEnumerable.LastOrDefault.cs" />
+    <Compile Include="Extensions\Aggregators\BindableEnumerable.Max.cs" />
+    <Compile Include="Extensions\Aggregators\BindableEnumerable.Min.cs" />
+    <Compile Include="Extensions\Aggregators\BindableEnumerable.SequenceEqual.cs" />
+    <Compile Include="Extensions\Aggregators\BindableEnumerable.Single.cs" />
+    <Compile Include="Extensions\Aggregators\BindableEnumerable.SingleOrDefault.cs" />
+    <Compile Include="Extensions\Aggregators\BindableEnumerable.Sum.cs" />
+    <Compile Include="Extensions\Dependencies\BindableEnumerable.WithDependency.cs" />
+    <Compile Include="Extensions\Iterators\BindableEnumerable.AsBindable.cs" />
+    <Compile Include="Extensions\Iterators\BindableEnumerable.Cast.cs" />
+    <Compile Include="Extensions\Iterators\BindableEnumerable.Concat.cs" />
+    <Compile Include="Extensions\Iterators\BindableEnumerable.Distinct.cs" />
+    <Compile Include="Extensions\Iterators\BindableEnumerable.GroupBy.cs" />
+    <Compile Include="Extensions\Iterators\BindableEnumerable.Into.cs" />
+    <Compile Include="Extensions\Iterators\BindableEnumerable.OfType.cs" />
+    <Compile Include="Extensions\Iterators\BindableEnumerable.OrderBy.cs" />
+    <Compile Include="Extensions\Iterators\BindableEnumerable.OrderByDescending.cs" />
+    <Compile Include="Extensions\Iterators\BindableEnumerable.Select.cs" />
+    <Compile Include="Extensions\Iterators\BindableEnumerable.SelectMany.cs" />
+    <Compile Include="Extensions\Iterators\BindableEnumerable.ThenBy.cs" />
+    <Compile Include="Extensions\Iterators\BindableEnumerable.ThenByDescending.cs" />
+    <Compile Include="Extensions\Iterators\BindableEnumerable.ToBindingList.cs" />
+    <Compile Include="Extensions\Iterators\BindableEnumerable.Union.cs" />
+    <Compile Include="Extensions\Iterators\BindableEnumerable.UnionAll.cs" />
+    <Compile Include="Extensions\Iterators\BindableEnumerable.Where.cs" />
+    <Compile Include="Extensions\Operators\BindableEnumerable.Project.cs" />
+    <Compile Include="Extensions\Operators\BindableEnumerable.Switch.cs" />
+    <Compile Include="Extensions\Operators\BindableEnumerable.Add.cs" />
+    <Compile Include="Extensions\Operators\BindableEnumerable.Subtract.cs" />
+    <Compile Include="Framework\BindableIdentityMap.cs" />
+    <Compile Include="Framework\IIdentityMap.cs" />
+    <Compile Include="Framework\IIdentifier.cs" />
+    <Compile Include="Framework\IEntityStore.cs" />
+    <Compile Include="Framework\InMemoryEntityStore.cs" />
     <Compile Include="Helpers\ElementActioner.cs" />
     <Compile Include="Helpers\ElementComparerFactory.cs" />
     <Compile Include="Dependencies\IPropertyReader.cs" />
@@ -118,7 +164,7 @@
     <Compile Include="Helpers\DispatcherBound.cs" />
     <Compile Include="Helpers\LifetimeCouplings.cs" />
     <Compile Include="Helpers\LifetimeExtensions.cs" />
-    <Compile Include="Helpers\PropertyChangedCache.cs" />
+    <Compile Include="Helpers\CommonEventArgsCache.cs" />
     <Compile Include="Helpers\WeakEvent.cs" />
     <Compile Include="Helpers\WeakTimer.cs" />
     <Compile Include="Interfaces\Events\EvaluatingEventArgs.cs" />
@@ -131,9 +177,6 @@
     <Compile Include="Aggregators\Numerics\INumeric.cs" />
     <Compile Include="Aggregators\Numerics\Int32Numeric.cs" />
     <Compile Include="Aggregators\Aggregator.cs" />
-    <Compile Include="Enumerable.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Dependencies\Observers\CollectionChangeObserver.cs" />
     <Compile Include="Dependencies\Observers\EventObserver.cs" />
     <Compile Include="Collections\BindableGrouping.cs" />
@@ -155,11 +198,11 @@
     <Compile Include="Iterators\SelectIterator.cs" />
     <Compile Include="Iterators\UnionIterator.cs" />
     <Compile Include="Iterators\WhereIterator.cs" />
-    <Compile Include="Operators\Case.cs" />
-    <Compile Include="Operators\IfOperator.cs">
-      <SubType>Code</SubType>
-    </Compile>
+    <Compile Include="Operators\SwitchDefault.cs" />
+    <Compile Include="Operators\EmptySwitchDefinition.cs" />
+    <Compile Include="Operators\ISwitch.cs" />
     <Compile Include="Operators\ISwitchCase.cs" />
+    <Compile Include="Operators\ISwitchDeclaration.cs" />
     <Compile Include="Operators\Operator.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -191,8 +234,7 @@
 set PF=%25PROGRAMFILES(x86)%25
 if "%25PF%25"=="" set PF=%25PROGRAMFILES%25
 
-set SILVERLIGHTPATH=%25PF%25\Microsoft Silverlight\2.0.30523.8
-
+set SILVERLIGHTPATH=%25PF%25\Microsoft Silverlight\2.0.30930.0
 if exist "%25SILVERLIGHTPATH%25" (
     mkdir bin\Silverlight
     %25WINDIR%25\Microsoft.NET\Framework\v3.5\Csc.exe /noconfig /nostdlib+ /nowarn:1701,1702 /errorreport:prompt /warn:4 /doc:bin\Silverlight\Bindable.Linq.xml /define:DEBUG;TRACE;SILVERLIGHT /reference:"%25SILVERLIGHTPATH%25\System.Windows.dll" /reference:"%25SILVERLIGHTPATH%25\mscorlib.dll" /reference:"%25SILVERLIGHTPATH%25\System.Core.dll" /reference:"%25SILVERLIGHTPATH%25\System.dll" /debug+ /debug:full /filealign:512 /optimize- /out:bin\Silverlight\Bindable.Linq.dll /target:library /recurse:*.cs

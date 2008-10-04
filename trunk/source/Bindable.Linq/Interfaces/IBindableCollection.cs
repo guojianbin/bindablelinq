@@ -46,6 +46,12 @@ namespace Bindable.Linq.Interfaces
     public interface IBindableCollection<TElement> : IEnumerable<TElement>, IBindableCollection
     {
         /// <summary>
+        /// Gets the <typeparamref name="TElement"/> at the specified index.
+        /// </summary>
+        /// <value></value>
+        TElement this[int index] { get; }
+
+        /// <summary>
         /// Occurs when the collection is being evaluated (GetEnumerator() is called) for the first time, just before it returns 
         /// the results, to provide insight into the items being evaluated. This allows consumers to iterate the items in a collection 
         /// just before they are returned to the caller, while still enabling delayed execution of queries.

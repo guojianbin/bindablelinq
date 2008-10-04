@@ -30,7 +30,7 @@ namespace Bindable.Linq.Iterators
     /// </para>
     /// </remarks>
     public abstract class Iterator<TSource, TResult> : DispatcherBound, IBindableCollection<TResult>, IAcceptsDependencies
-        where TSource : class
+        
     {
         private readonly StateScope _collectionChangedSuspendedState = new StateScope();
         private readonly List<IDependency> _dependencies = new List<IDependency>();
@@ -94,6 +94,20 @@ namespace Bindable.Linq.Iterators
         }
 
         /// <summary>
+        /// Gets the <typeparamref name="TResult"/> at the specified index.
+        /// </summary>
+        /// <value></value>
+        public TResult this[int index]
+        {
+            get
+            {
+                AssertDispatcherThread();
+                Evaluate();
+                return ResultCollection[index];
+            }
+        }
+
+        /// <summary>
         /// Gets a count of the number of items in this Iterator.
         /// </summary>
         public int Count
@@ -115,7 +129,7 @@ namespace Bindable.Linq.Iterators
             private set
             {
                 _hasEvaluated = value;
-                OnPropertyChanged(PropertyChangedCache.HasEvaluated);
+                OnPropertyChanged(CommonEventArgsCache.HasEvaluated);
             }
         }
 
@@ -351,7 +365,7 @@ namespace Bindable.Linq.Iterators
             var handler = Evaluating;
             if (handler != null)
                 handler(this, e);
-            OnPropertyChanged(PropertyChangedCache.Count);
+            OnPropertyChanged(CommonEventArgsCache.Count);
         }
 
         /// <summary>
@@ -364,7 +378,7 @@ namespace Bindable.Linq.Iterators
             var handler = CollectionChanged;
             if (handler != null && !CollectionChangedSuspendedState.IsWithin) 
                 handler(this, e);
-            OnPropertyChanged(PropertyChangedCache.Count);
+            OnPropertyChanged(CommonEventArgsCache.Count);
         }
 
         /// <summary>

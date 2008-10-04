@@ -66,7 +66,7 @@ namespace Bindable.Linq.Operators
             {
                 AssertDispatcherThread();
                 _current = value;
-                OnPropertyChanged(PropertyChangedCache.Current);
+                OnPropertyChanged(CommonEventArgsCache.Current);
             }
         }
 
@@ -91,7 +91,7 @@ namespace Bindable.Linq.Operators
             {
                 AssertDispatcherThread();
                 _hasEvaluated = value;
-                OnPropertyChanged(PropertyChangedCache.HasEvaluated);
+                OnPropertyChanged(CommonEventArgsCache.HasEvaluated);
             }
         }
 

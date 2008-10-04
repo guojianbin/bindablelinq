@@ -21,6 +21,10 @@ namespace Bindable.Linq.Threading
             _dispatcher = dispatcher;
         }
 
+        /// <summary>
+        /// Dispatches the specified action to the thread.
+        /// </summary>
+        /// <param name="actionToInvoke">The action to invoke.</param>
         public void Dispatch(Action actionToInvoke)
         {
             if (DispatchRequired()) 
@@ -48,6 +52,12 @@ namespace Bindable.Linq.Threading
             }
         }
 
+        /// <summary>
+        /// Dispatches the specified action to the thread.
+        /// </summary>
+        /// <typeparam name="TResult"></typeparam>
+        /// <param name="actionToInvoke">The action to invoke.</param>
+        /// <returns></returns>
         public TResult Dispatch<TResult>(Func<TResult> actionToInvoke)
         {
             if (DispatchRequired()) 
@@ -77,6 +87,10 @@ namespace Bindable.Linq.Threading
             }
         }
 
+        /// <summary>
+        /// Checks whether the thread invoking the method .
+        /// </summary>
+        /// <returns></returns>
         public bool DispatchRequired()
         {
             return !_dispatcher.CheckAccess();

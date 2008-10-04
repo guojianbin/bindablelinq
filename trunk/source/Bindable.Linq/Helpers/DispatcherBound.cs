@@ -1,5 +1,5 @@
-﻿using Bindable.Linq.Threading;
-using System;
+﻿using System;
+using Bindable.Linq.Threading;
 
 namespace Bindable.Linq.Helpers
 {
@@ -54,6 +54,7 @@ namespace Bindable.Linq.Helpers
         {
             if (Dispatcher.DispatchRequired())
             {
+                // TODO: Better messages
                 var message = "Must be called on UI thread.";
                 throw new Exception(message);
             }
@@ -66,6 +67,7 @@ namespace Bindable.Linq.Helpers
         {
             if (_isSealed)
             {
+                // TODO: Better messages
                 var message = "Must not be sealed.";
                 throw new Exception(message);
             }
@@ -85,7 +87,6 @@ namespace Bindable.Linq.Helpers
         /// </summary>
         protected virtual void BeforeSealingOverride()
         {
-            
         }
 
         /// <summary>
@@ -95,6 +96,9 @@ namespace Bindable.Linq.Helpers
         {
         }
 
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
         public void Dispose()
         {
             BeforeDisposeOverride();

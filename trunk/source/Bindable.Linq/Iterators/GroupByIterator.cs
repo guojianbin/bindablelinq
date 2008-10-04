@@ -26,6 +26,7 @@ namespace Bindable.Linq.Iterators
         /// <param name="keySelector">The key selector.</param>
         /// <param name="elementSelector">The element selector.</param>
         /// <param name="keyComparer">The key comparer.</param>
+        /// <param name="dispatcher">The dispatcher.</param>
         public GroupByIterator(IBindableCollection<TSource> sourceCollection, Expression<Func<TSource, TKey>> keySelector, Expression<Func<TSource, TElement>> elementSelector, IEqualityComparer<TKey> keyComparer, IDispatcher dispatcher)
             : base(sourceCollection, dispatcher)
         {

@@ -24,7 +24,7 @@ namespace Bindable.Linq.Collections
     public class BindableCollection<TElement> : DispatcherBound, IBindableCollection<TElement>
     {
         private readonly IEqualityComparer<TElement> _comparer = ElementComparerFactory.Create<TElement>();
-        private readonly List<TElement> _innerList;
+        private readonly List<TElement> _innerList = new List<TElement>(10000);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BindableCollection&lt;TElement&gt;"/> class.
@@ -82,7 +82,7 @@ namespace Bindable.Linq.Collections
             get { return true; }
         }
 
-        public void Evaluate()
+        void IBindableCollection.Evaluate()
         {
         }
 
@@ -190,11 +190,11 @@ namespace Bindable.Linq.Collections
         }
 
         /// <summary>
-        /// Inserts a range of items so that they appear in order, using a given comparer.
+        /// Inserts an item so that it appears in order, using a given comparer.
         /// </summary>
-        /// <param name="range">The range.</param>
+        /// <param name="element">The element.</param>
         /// <param name="comparer">The comparer.</param>
-        public void InsertOrderd(TElement element, Comparison<TElement> comparer)
+        public void InsertOrdered(TElement element, Comparison<TElement> comparer)
         {
             AssertDispatcherThread();
             
@@ -406,7 +406,7 @@ namespace Bindable.Linq.Collections
         public void Clear()
         {
             InnerList.Clear();
-            OnCollectionChanged(CollectionChangedCache.Reset);
+            OnCollectionChanged(CommonEventArgsCache.Reset);
         }
         #endregion
 
@@ -438,6 +438,15 @@ namespace Bindable.Linq.Collections
         #endregion
 
         #region IBindableCollection<TElement> Members
+
+        /// <summary>
+        /// Gets the <typeparamref name="TElement"/> at the specified index.
+        /// </summary>
+        /// <value></value>
+        public TElement this[int index]
+        {
+            get { return _innerList[index]; }
+        }
 
         /// <summary>
         /// Gets the number of elements contained in the <see cref="BindableCollection{TElement}"/>.
@@ -490,7 +499,7 @@ namespace Bindable.Linq.Collections
             return index;
         }
 
-        public void Refresh()
+        void IRefreshable.Refresh()
         {
         }
 
@@ -505,9 +514,9 @@ namespace Bindable.Linq.Collections
             return string.Format(CultureInfo.InvariantCulture, "BindableCollection - Count: " + Count);
         }
 
-        public void AcceptDependency(IDependencyDefinition definition)
+        void IAcceptsDependencies.AcceptDependency(IDependencyDefinition definition)
         {
-            throw new NotImplementedException("This object cannot accept dependencies directly.");
+            throw new NotSupportedException("This object cannot accept dependencies directly.");
         }
 
         /// <summary>
@@ -532,7 +541,7 @@ namespace Bindable.Linq.Collections
             var handler = Evaluating;
             if (handler != null)
                 handler(this, e);
-            OnPropertyChanged(PropertyChangedCache.Count);
+            OnPropertyChanged(CommonEventArgsCache.Count);
         }
 
         /// <summary>
@@ -545,7 +554,7 @@ namespace Bindable.Linq.Collections
             var handler = CollectionChanged;
             if (handler != null)
                 handler(this, e);
-            OnPropertyChanged(PropertyChangedCache.Count);
+            OnPropertyChanged(CommonEventArgsCache.Count);
         }
     }
 }

@@ -33,8 +33,9 @@ namespace Bindable.Linq.Iterators
         /// <remarks>Warning: No locks should be held when invoking this method.</remarks>
         protected override void EvaluateSourceCollection()
         {
-            foreach (var item in SourceCollection)
-                ReactToAdd(-1, item);
+            ResultCollection.AddRange(System.Linq.Enumerable.OrderBy(SourceCollection, _itemSorter._keySelector));
+            //foreach (var item in SourceCollection)
+            //    ReactToAdd(-1, item);
         }
 
         /// <summary>
@@ -55,7 +56,7 @@ namespace Bindable.Linq.Iterators
         /// <param name="addedItem">The added item.</param>
         protected override void ReactToAdd(int insertionIndex, TElement addedItem)
         {
-            ResultCollection.InsertOrderd(addedItem, Compare);
+            ResultCollection.InsertOrdered(addedItem, Compare);
         }
 
         /// <summary>

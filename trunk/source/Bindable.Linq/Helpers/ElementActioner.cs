@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Specialized;
-using System.Linq;
 using Bindable.Linq.Collections;
 using Bindable.Linq.Interfaces;
-using Bindable.Linq.Interfaces.Internal;
 using Bindable.Linq.Threading;
 
 namespace Bindable.Linq.Helpers
@@ -14,11 +12,10 @@ namespace Bindable.Linq.Helpers
     /// </summary>
     /// <remarks>
     /// This object uses a direct event reference rather than weak references on purpose. The lifetime of 
-    /// the object should be coupled to the owning class. Use the <see cref="Dispose"/> method to 
-    /// unhook the event handler.
+    /// the object should be coupled to the owning class. 
     /// </remarks>
     /// <typeparam name="TElement">The type of the element.</typeparam>
-    internal sealed class ElementActioner<TElement> : DispatcherBound, IDisposable
+    internal sealed class ElementActioner<TElement> : DispatcherBound
     {
         private readonly WeakEvent<NotifyCollectionChangedEventArgs> _collection_CollectionChangedHandler;
         private readonly Action<TElement> _addAction;
@@ -66,20 +63,6 @@ namespace Bindable.Linq.Helpers
                 });
             }
         }
-
-        #region IDisposable Members
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            if (_collection != null)
-            {
-                _copy.ForEach(e => HandleElement(NotifyCollectionChangedAction.Remove, e));
-                _collection.CollectionChanged -= _collection_CollectionChangedHandler.HandlerProxy.Handler;
-            }
-        }
-        #endregion
 
         private void HandleElement(NotifyCollectionChangedAction action, TElement element)
         {
@@ -138,6 +121,16 @@ namespace Bindable.Linq.Helpers
             _collection.ForEach(a => HandleElement(NotifyCollectionChangedAction.Add, a));
             _copy.Clear();
             _copy.AddRange(_collection);
+        }
+
+        protected override void BeforeDisposeOverride()
+        {
+            if (_collection != null)
+            {
+                _copy.ForEach(e => HandleElement(NotifyCollectionChangedAction.Remove, e));
+                _collection.CollectionChanged -= _collection_CollectionChangedHandler.HandlerProxy.Handler;
+            }
+            base.BeforeDisposeOverride();
         }
     }
 }

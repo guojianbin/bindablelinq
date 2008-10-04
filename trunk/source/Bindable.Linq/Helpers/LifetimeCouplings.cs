@@ -11,6 +11,9 @@ namespace Bindable.Linq.Helpers
     {
         private readonly List<object> _objects;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LifetimeCouplings"/> class.
+        /// </summary>
         public LifetimeCouplings()
         {
             _objects = new List<object>();
