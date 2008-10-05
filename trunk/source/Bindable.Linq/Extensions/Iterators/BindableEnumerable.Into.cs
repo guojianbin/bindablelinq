@@ -22,7 +22,7 @@ namespace Bindable.Linq
             where TResult : class
         {
             var func = resultSelector.Compile();
-            return source.Select(g => func(g.Key, g), DependencyAnalysis.Disabled);
+            return source.Select(g => func(g.Key, g), DependencyDiscovery.Disabled);
         }
 	}
 }

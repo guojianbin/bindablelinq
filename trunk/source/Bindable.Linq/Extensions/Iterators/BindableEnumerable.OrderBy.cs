@@ -57,7 +57,7 @@ namespace Bindable.Linq
         /// </returns>
         /// <exception cref="T:System.ArgumentNullException">
         /// 	<paramref name="source"/> or <paramref name="keySelector"/> is null.</exception>
-        public static IOrderedBindableCollection<TSource> OrderBy<TSource, TKey>(this IBindableCollection<TSource> source, Expression<Func<TSource, TKey>> keySelector, DependencyAnalysis dependencyAnalysisMode) where TSource : class
+        public static IOrderedBindableCollection<TSource> OrderBy<TSource, TKey>(this IBindableCollection<TSource> source, Expression<Func<TSource, TKey>> keySelector, DependencyDiscovery dependencyAnalysisMode) where TSource : class
         {
             return source.OrderBy(keySelector, null, dependencyAnalysisMode);
         }
@@ -76,14 +76,14 @@ namespace Bindable.Linq
         /// </returns>
         /// <exception cref="T:System.ArgumentNullException">
         /// 	<paramref name="source"/> or <paramref name="keySelector"/> is null.</exception>
-        public static IOrderedBindableCollection<TSource> OrderBy<TSource, TKey>(this IBindableCollection<TSource> source, Expression<Func<TSource, TKey>> keySelector, IComparer<TKey> comparer, DependencyAnalysis dependencyAnalysisMode) where TSource : class
+        public static IOrderedBindableCollection<TSource> OrderBy<TSource, TKey>(this IBindableCollection<TSource> source, Expression<Func<TSource, TKey>> keySelector, IComparer<TKey> comparer, DependencyDiscovery dependencyAnalysisMode) where TSource : class
         {
             source.ShouldNotBeNull("source");
             keySelector.ShouldNotBeNull("keySelector");
             var result = new OrderByIterator<TSource, TKey>(source, new ItemSorter<TSource, TKey>(null, keySelector.Compile(), comparer, true), source.Dispatcher);
-            if (dependencyAnalysisMode == DependencyAnalysis.Automatic)
+            if (dependencyAnalysisMode == DependencyDiscovery.Enabled)
             {
-                return result.WithDependencyExpression(keySelector.Body, keySelector.Parameters[0]);
+                return result.DependsOnExpression(keySelector.Body, keySelector.Parameters[0]);
             }
             return result;
         }

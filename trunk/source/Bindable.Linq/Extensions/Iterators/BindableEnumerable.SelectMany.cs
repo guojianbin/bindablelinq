@@ -39,7 +39,7 @@ namespace Bindable.Linq
         /// </returns>
         /// <exception cref="T:System.ArgumentNullException">
         /// 	<paramref name="source"/> or <paramref name="selector"/> is null.</exception>
-        public static IBindableCollection<TResult> SelectMany<TSource, TResult>(this IBindableCollection<TSource> source, Expression<Func<TSource, IBindableCollection<TResult>>> selector, DependencyAnalysis dependencyAnalysisMode)
+        public static IBindableCollection<TResult> SelectMany<TSource, TResult>(this IBindableCollection<TSource> source, Expression<Func<TSource, IBindableCollection<TResult>>> selector, DependencyDiscovery dependencyAnalysisMode)
             where TSource : class
             where TResult : class
         {

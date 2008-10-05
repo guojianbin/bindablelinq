@@ -132,7 +132,7 @@ namespace Bindable.Linq.Adapters.Outgoing
 
             var q = ListSortDirection.Ascending == _sortDirection ? _originalSource.OrderBy(selector) : _originalSource.OrderByDescending(selector);
 
-            WireInterceptor(q.WithDependency(_sortProperty.Name));
+            WireInterceptor(q.DependsOn(_sortProperty.Name));
 
             OnListChanged(new ListChangedEventArgs(ListChangedType.Reset, -1));
         }

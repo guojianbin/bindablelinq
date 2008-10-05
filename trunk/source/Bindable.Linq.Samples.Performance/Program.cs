@@ -25,22 +25,22 @@ namespace Bindable.Linq.Samples.Performance
             Console.WriteLine("Done.");
             Test("Select",
                 () => System.Linq.Enumerable.Select(contacts, c => c.FirstName),
-                () => contacts.AsBindable().Select(c => c.FirstName, DependencyAnalysis.Disabled)
+                () => contacts.AsBindable().Select(c => c.FirstName, DependencyDiscovery.Disabled)
                 );
 
             Test("Select Anonymous",
                 () => System.Linq.Enumerable.Select(contacts, c => new { Name = c.FirstName + c.LastName }),
-                () => contacts.AsBindable().Select(c => new { Name = c.FirstName + c.LastName }, DependencyAnalysis.Disabled)
+                () => contacts.AsBindable().Select(c => new { Name = c.FirstName + c.LastName }, DependencyDiscovery.Disabled)
                 );
 
             Test("Where",
                 () => System.Linq.Enumerable.Where(contacts, c => c.FirstName.Contains("3")),
-                () => contacts.AsBindable().Where(c => c.FirstName.Contains("3"), DependencyAnalysis.Disabled)
+                () => contacts.AsBindable().Where(c => c.FirstName.Contains("3"), DependencyDiscovery.Disabled)
                 );
 
             Test("OrderBy",
                 () => System.Linq.Enumerable.OrderBy(contacts, c => c.FirstName.Substring(4, 1)),
-                () => contacts.AsBindable().OrderBy(c => c.FirstName.Substring(4, 1), DependencyAnalysis.Disabled)
+                () => contacts.AsBindable().OrderBy(c => c.FirstName.Substring(4, 1), DependencyDiscovery.Disabled)
                 );
 
             Console.WriteLine("Complete");

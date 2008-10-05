@@ -77,7 +77,7 @@ namespace Bindable.Linq
         /// <param name="resultSelector">A function to transform the final accumulator value into the result value.</param>
         /// <param name="dependencyAnalysisMode">The dependency analysis mode.</param>
         /// <returns>The transformed final accumulator value.</returns>
-        public static IBindable<TResult> Aggregate<TSource, TAccumulate, TResult>(this IBindableCollection<TSource> source, TAccumulate seed, Expression<Func<TAccumulate, TSource, TAccumulate>> func, Expression<Func<TAccumulate, TResult>> resultSelector, DependencyAnalysis dependencyAnalysisMode)
+        public static IBindable<TResult> Aggregate<TSource, TAccumulate, TResult>(this IBindableCollection<TSource> source, TAccumulate seed, Expression<Func<TAccumulate, TSource, TAccumulate>> func, Expression<Func<TAccumulate, TResult>> resultSelector, DependencyDiscovery dependencyAnalysisMode)
         {
             return source.Aggregate(seed, func, dependencyAnalysisMode).Project(resultSelector, dependencyAnalysisMode);
         }
@@ -91,14 +91,14 @@ namespace Bindable.Linq
         /// <param name="func">An accumulator function to be invoked on each element.</param>
         /// <param name="dependencyAnalysisMode">The dependency analysis mode.</param>
         /// <returns>The final accumulator value.</returns>
-        public static IBindable<TResult> Aggregate<TSource, TResult>(this IBindableCollection<TSource> source, Expression<Func<IBindableCollection<TSource>, TResult>> func, DependencyAnalysis dependencyAnalysisMode)
+        public static IBindable<TResult> Aggregate<TSource, TResult>(this IBindableCollection<TSource> source, Expression<Func<IBindableCollection<TSource>, TResult>> func, DependencyDiscovery dependencyAnalysisMode)
         {
             source.ShouldNotBeNull("source");
             func.ShouldNotBeNull("func");
             var result = new CustomAggregator<TSource, TResult>(source, func.Compile(), source.Dispatcher);
-            if (dependencyAnalysisMode == DependencyAnalysis.Automatic)
+            if (dependencyAnalysisMode == DependencyDiscovery.Enabled)
             {
-                return result.WithDependencyExpression(func, func.Parameters[0]);
+                return result.DependsOnExpression(func, func.Parameters[0]);
             }
             return result;
         }
@@ -114,7 +114,7 @@ namespace Bindable.Linq
         /// <param name="func">An accumulator function to be invoked on each element.</param>
         /// <param name="dependencyAnalysisMode">The dependency analysis mode.</param>
         /// <returns>The final accumulator value.</returns>
-        public static IBindable<TAccumulate> Aggregate<TSource, TAccumulate>(this IBindableCollection<TSource> source, TAccumulate seed, Expression<Func<TAccumulate, TSource, TAccumulate>> func, DependencyAnalysis dependencyAnalysisMode)
+        public static IBindable<TAccumulate> Aggregate<TSource, TAccumulate>(this IBindableCollection<TSource> source, TAccumulate seed, Expression<Func<TAccumulate, TSource, TAccumulate>> func, DependencyDiscovery dependencyAnalysisMode)
         {
             source.ShouldNotBeNull("source");
             func.ShouldNotBeNull("func");
@@ -134,9 +134,9 @@ namespace Bindable.Linq
                 );
 
             var result = new CustomAggregator<TSource, TAccumulate>(source, function, source.Dispatcher);
-            if (dependencyAnalysisMode == DependencyAnalysis.Automatic)
+            if (dependencyAnalysisMode == DependencyDiscovery.Enabled)
             {
-                return result.WithDependencyExpression(func, func.Parameters[1]);
+                return result.DependsOnExpression(func, func.Parameters[1]);
             }
             return result;
         }

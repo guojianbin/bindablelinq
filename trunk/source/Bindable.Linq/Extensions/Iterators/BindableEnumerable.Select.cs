@@ -49,7 +49,7 @@ namespace Bindable.Linq
         /// An <see cref="IBindableCollection{TElement}"/> whose elements are the result of invoking the transform function on each element of <paramref name="source"/>.
         /// </returns>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="source"/> is null.</exception>
-        public static IBindableCollection<TSource> Select<TSource>(this IBindableCollection<TSource> source, DependencyAnalysis dependencyAnalysisMode) where TSource : class
+        public static IBindableCollection<TSource> Select<TSource>(this IBindableCollection<TSource> source, DependencyDiscovery dependencyAnalysisMode) where TSource : class
         {
             return source.Select(s => s, dependencyAnalysisMode);
         }
@@ -67,14 +67,14 @@ namespace Bindable.Linq
         /// </returns>
         /// <exception cref="T:System.ArgumentNullException">
         /// 	<paramref name="source"/> or <paramref name="selector"/> is null.</exception>
-        public static IBindableCollection<TResult> Select<TSource, TResult>(this IBindableCollection<TSource> source, Expression<Func<TSource, TResult>> selector, DependencyAnalysis dependencyAnalysisMode) where TSource : class
+        public static IBindableCollection<TResult> Select<TSource, TResult>(this IBindableCollection<TSource> source, Expression<Func<TSource, TResult>> selector, DependencyDiscovery dependencyAnalysisMode) where TSource : class
         {
             source.ShouldNotBeNull("source");
             selector.ShouldNotBeNull("selector");
             var result = new SelectIterator<TSource, TResult>(source, selector.Compile(), source.Dispatcher);
-            if (dependencyAnalysisMode == DependencyAnalysis.Automatic)
+            if (dependencyAnalysisMode == DependencyDiscovery.Enabled)
             {
-                result = result.WithDependencyExpression(selector.Body, selector.Parameters[0]);
+                result = result.DependsOnExpression(selector.Body, selector.Parameters[0]);
             }
             return result;
         }

@@ -16,7 +16,7 @@ namespace Bindable.Linq
         /// 	<paramref name="source"/> is null.</exception>
         public static IBindableCollection<TResult> OfType<TResult>(this IBindableCollection source) where TResult : class
         {
-            return AsBindable<object>(source, source.Dispatcher).Where(s => s is TResult, DependencyAnalysis.Disabled).Select(s => (TResult)s, DependencyAnalysis.Disabled);
+            return AsBindable<object>(source, source.Dispatcher).Where(s => s is TResult, DependencyDiscovery.Disabled).Select(s => (TResult)s, DependencyDiscovery.Disabled);
         }
 	}
 }

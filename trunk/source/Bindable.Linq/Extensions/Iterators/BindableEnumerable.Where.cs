@@ -42,14 +42,14 @@ namespace Bindable.Linq
         /// </returns>
         /// <exception cref="T:System.ArgumentNullException">
         /// 	<paramref name="source"/> or <paramref name="predicate"/> is null.</exception>
-        public static IBindableCollection<TSource> Where<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, bool>> predicate, DependencyAnalysis dependencyAnalysisMode) where TSource : class
+        public static IBindableCollection<TSource> Where<TSource>(this IBindableCollection<TSource> source, Expression<Func<TSource, bool>> predicate, DependencyDiscovery dependencyAnalysisMode) where TSource : class
         {
             source.ShouldNotBeNull("source");
             predicate.ShouldNotBeNull("predicate");
             var result = new WhereIterator<TSource>(source, predicate.Compile(), source.Dispatcher);
-            if (dependencyAnalysisMode == DependencyAnalysis.Automatic)
+            if (dependencyAnalysisMode == DependencyDiscovery.Enabled)
             {
-                return result.WithDependencyExpression(predicate.Body, predicate.Parameters[0]);
+                return result.DependsOnExpression(predicate.Body, predicate.Parameters[0]);
             }
 	        return result;
         }

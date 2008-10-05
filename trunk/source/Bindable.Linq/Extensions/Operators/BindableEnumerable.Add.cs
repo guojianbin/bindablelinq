@@ -15,7 +15,7 @@ namespace Bindable.Linq
         /// </returns>
         public static IBindable<int> Add(this IBindable<int> source, IBindable<int> toAdd)
         {
-            return source.Project(s => s + toAdd.Current, DependencyAnalysis.Automatic);
+            return source.Project(s => s + toAdd.Current, DependencyDiscovery.Enabled);
         }
 
         /// <summary>
@@ -28,7 +28,7 @@ namespace Bindable.Linq
         /// </returns>
         public static IBindable<float> Add(this IBindable<float> source, IBindable<float> toAdd)
         {
-            return source.Project(s => s + toAdd.Current, DependencyAnalysis.Automatic);
+            return source.Project(s => s + toAdd.Current, DependencyDiscovery.Enabled);
         }
 
         /// <summary>
@@ -41,7 +41,7 @@ namespace Bindable.Linq
         /// </returns>
         public static IBindable<decimal> Add(this IBindable<decimal> source, IBindable<decimal> toAdd)
         {
-            return source.Project(s => s + toAdd.Current, DependencyAnalysis.Automatic);
+            return source.Project(s => s + toAdd.Current, DependencyDiscovery.Enabled);
         }
 
         /// <summary>
@@ -54,7 +54,7 @@ namespace Bindable.Linq
         /// </returns>
         public static IBindable<double> Add(this IBindable<double> source, IBindable<double> toAdd)
         {
-            return source.Project(s => s + toAdd.Current, DependencyAnalysis.Automatic);
+            return source.Project(s => s + toAdd.Current, DependencyDiscovery.Enabled);
         }
 
         /// <summary>
@@ -67,7 +67,7 @@ namespace Bindable.Linq
         /// </returns>
         public static IBindable<long> Add(this IBindable<long> source, IBindable<long> toAdd)
         {
-            return source.Project(s => s + toAdd.Current, DependencyAnalysis.Automatic);
+            return source.Project(s => s + toAdd.Current, DependencyDiscovery.Enabled);
         }
 	}
 }

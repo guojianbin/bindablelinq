@@ -85,7 +85,7 @@
     <Compile Include="Configuration\IBindingConfiguration.cs" />
     <Compile Include="Dependencies\Definitions\ItemDependencyDefinition.cs" />
     <Compile Include="Dependencies\Definitions\ExternalDependencyDefinition.cs" />
-    <Compile Include="DependencyAnalysis.cs" />
+    <Compile Include="DependencyDiscovery.cs" />
     <Compile Include="Dependencies\ExpressionAnalysis\IExpressionAnalyzer.cs" />
     <Compile Include="Dependencies\Instances\StaticDependency.cs" />
     <Compile Include="Dependencies\PathNavigation\IPathNavigator.cs" />
@@ -130,7 +130,7 @@
     <Compile Include="Extensions\Aggregators\BindableEnumerable.Single.cs" />
     <Compile Include="Extensions\Aggregators\BindableEnumerable.SingleOrDefault.cs" />
     <Compile Include="Extensions\Aggregators\BindableEnumerable.Sum.cs" />
-    <Compile Include="Extensions\Dependencies\BindableEnumerable.WithDependency.cs" />
+    <Compile Include="Extensions\Dependencies\BindableEnumerable.DependsOn.cs" />
     <Compile Include="Extensions\Iterators\BindableEnumerable.AsBindable.cs" />
     <Compile Include="Extensions\Iterators\BindableEnumerable.Cast.cs" />
     <Compile Include="Extensions\Iterators\BindableEnumerable.Concat.cs" />

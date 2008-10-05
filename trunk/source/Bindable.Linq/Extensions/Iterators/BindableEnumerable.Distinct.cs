@@ -38,7 +38,7 @@ namespace Bindable.Linq
             {
                 comparer = new DefaultComparer<TSource>();
             }
-            return source.GroupBy(c => comparer.GetHashCode(c), DependencyAnalysis.Disabled).Select(group => group.First().Current, DependencyAnalysis.Disabled);
+            return source.GroupBy(c => comparer.GetHashCode(c), DependencyDiscovery.Disabled).Select(group => group.First().Current, DependencyDiscovery.Disabled);
         }
 	}
 }

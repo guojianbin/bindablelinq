@@ -18,11 +18,11 @@ namespace Bindable.Linq
         /// <param name="expression">The expression.</param>
         /// <param name="itemParameter">The item parameter.</param>
         /// <returns></returns>
-        public static TResult WithDependencyExpression<TResult>(this TResult query, System.Linq.Expressions.Expression expression, ParameterExpression itemParameter) where TResult : IAcceptsDependencies
+        public static TResult DependsOnExpression<TResult>(this TResult query, System.Linq.Expressions.Expression expression, ParameterExpression itemParameter) where TResult : IAcceptsDependencies
         {
             var analyzer = BindingConfigurations.Default.CreateExpressionAnalyzer();
             var definitions = analyzer.DiscoverDependencies(expression, itemParameter);
-            return query.WithDependencies(definitions);
+            return query.DependsOn(definitions);
         }
 
         /// <summary>
@@ -34,9 +34,9 @@ namespace Bindable.Linq
         /// class object, an object that implements <see cref="INotifyCollectionChanged" />, or a Windows Forms control.</param>
         /// <param name="propertyPath">The property path. For example: "HomeAddress.Postcode".</param>
         /// <returns></returns>
-        public static TResult WithDependency<TResult>(this TResult query, object externalObject, string propertyPath) where TResult : IAcceptsDependencies
+        public static TResult DependsOn<TResult>(this TResult query, object externalObject, string propertyPath) where TResult : IAcceptsDependencies
         {
-            return query.WithDependency(new ExternalDependencyDefinition(propertyPath, externalObject));
+            return query.DependsOn(new ExternalDependencyDefinition(propertyPath, externalObject));
         }
 
 #if SILVERLIGHT
@@ -48,10 +48,10 @@ namespace Bindable.Linq
         /// <param name="dependencyObject">A Silverlight dependency object.</param>
         /// <param name="propertyPath">The name of a property on the dependency object.</param>
         /// <returns></returns>
-        public static TResult WithDependency<TResult>(this TResult query, System.Windows.DependencyObject dependencyObject, string propertyPath)
+        public static TResult DependsOn<TResult>(this TResult query, System.Windows.DependencyObject dependencyObject, string propertyPath)
             where TResult : IAcceptsDependencies
         {
-            return query.WithDependency(new ExternalDependencyDefinition(propertyPath, dependencyObject));
+            return query.DependsOn(new ExternalDependencyDefinition(propertyPath, dependencyObject));
         }
 #else
         /// <summary>
@@ -62,10 +62,10 @@ namespace Bindable.Linq
         /// <param name="dependencyObject">A WPF dependency object.</param>
         /// <param name="dependencyProperty">A WPF dependency property.</param>
         /// <returns></returns>
-        public static TResult WithDependency<TResult>(this TResult query, DependencyObject dependencyObject, DependencyProperty dependencyProperty)
+        public static TResult DependsOn<TResult>(this TResult query, DependencyObject dependencyObject, DependencyProperty dependencyProperty)
             where TResult : IAcceptsDependencies
         {
-            return query.WithDependency(new ExternalDependencyDefinition(dependencyProperty.Name, dependencyObject));
+            return query.DependsOn(new ExternalDependencyDefinition(dependencyProperty.Name, dependencyObject));
         }
 #endif
 
@@ -76,9 +76,9 @@ namespace Bindable.Linq
         /// <param name="query">The query.</param>
         /// <param name="propertyPath">The property name or path. For example: "HomeAddress.Postcode".</param>
         /// <returns></returns>
-        public static TResult WithDependency<TResult>(this TResult query, string propertyPath) where TResult : IAcceptsDependencies
+        public static TResult DependsOn<TResult>(this TResult query, string propertyPath) where TResult : IAcceptsDependencies
         {
-            return query.WithDependency(new ItemDependencyDefinition(propertyPath));
+            return query.DependsOn(new ItemDependencyDefinition(propertyPath));
         }
 
         /// <summary>
@@ -89,7 +89,7 @@ namespace Bindable.Linq
         /// <param name="query">The query.</param>
         /// <param name="definition">The definition.</param>
         /// <returns></returns>
-        public static TResult WithDependency<TResult>(this TResult query, IDependencyDefinition definition) where TResult : IAcceptsDependencies
+        public static TResult DependsOn<TResult>(this TResult query, IDependencyDefinition definition) where TResult : IAcceptsDependencies
         {
             if (query != null && definition != null)
             {
@@ -105,7 +105,7 @@ namespace Bindable.Linq
         /// <param name="query">The query.</param>
         /// <param name="definitions">The definitions.</param>
         /// <returns></returns>
-        public static TResult WithDependencies<TResult>(this TResult query, IEnumerable<IDependencyDefinition> definitions) where TResult : IAcceptsDependencies
+        public static TResult DependsOn<TResult>(this TResult query, IEnumerable<IDependencyDefinition> definitions) where TResult : IAcceptsDependencies
         {
             if (query != null)
             {

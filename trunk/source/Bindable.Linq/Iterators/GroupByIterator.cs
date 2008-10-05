@@ -86,7 +86,7 @@ namespace Bindable.Linq.Iterators
             var groupExists = FindGroup(key, ResultCollection);
             if (!groupExists)
             {
-                IBindableGrouping<TKey, TElement> newGroup = new BindableGrouping<TKey, TElement>(key, SourceCollection.Where(e => CompareKeys(_keySelectorCompiled(e), key)).WithDependencyExpression(_keySelector.Body, _keySelector.Parameters[0]).Select(_elementSelector), Dispatcher);
+                IBindableGrouping<TKey, TElement> newGroup = new BindableGrouping<TKey, TElement>(key, SourceCollection.Where(e => CompareKeys(_keySelectorCompiled(e), key)).DependsOnExpression(_keySelector.Body, _keySelector.Parameters[0]).Select(_elementSelector), Dispatcher);
                 newGroup.CollectionChanged += Group_CollectionChanged;
                 ResultCollection.Add(newGroup);
             }

@@ -36,14 +36,14 @@ namespace Bindable.Linq
         /// <returns>
         /// An object created by the <paramref name="projector"/>. If the source value changes, the item will be projected again.
         /// </returns>
-        public static IBindable<TResult> Project<TSource, TResult>(this IBindable<TSource> source, Expression<Func<TSource, TResult>> projector, DependencyAnalysis dependencyAnalysisMode)
+        public static IBindable<TResult> Project<TSource, TResult>(this IBindable<TSource> source, Expression<Func<TSource, TResult>> projector, DependencyDiscovery dependencyAnalysisMode)
         {
             source.ShouldNotBeNull("source");
             projector.ShouldNotBeNull("projector");
             var result = new ProjectOperator<TSource, TResult>(source, projector.Compile(), source.Dispatcher);
-            if (dependencyAnalysisMode == DependencyAnalysis.Automatic)
+            if (dependencyAnalysisMode == DependencyDiscovery.Enabled)
             {
-                return result.WithDependencyExpression(projector.Body, projector.Parameters[0]);
+                return result.DependsOnExpression(projector.Body, projector.Parameters[0]);
             }
             return result;
         }

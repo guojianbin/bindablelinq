@@ -39,7 +39,7 @@ namespace Bindable.Linq
         /// </returns>
         /// <exception cref="T:System.ArgumentNullException">
         /// 	<paramref name="source"/> or <paramref name="keySelector"/> is null.</exception>
-        public static IBindableCollection<IBindableGrouping<TKey, TSource>> GroupBy<TSource, TKey>(this IBindableCollection<TSource> source, Expression<Func<TSource, TKey>> keySelector, DependencyAnalysis dependencyAnalysisMode) where TSource : class
+        public static IBindableCollection<IBindableGrouping<TKey, TSource>> GroupBy<TSource, TKey>(this IBindableCollection<TSource> source, Expression<Func<TSource, TKey>> keySelector, DependencyDiscovery dependencyAnalysisMode) where TSource : class
         {
             return source.GroupBy(keySelector, s => s, new DefaultComparer<TKey>(), dependencyAnalysisMode);
         }
@@ -76,7 +76,7 @@ namespace Bindable.Linq
         /// </returns>
         /// <exception cref="T:System.ArgumentNullException">
         /// 	<paramref name="source"/> or <paramref name="keySelector"/> is null.</exception>
-        public static IBindableCollection<IBindableGrouping<TKey, TSource>> GroupBy<TSource, TKey>(this IBindableCollection<TSource> source, Expression<Func<TSource, TKey>> keySelector, IEqualityComparer<TKey> comparer, DependencyAnalysis dependencyAnalysisMode) where TSource : class
+        public static IBindableCollection<IBindableGrouping<TKey, TSource>> GroupBy<TSource, TKey>(this IBindableCollection<TSource> source, Expression<Func<TSource, TKey>> keySelector, IEqualityComparer<TKey> comparer, DependencyDiscovery dependencyAnalysisMode) where TSource : class
         {
             return source.GroupBy(keySelector, s => s, comparer, dependencyAnalysisMode);
         }
@@ -117,7 +117,7 @@ namespace Bindable.Linq
         /// </returns>
         /// <exception cref="T:System.ArgumentNullException">
         /// 	<paramref name="source"/> or <paramref name="keySelector"/> or <paramref name="elementSelector"/> is null.</exception>
-        public static IBindableCollection<IBindableGrouping<TKey, TElement>> GroupBy<TSource, TKey, TElement>(this IBindableCollection<TSource> source, Expression<Func<TSource, TKey>> keySelector, Expression<Func<TSource, TElement>> elementSelector, DependencyAnalysis dependencyAnalysisMode)
+        public static IBindableCollection<IBindableGrouping<TKey, TElement>> GroupBy<TSource, TKey, TElement>(this IBindableCollection<TSource> source, Expression<Func<TSource, TKey>> keySelector, Expression<Func<TSource, TElement>> elementSelector, DependencyDiscovery dependencyAnalysisMode)
             where TSource : class
             where TElement : class
         {
@@ -156,7 +156,7 @@ namespace Bindable.Linq
         /// <returns>
         /// A collection of elements of type TResult where each element represents a projection over a group and its key.
         /// </returns>
-        public static IBindableCollection<TResult> GroupBy<TSource, TKey, TResult>(this IBindableCollection<TSource> source, Expression<Func<TSource, TKey>> keySelector, Expression<Func<TKey, IBindableCollection<TSource>, TResult>> resultSelector, DependencyAnalysis dependencyAnalysisMode)
+        public static IBindableCollection<TResult> GroupBy<TSource, TKey, TResult>(this IBindableCollection<TSource> source, Expression<Func<TSource, TKey>> keySelector, Expression<Func<TKey, IBindableCollection<TSource>, TResult>> resultSelector, DependencyDiscovery dependencyAnalysisMode)
             where TSource : class
             where TResult : class
         {
@@ -201,7 +201,7 @@ namespace Bindable.Linq
         /// </returns>
         /// <exception cref="T:System.ArgumentNullException">
         /// 	<paramref name="source"/> or <paramref name="keySelector"/> or <paramref name="elementSelector"/> is null.</exception>
-        public static IBindableCollection<IBindableGrouping<TKey, TElement>> GroupBy<TSource, TKey, TElement>(this IBindableCollection<TSource> source, Expression<Func<TSource, TKey>> keySelector, Expression<Func<TSource, TElement>> elementSelector, IEqualityComparer<TKey> comparer, DependencyAnalysis dependencyAnalysisMode)
+        public static IBindableCollection<IBindableGrouping<TKey, TElement>> GroupBy<TSource, TKey, TElement>(this IBindableCollection<TSource> source, Expression<Func<TSource, TKey>> keySelector, Expression<Func<TSource, TElement>> elementSelector, IEqualityComparer<TKey> comparer, DependencyDiscovery dependencyAnalysisMode)
             where TSource : class
             where TElement : class
         {
@@ -209,9 +209,9 @@ namespace Bindable.Linq
             keySelector.ShouldNotBeNull("keySelector");
             elementSelector.ShouldNotBeNull("elementSelector");
             var result = new GroupByIterator<TKey, TSource, TElement>(source, keySelector, elementSelector, comparer, source.Dispatcher);
-            if (dependencyAnalysisMode == DependencyAnalysis.Automatic)
+            if (dependencyAnalysisMode == DependencyDiscovery.Enabled)
             {
-                return result.WithDependencyExpression(keySelector.Body, keySelector.Parameters[0]);
+                return result.DependsOnExpression(keySelector.Body, keySelector.Parameters[0]);
             }
             return result;
         }
@@ -253,7 +253,7 @@ namespace Bindable.Linq
         /// <returns>
         /// A collection of elements of type TResult where each element represents a projection over a group and its key.
         /// </returns>
-        public static IBindableCollection<TResult> GroupBy<TSource, TKey, TElement, TResult>(this IBindableCollection<TSource> source, Expression<Func<TSource, TKey>> keySelector, Expression<Func<TSource, TElement>> elementSelector, Expression<Func<TKey, IBindableCollection<TElement>, TResult>> resultSelector, DependencyAnalysis dependencyAnalysisMode)
+        public static IBindableCollection<TResult> GroupBy<TSource, TKey, TElement, TResult>(this IBindableCollection<TSource> source, Expression<Func<TSource, TKey>> keySelector, Expression<Func<TSource, TElement>> elementSelector, Expression<Func<TKey, IBindableCollection<TElement>, TResult>> resultSelector, DependencyDiscovery dependencyAnalysisMode)
             where TSource : class
             where TElement : class
             where TResult : class
@@ -295,7 +295,7 @@ namespace Bindable.Linq
         /// <returns>
         /// A collection of elements of type TResult where each element represents a projection over a group and its key.
         /// </returns>
-        public static IBindableCollection<TResult> GroupBy<TSource, TKey, TResult>(this IBindableCollection<TSource> source, Expression<Func<TSource, TKey>> keySelector, Expression<Func<TKey, IBindableCollection<TSource>, TResult>> resultSelector, IEqualityComparer<TKey> comparer, DependencyAnalysis dependencyAnalysisMode)
+        public static IBindableCollection<TResult> GroupBy<TSource, TKey, TResult>(this IBindableCollection<TSource> source, Expression<Func<TSource, TKey>> keySelector, Expression<Func<TKey, IBindableCollection<TSource>, TResult>> resultSelector, IEqualityComparer<TKey> comparer, DependencyDiscovery dependencyAnalysisMode)
             where TSource : class
             where TResult : class
         {
@@ -341,7 +341,7 @@ namespace Bindable.Linq
         /// <returns>
         /// A collection of elements of type TResult where each element represents a projection over a group and its key.
         /// </returns>
-        public static IBindableCollection<TResult> GroupBy<TSource, TKey, TElement, TResult>(this IBindableCollection<TSource> source, Expression<Func<TSource, TKey>> keySelector, Expression<Func<TSource, TElement>> elementSelector, Expression<Func<TKey, IBindableCollection<TElement>, TResult>> resultSelector, IEqualityComparer<TKey> comparer, DependencyAnalysis dependencyAnalysisMode)
+        public static IBindableCollection<TResult> GroupBy<TSource, TKey, TElement, TResult>(this IBindableCollection<TSource> source, Expression<Func<TSource, TKey>> keySelector, Expression<Func<TSource, TElement>> elementSelector, Expression<Func<TKey, IBindableCollection<TElement>, TResult>> resultSelector, IEqualityComparer<TKey> comparer, DependencyDiscovery dependencyAnalysisMode)
             where TSource : class
             where TElement : class
             where TResult : class

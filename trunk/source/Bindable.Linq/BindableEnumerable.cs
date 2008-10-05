@@ -11,6 +11,6 @@ namespace Bindable.Linq
         // under the /Extensions folders. 
 
 
-        private static DependencyAnalysis DefaultDependencyAnalysis = DependencyAnalysis.Automatic;
+        private static DependencyDiscovery DefaultDependencyAnalysis = DependencyDiscovery.Enabled;
     }
 }
